@@ -1,0 +1,6 @@
+[package]
+name = "blob"
+version = "0.1.0"
+
+[dependencies]
+graffiti = { git = "https://github.com/milancermak/graffiti.git" }
