@@ -1,22 +1,15 @@
 use blob::generation::traits::jewellry;
 
-const TRAIT_COUNT: u32 = 8;
-
-fn get_jewellry(seed: u32) -> ByteArray {
-    let value = seed % TRAIT_COUNT;
-
-    println!("Armour: {}", value);
-
-    match value {
-        0 => jewellry::amulet(),
-        1 => jewellry::bronzering(),
-        2 => jewellry::goldring(),
-        3 => jewellry::necklace(),
-        4 => jewellry::nounsglasses(),
-        5 => jewellry::pendant(),
-        6 => jewellry::platinumring(),
-        7 => jewellry::silverring(),
-        8 => jewellry::titaniumring(),
-        _ => panic!("Invalid trait value"),
-    }
+fn jewellries() -> Array<(ByteArray, ByteArray)> {
+    return array![
+            (jewellry::amulet(), "Amulet"),
+            (jewellry::bronzering(), "Bronze Ring"),
+            (jewellry::goldring(), "Gold Ring"),
+            (jewellry::necklace(), "Necklace"),
+            (jewellry::nounsglasses(), "Nouns Glasses"),
+            (jewellry::pendant(), "Pendant"),
+            (jewellry::platinumring(), "Platinum Ring"),
+            (jewellry::silverring(), "Silver Ring"),
+            (jewellry::titaniumring(), "Titanium Ring")
+        ];
 }

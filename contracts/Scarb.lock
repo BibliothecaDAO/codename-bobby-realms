@@ -2,13 +2,59 @@
 version = 1
 
 [[package]]
+name = "alexandria_data_structures"
+version = "0.2.0"
+source = "git+https://github.com/keep-starknet-strange/alexandria.git#8ddf02430dfe04656ed5bf1b99de7024da1aef41"
+dependencies = [
+ "alexandria_encoding",
+]
+
+[[package]]
+name = "alexandria_encoding"
+version = "0.1.0"
+source = "git+https://github.com/keep-starknet-strange/alexandria.git#8ddf02430dfe04656ed5bf1b99de7024da1aef41"
+dependencies = [
+ "alexandria_math",
+ "alexandria_numeric",
+]
+
+[[package]]
+name = "alexandria_math"
+version = "0.2.0"
+source = "git+https://github.com/keep-starknet-strange/alexandria.git#8ddf02430dfe04656ed5bf1b99de7024da1aef41"
+dependencies = [
+ "alexandria_data_structures",
+]
+
+[[package]]
+name = "alexandria_numeric"
+version = "0.1.0"
+source = "git+https://github.com/keep-starknet-strange/alexandria.git#8ddf02430dfe04656ed5bf1b99de7024da1aef41"
+dependencies = [
+ "alexandria_math",
+]
+
+[[package]]
 name = "blob"
 version = "0.1.0"
 dependencies = [
+ "alexandria_math",
  "graffiti",
+ "openzeppelin",
+ "snforge_std",
 ]
 
 [[package]]
 name = "graffiti"
 version = "0.1.0"
-source = "git+https://github.com/milancermak/graffiti.git#d3d14da9644b861b238c6907042a3e8c00ecc85c"
+source = "git+https://github.com/ponderingdemocritus/graffiti#bc569531791dbc71c6cd8d9bc154c34eedad31fe"
+
+[[package]]
+name = "openzeppelin"
+version = "0.8.0"
+source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v0.8.0#c23e8e96de60e6e3159b1ff8591a1187269c0eb7"
+
+[[package]]
+name = "snforge_std"
+version = "0.1.0"
+source = "git+https://github.com/foundry-rs/starknet-foundry?tag=v0.12.0#0c3d2fe4ab31aa4484fa216417408ae65a149efe"

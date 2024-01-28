@@ -1,22 +1,16 @@
 use blob::generation::traits::armour;
 
-const TRAIT_COUNT: u32 = 8;
 
-fn get_armour(seed: u32) -> ByteArray {
-    let value = seed % TRAIT_COUNT;
-
-    println!("Armour: {}", value);
-
-    match value {
-        0 => armour::chainmail(),
-        1 => armour::demonarmour(),
-        2 => armour::divinerobe(),
-        3 => armour::kigurumi(),
-        4 => armour::leatherarmour(),
-        5 => armour::platemail(),
-        6 => armour::robe(),
-        7 => armour::sheepswool(),
-        8 => armour::underpants(),
-        _ => panic!("Invalid trait value"),
-    }
+fn armours() -> Array<(ByteArray, ByteArray)> {
+    return array![
+            (armour::chainmail(), "Chainmail"),
+            (armour::demonarmour(), "Demon Armour"),
+            (armour::divinerobe(), "Divine Robe"),
+            (armour::kigurumi(), "Kigurumi"),
+            (armour::leatherarmour(), "Leather Armour"),
+            (armour::platemail(), "Plate Mail"),
+            (armour::robe(), "Robe"),
+            (armour::sheepswool(), "Sheep's Wool"),
+            (armour::underpants(), "Underpants")
+    ];
 }

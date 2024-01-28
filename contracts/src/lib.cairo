@@ -1,16 +1,19 @@
+mod erc721;
+mod descriptor;
+mod seeder;
 mod generation {
     mod build;
     mod armour;
-    mod masks;
+    mod mask;
     mod background;
     mod jewellry;
-    mod weapons;
+    mod weapon;
 
     mod traits {
         mod armour;
-        mod masks;
+        mod mask;
         mod jewellry;
-        mod weapons;
+        mod weapon;
         mod background;
     }
 }

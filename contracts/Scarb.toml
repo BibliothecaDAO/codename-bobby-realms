@@ -3,4 +3,21 @@ name = "blob"
 version = "0.1.0"
 
 [dependencies]
-graffiti = { git = "https://github.com/milancermak/graffiti.git" }
+snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry", tag = "v0.12.0" }
+starknet = "2.4.0"
+
+# External dependencies
+alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
+graffiti = { git = "https://github.com/ponderingdemocritus/graffiti" }
+openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.8.0" }
+
+
+[[target.starknet-contract]]
+sierra = true
+casm = true
+
+[cairo]
+sierra-replace-ids = true
+
+[tool.fmt]
+sort-module-level-items = true
