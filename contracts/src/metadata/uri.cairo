@@ -5,16 +5,24 @@ use graffiti::json::JsonImpl;
 use alexandria_encoding::base64::Base64Encoder;
 
 fn uri(seed: u32) -> ByteArray {
-    let image = build::blobert(1000);
+    let (image, attributes) = build::blobert(1000);
 
     let encoded = "data:image/png;base64," + _base64_encode(image);
 
-    let sub = JsonImpl::new().add("trait_type", "Base").add("value", "Star").build();
-
     let mainarr = JsonImpl::new()
         .add("name", "John")
-        .add("description", "Kevin")
-        .add_array("attributes", array![sub.clone()].span())
+        .add("description", "Blobert ")
+        .add_array(
+            "attributes",
+            array![
+                attributes.mask.clone(),
+                attributes.background.clone(),
+                attributes.weapon.clone(),
+                attributes.jewellry.clone(),
+                attributes.armour.clone()
+            ]
+                .span()
+        )
         .add("image", encoded);
 
     let z = mainarr.build();
