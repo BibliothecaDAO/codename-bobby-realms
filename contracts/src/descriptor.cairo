@@ -35,8 +35,9 @@ mod Descriptor {
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::token::erc721::ERC721Component;
     use blob::generation::{
-        armour::{armours}, mask::{masks}, background::{backgrounds},
-        jewellry::{jewellries}, weapon::{weapons}
+        armour::{ARMOUR_COUNT}, mask::{MASK_COUNT}, 
+        background::{BACKGROUND_COUNT},
+        jewellry::{JEWELLRY_COUNT}, weapon::{WEAPON_COUNT}
     };
 
     use starknet::ContractAddress;
@@ -51,27 +52,27 @@ mod Descriptor {
     #[abi(embed_v0)]
     impl TraitsMetadata of super::IDescriptorTraitsMetadata<ContractState> {
         fn armour_count(self: @ContractState) -> u32 {
-            return armours().len();
+            return ARMOUR_COUNT;
         }
 
         fn background_count(self: @ContractState) -> u32 {
-            return backgrounds().len();
+            return BACKGROUND_COUNT;
         }       
 
         fn jewellry_count(self: @ContractState) -> u32 {
-            return jewellries().len();
+            return JEWELLRY_COUNT;
         }
 
         fn mask_count(self: @ContractState) -> u32 {
-            return masks().len();
+            return MASK_COUNT;
         }
 
         fn weapon_count(self: @ContractState) -> u32 {
-            return weapons().len();
+            return WEAPON_COUNT;
         }
     }
-
-
+// 4,385,075,082
+// 4,381,697,532
 
     #[abi(embed_v0)]
     impl TokenMetadata of super::IDescriptorTokenMetadata<ContractState> {

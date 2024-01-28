@@ -25,11 +25,11 @@ use blob::generation::{
 ///
 fn blobert(token_id: u256, seed: Seed) -> ByteArray {
 
-    let (armour_bytes, armour_name) = armours().at(seed.armour);
-    let (mask_bytes, mask_name) = masks().at(seed.mask);
-    let (background_bytes, background_name) = backgrounds().at(seed.background);
-    let (jewellry_bytes, jewellry_name) = jewellries().at(seed.jewellry);
-    let (weapon_bytes, weapon_name) = weapons().at(seed.weapon);
+    let (armour_bytes, armour_name) = armours(seed.armour);
+    let (mask_bytes, mask_name) = masks(seed.mask);
+    let (background_bytes, background_name) = backgrounds(seed.background);
+    let (jewellry_bytes, jewellry_name) = jewellries(seed.jewellry);
+    let (weapon_bytes, weapon_name) = weapons(seed.weapon);
 
     let image: ByteArray = construct_base64_image(
         armour: armour_bytes, 
@@ -78,39 +78,39 @@ fn blobert(token_id: u256, seed: Seed) -> ByteArray {
 ///                 e.g "data:image/svg+xml;base64,PHN2ZyB4..."
 ///
 fn construct_base64_image(
-        armour: @ByteArray, mask: @ByteArray, 
-        background: @ByteArray, jewellry: @ByteArray, weapon: @ByteArray
+        armour: ByteArray, mask: ByteArray, 
+        background: ByteArray, jewellry: ByteArray, weapon: ByteArray
     ) -> ByteArray {
     let image_body: Tag = TagImpl::new("image")
-        .attr("href", "data:image/png;base64," + armour.clone())
+        .attr("href", "data:image/png;base64," + armour)
         .attr("x", "0")
         .attr("y", "0")
         .attr("width", "350px")
         .attr("height", "350px");
 
     let image_head: Tag = TagImpl::new("image")
-        .attr("href", "data:image/png;base64," + mask.clone())
+        .attr("href", "data:image/png;base64," + mask)
         .attr("x", "0")
         .attr("y", "0")
         .attr("width", "350px")
         .attr("height", "350px");
 
     let image_background: Tag = TagImpl::new("image")
-        .attr("href", "data:image/png;base64," + background.clone())
+        .attr("href", "data:image/png;base64," + background)
         .attr("x", "0")
         .attr("y", "0")
         .attr("width", "350px")
         .attr("height", "350px");
 
     let image_jewellry: Tag = TagImpl::new("image")
-        .attr("href", "data:image/png;base64," + jewellry.clone())
+        .attr("href", "data:image/png;base64," + jewellry)
         .attr("x", "0")
         .attr("y", "0")
         .attr("width", "350px")
         .attr("height", "350px");
 
     let image_weapon: Tag = TagImpl::new("image")
-        .attr("href", "data:image/png;base64," + weapon.clone())
+        .attr("href", "data:image/png;base64," + weapon)
         .attr("x", "0")
         .attr("y", "0")
         .attr("width", "350px")
@@ -159,33 +159,33 @@ fn construct_base64_image(
 ///                           ].span();
 ///
 fn construct_json_attributes(
-        armour: @ByteArray, mask: @ByteArray, 
-        background: @ByteArray, jewellry: @ByteArray, weapon: @ByteArray
+        armour: ByteArray, mask: ByteArray, 
+        background: ByteArray, jewellry: ByteArray, weapon: ByteArray
     ) -> Span<ByteArray> {
 
         let armour : ByteArray = JsonImpl::new()
             .add("trait", "Armour")
-            .add("value", armour.clone())
+            .add("value", armour)
             .build();
 
         let mask : ByteArray = JsonImpl::new()
             .add("trait", "Mask")
-            .add("value", mask.clone())
+            .add("value", mask)
             .build();
 
         let background : ByteArray = JsonImpl::new()
             .add("trait", "Background")
-            .add("value", background.clone())
+            .add("value", background)
             .build();
 
         let jewellry : ByteArray = JsonImpl::new()
                 .add("trait", "Jewellry")
-                .add("value", jewellry.clone())
+                .add("value", jewellry)
                 .build();
 
         let weapon : ByteArray = JsonImpl::new()
             .add("trait", "Weapon")
-            .add("value", weapon.clone())
+            .add("value", weapon)
             .build();
 
         return array![
@@ -309,11 +309,11 @@ mod tests {
 
         #[test]
         fn test_construct_base64_image() {
-            let (armour_bytes, _) = armours().at(2);
-            let (mask_bytes, _) = masks().at(1);
-            let (background_bytes, _) = backgrounds().at(2);
-            let (jewellry_bytes, _) = jewellries().at(3);
-            let (weapon_bytes, _) = weapons().at(1);
+            let (armour_bytes, _) = armours(2);
+            let (mask_bytes, _) = masks(1);
+            let (background_bytes, _) = backgrounds(2);
+            let (jewellry_bytes, _) = jewellries(3);
+            let (weapon_bytes, _) = weapons(1);
 
             let image_bytes: ByteArray = construct_base64_image(
                 armour: armour_bytes, 
@@ -339,11 +339,11 @@ mod tests {
 
         #[test]
         fn test_construct_json_attributes() {
-            let (_, armour_name) = armours().at(2);
-            let (_, mask_name) = masks().at(1);
-            let (_, background_name) = backgrounds().at(2);
-            let (_, jewellry_name) = jewellries().at(3);
-            let (_, weapon_name) = weapons().at(1);
+            let (_, armour_name) = armours(2);
+            let (_, mask_name) = masks(1);
+            let (_, background_name) = backgrounds(2);
+            let (_, jewellry_name) = jewellries(3);
+            let (_, weapon_name) = weapons(1);
 
 
             let blobert_attributes = construct_json_attributes(
