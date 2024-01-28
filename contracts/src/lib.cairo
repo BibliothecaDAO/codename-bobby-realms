@@ -14,3 +14,7 @@ mod generation {
         mod background;
     }
 }
+
+mod metadata {
+    mod uri;
+}
