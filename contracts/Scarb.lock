@@ -27,6 +27,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "alexandria_merkle_tree"
+version = "0.1.0"
+source = "git+https://github.com/keep-starknet-strange/alexandria.git#8ddf02430dfe04656ed5bf1b99de7024da1aef41"
+
+[[package]]
 name = "alexandria_numeric"
 version = "0.1.0"
 source = "git+https://github.com/keep-starknet-strange/alexandria.git#8ddf02430dfe04656ed5bf1b99de7024da1aef41"
@@ -39,6 +44,7 @@ name = "blob"
 version = "0.1.0"
 dependencies = [
  "alexandria_math",
+ "alexandria_merkle_tree",
  "graffiti",
  "openzeppelin",
  "snforge_std",
