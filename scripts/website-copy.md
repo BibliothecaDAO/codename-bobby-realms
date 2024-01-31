@@ -31,5 +31,3 @@ Got questions? Of course, you do. Here's where I half-heartedly attempt to answe
 
 _Treasury Address:_
 
-I’m just the face, the blobfish in the spotlight. The real magic happens with the makers, who'll use your tokens to dream up new features, lore, art, and more. Your tokens, their talent, and my face: a triad of reluctant cooperation.
-
