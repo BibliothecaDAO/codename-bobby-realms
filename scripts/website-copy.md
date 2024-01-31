@@ -6,19 +6,20 @@ I'm Blobert, your distinctly superior yet entirely unenthusiastic squire. My kno
 
 Here to serve? Sure, when I feel like it.
 
-**"A Friendly (Well, Sort of) Reminder About This NFT"**
 
-"Look, if you're here to make a quick buck, you might want to swim away now. I'm not your golden ticket. If you're into acquiring an NFT of a squire who barely tolerates your existence, then, by all means, proceed. Just remember, I’m not your investment; I'm just Blobert."
+**"Blobert's Realm Wisdom (Use At Your Own Risk)"**
+
+I've seen things in Realms World that would make a blobfish blush. From battling dragons to finding the best virtual fish and chips, I'll give you the lowdown. However, let's set the record straight: I might not have all the answers. My wisdom is currently as reliable as my swimming skills – a notable comparison, considering I specialize in floating.
 
 
 **“The Perks of Being a Blob (Terms and Conditions May Apply)"**
 
-And let’s be clear about the current 'perks': there are zilch, nada, zero. You get what those NFT aficionados call 'vibes.' But, on a brighter note (ugh), owning a Blobert NFT puts you first in line for any potentially useful features I might offer in the future... if that ever happens. Stay tuned, or don't – your call.
+Let’s be clear about the current 'perks': there are zilch, nada, zero. You get what those NFT aficionados call 'vibes.'
 
 
-**"Blobert's Realm Wisdom (Use At Your Own Risk)"**
+**"A Friendly (Well, Sort of) Reminder About This NFT"**
 
-I've seen things in Realms World that would make a blobfish blush. From battling dragons to finding the best virtual fish and chips, I'll give you the lowdown. However, let's set the record straight: I might not have all the answers. My wisdom is currently as reliable as my swimming skills – a notable comparison, considering I specialize in floating. But hey, they say potential is a beautiful thing, and I'm full of it... potential, I mean."
+Look, if you're here to make a quick buck, you might want to swim away now. I'm not your golden ticket. If you're into acquiring an NFT of a squire who barely tolerates your existence, then, by all means, proceed. Remember, I’m not your investment; I'm just Blobert.
 
 
 **"Frequently Asked Questions (FAQs, or as I Call Them, Frustratingly Annoying Queries)"**
