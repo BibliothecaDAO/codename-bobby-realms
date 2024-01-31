@@ -8,7 +8,7 @@ Here to serve? Sure, when I feel like it.
 
 **"A Friendly (Well, Sort of) Reminder About This NFT"**
 
-"Look, if you're here to make a quick buck, you might want to swim away now. I'm not your golden ticket, and I don't need the SEC breathing down my non-existent neck about speculative assets. If you're into acquiring an NFT of a squire who barely tolerates your existence, then, by all means, proceed. Just remember, I’m not your investment; I'm just Blobert."
+"Look, if you're here to make a quick buck, you might want to swim away now. I'm not your golden ticket. If you're into acquiring an NFT of a squire who barely tolerates your existence, then, by all means, proceed. Just remember, I’m not your investment; I'm just Blobert."
 
 
 **“The Perks of Being a Blob (Terms and Conditions May Apply)"**
