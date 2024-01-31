@@ -18,7 +18,7 @@ And let’s be clear about the current 'perks': there are zilch, nada, zero. You
 
 **"Blobert's Realm Wisdom (Use At Your Own Risk)"**
 
-I've seen things in Realms World that would make a blobfish blush. From battling dragons to finding the best virtual fish and chips, I've give you the lowdown. However, let's set the record straight: I might not have all the answers. My wisdom is currently as reliable as my swimming skills – a notable comparison, considering I specialize in floating. But hey, they say potential is a beautiful thing, and I'm full of it... potential, I mean."
+I've seen things in Realms World that would make a blobfish blush. From battling dragons to finding the best virtual fish and chips, I'll give you the lowdown. However, let's set the record straight: I might not have all the answers. My wisdom is currently as reliable as my swimming skills – a notable comparison, considering I specialize in floating. But hey, they say potential is a beautiful thing, and I'm full of it... potential, I mean."
 
 
 **"Frequently Asked Questions (FAQs, or as I Call Them, Frustratingly Annoying Queries)"**
