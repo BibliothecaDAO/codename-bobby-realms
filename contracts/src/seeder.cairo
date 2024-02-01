@@ -9,7 +9,7 @@ struct Seed {
 
 #[starknet::interface]
 trait ISeeder<TContractState> {
-    fn generate_seed(self: @TContractState, token_id: u256, descriptor_addr: starknet::ContractAddress) -> Seed;
+    fn generate_seed(self: @TContractState, token_id: u256, descriptor_addr: starknet::ContractAddress, salt: felt252) -> Seed;
 }
 
 #[starknet::contract]
@@ -34,15 +34,14 @@ mod Seeder {
     impl Seeder of super::ISeeder<ContractState> {
 
         fn generate_seed(
-            self: @ContractState, token_id: u256,  descriptor_addr: starknet::ContractAddress
+            self: @ContractState, token_id: u256,  descriptor_addr: starknet::ContractAddress, salt: felt252
         ) -> Seed {
 
             let descriptor = IDescriptorDispatcher{contract_address: descriptor_addr};
 
-            let block_number = starknet::get_block_info().unbox().block_number;
-            let previous_block_hash = starknet::get_block_hash_syscall(block_number - 1).unwrap();
-            let pseudorandomness: u256 = poseidon_hash_span(
-                    array![previous_block_hash, token_id.low.into(), token_id.high.into()].span()
+            let block_timestamp = starknet::get_block_timestamp();
+            let randomness: u256 = poseidon_hash_span(
+                    array![block_timestamp.into(), token_id.low.into(), token_id.high.into()].span()
                 ).into();
 
             let background_count: u256 = descriptor.background_count().into();
@@ -52,11 +51,11 @@ mod Seeder {
             let weapon_count: u256 = descriptor.weapon_count().into();
 
             return Seed {
-                background: (pseudorandomness % background_count).try_into().unwrap(),
-                armour: (BitShift::shr(background_count, 48) % armour_count).try_into().unwrap(),
-                jewellry: (BitShift::shr(background_count, 96) % jewellry_count).try_into().unwrap(),
-                mask: (BitShift::shr(background_count, 144) % mask_count).try_into().unwrap(),
-                weapon: (BitShift::shr(background_count, 192) % weapon_count).try_into().unwrap(),
+                background: (randomness % background_count).try_into().unwrap(),
+                armour: (BitShift::shr(randomness, 48) % armour_count).try_into().unwrap(),
+                jewellry: (BitShift::shr(randomness, 96) % jewellry_count).try_into().unwrap(),
+                mask: (BitShift::shr(randomness, 144) % mask_count).try_into().unwrap(),
+                weapon: (BitShift::shr(randomness, 192) % weapon_count).try_into().unwrap(),
             };
         }
         
