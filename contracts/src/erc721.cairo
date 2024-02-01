@@ -176,23 +176,29 @@ mod BlobertNFT {
             // set the token's seed
             let seeder = self.seeder.read();
             let descriptor = self.descriptor.read();
-            let seed: Seed = seeder.generate_seed(
-                    token_id, descriptor.contract_address
-                );
 
+            
             // todo@credence calculate prob of hash collision
-            // and handle collisions
 
             // ensure that seed is unique
-            let seed_hash: felt252 
-                = PoseidonTrait::new().update_with(seed).finalize();
-            assert!(
-                !self.seed_exists.read(seed_hash), 
-                    "Blobert: seed already exists"
-            );
+            let mut salt = 0x74657874206d652062616279207844204063726564656e63653078; 
+            loop {
+                let seed: Seed = seeder.generate_seed(
+                    token_id, descriptor.contract_address, salt
+                );
+
+                // ensure that seed is unique
+                let seed_hash: felt252 
+                    = PoseidonTrait::new().update_with(seed).finalize();
+                if !self.seed_exists.read(seed_hash) {
+                    self.seeds.write(token_id, seed);
+                    self.seed_exists.write(seed_hash, true);
+                    break;
+                }
+
+                salt += 1;
+            };
             
-            self.seeds.write(token_id, seed);
-            self.seed_exists.write(seed_hash, true);
         }
 
 
