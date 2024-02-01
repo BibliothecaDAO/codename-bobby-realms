@@ -13,6 +13,14 @@ use blob::generation::{
 };
 use alexandria_encoding::base64::get_base64_char_set;
 
+#[derive(Drop)]
+struct Traits {
+    mask: ByteArray,
+    armour: ByteArray,
+    weapon: ByteArray,
+    jewellry: ByteArray,
+    background: ByteArray,
+}
 
 /// Generate blobert metadata given the token id and seed
 ///
