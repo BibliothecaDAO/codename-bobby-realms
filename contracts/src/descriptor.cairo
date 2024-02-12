@@ -71,8 +71,7 @@ mod Descriptor {
             return WEAPON_COUNT;
         }
     }
-// 4,385,075,082
-// 4,381,697,532
+
 
     #[abi(embed_v0)]
     impl TokenMetadata of super::IDescriptorTokenMetadata<ContractState> {

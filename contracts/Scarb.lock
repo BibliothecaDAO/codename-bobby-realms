@@ -58,9 +58,9 @@ source = "git+https://github.com/ponderingdemocritus/graffiti#bc569531791dbc71c6
 [[package]]
 name = "openzeppelin"
 version = "0.8.0"
-source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v0.8.0#c23e8e96de60e6e3159b1ff8591a1187269c0eb7"
+source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v0.8.0#6f72a5236865f78380c194b4223783fa0f163be0"
 
 [[package]]
 name = "snforge_std"
-version = "0.1.0"
-source = "git+https://github.com/foundry-rs/starknet-foundry?tag=v0.12.0#0c3d2fe4ab31aa4484fa216417408ae65a149efe"
+version = "0.16.0"
+source = "git+https://github.com/foundry-rs/starknet-foundry.git?tag=v0.16.0#f58e0ab42b6095b7d0cb841ede595aecbc9cb45d"

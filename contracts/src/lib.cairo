@@ -1,4 +1,4 @@
-mod erc721;
+// mod erc721;
 mod descriptor;
 mod seeder;
 mod generation {
@@ -18,6 +18,3 @@ mod generation {
     }
 }
 
-mod metadata {
-    mod uri;
-}
