@@ -15,7 +15,6 @@ trait IERC721MetadataCamelOnly<TState> {
 
 #[starknet::interface]
 trait BlobertTrait<TContractState> {
-
     fn mint(ref self: TContractState, recipient: ContractAddress, merkle_proof: Span<felt252>);
     fn update_seeder(ref self: TContractState, seeder: ContractAddress);
     fn update_descriptor(ref self: TContractState, descriptor: ContractAddress);

@@ -1,11 +1,4 @@
-#[derive(Copy, Drop, Serde, Hash, starknet::Store)]
-struct Seed {
-    background: u32,
-    armour: u32,
-    jewellry: u32,
-    mask: u32,
-    weapon: u32,
-}
+use blob::types::seeder::Seed;
 
 #[starknet::interface]
 trait ISeeder<TContractState> {
@@ -23,7 +16,7 @@ mod Seeder {
     use core::poseidon::poseidon_hash_span;
     use core::u256;
     use blob::descriptor::{IDescriptorDispatcher, IDescriptorDispatcherTrait};
-    use blob::seeder::Seed;
+    use blob::types::seeder::Seed;
     use alexandria_math::{BitShift, U256BitShift};
 
 

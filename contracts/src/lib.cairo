@@ -1,8 +1,9 @@
-// mod erc721;
+mod erc721;
+mod utils;
+mod types;
 mod descriptor;
 mod seeder;
 mod generation {
-    mod build;
     mod armour;
     mod mask;
     mod background;

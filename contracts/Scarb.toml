@@ -9,8 +9,8 @@ starknet = "2.4.0"
 alexandria_merkle_tree = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
 alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
 graffiti = { git = "https://github.com/ponderingdemocritus/graffiti" }
-openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.8.0" }
-snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry.git", tag = "v0.16.0" }
+openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git"}
+snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry.git", tag = "v0.17.1" }
 
 
 [[target.starknet-contract]]
