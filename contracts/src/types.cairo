@@ -17,3 +17,13 @@ mod seeder {
         weapon: u32,
     }
 }
+
+
+mod erc721 {
+    
+    #[derive(Copy, Drop, Serde)]
+    enum WhitelistClass {
+        Dev,
+        RealmHolder
+    }
+}
