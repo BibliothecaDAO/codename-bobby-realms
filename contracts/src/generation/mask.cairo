@@ -3,7 +3,6 @@ use blob::generation::traits::mask;
 
 const MASK_COUNT: u32 = 10;
 fn masks(index: u32) -> (ByteArray, ByteArray) {
-
     assert(index < MASK_COUNT, 'wrong mask index');
     let index: felt252 = index.into();
 

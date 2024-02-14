@@ -2,7 +2,6 @@ use blob::generation::traits::jewellry;
 
 const JEWELLRY_COUNT: u32 = 9;
 fn jewellries(index: u32) -> (ByteArray, ByteArray) {
-
     assert(index < JEWELLRY_COUNT, 'wrong jewellry index');
     let index: felt252 = index.into();
 

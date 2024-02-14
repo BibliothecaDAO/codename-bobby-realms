@@ -1,5 +1,4 @@
 mod descriptor {
-    
     #[derive(Copy, Drop, Serde)]
     enum ImageType {
         Svg,
@@ -20,7 +19,6 @@ mod seeder {
 
 
 mod erc721 {
-    
     #[derive(Copy, Drop, Serde)]
     enum WhitelistClass {
         Dev,

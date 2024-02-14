@@ -2,7 +2,6 @@ use blob::generation::traits::armour;
 
 const ARMOUR_COUNT: u32 = 9;
 fn armours(index: u32) -> (ByteArray, ByteArray) {
-
     assert(index < ARMOUR_COUNT, 'wrong armour index');
 
     let index: felt252 = index.into();

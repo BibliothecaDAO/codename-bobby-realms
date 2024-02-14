@@ -2,7 +2,6 @@ use blob::generation::traits::weapon;
 
 const WEAPON_COUNT: u32 = 12;
 fn weapons(index: u32) -> (ByteArray, ByteArray) {
-
     assert(index < WEAPON_COUNT, 'wrong weapon index');
     let index: felt252 = index.into();
 

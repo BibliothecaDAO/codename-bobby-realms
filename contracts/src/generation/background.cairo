@@ -2,7 +2,6 @@ use blob::generation::traits::background;
 
 const BACKGROUND_COUNT: u32 = 9;
 fn backgrounds(index: u32) -> (ByteArray, ByteArray) {
-
     assert(index < BACKGROUND_COUNT, 'wrong background index');
     let index: felt252 = index.into();
 

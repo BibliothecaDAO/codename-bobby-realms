@@ -49,21 +49,17 @@ fn encode_bytes(mut bytes: ByteArray, base64_chars: Span<u8>) -> ByteArray {
         let e3 = (n / 64) & 63;
         let e4 = n & 63;
 
-        
         if i == last_iteration {
             if p == 2 {
                 result.append_byte(*base64_chars[e1]);
                 result.append_byte(*base64_chars[e2]);
                 result.append_byte('=');
                 result.append_byte('=');
-
             } else if p == 1 {
-          
                 result.append_byte(*base64_chars[e1]);
                 result.append_byte(*base64_chars[e2]);
                 result.append_byte(*base64_chars[e3]);
                 result.append_byte('=');
-
             } else {
                 result.append_byte(*base64_chars[e1]);
                 result.append_byte(*base64_chars[e2]);

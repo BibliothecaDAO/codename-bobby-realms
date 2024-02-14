@@ -1,9 +1,9 @@
-use starknet::ContractAddress;
 use blob::types::erc721::WhitelistClass;
+use starknet::ContractAddress;
 
 //todo@credence add renounceOwnership function
 // so that seeder and descriptor may not be updated
-    
+
 //todo: contract needs a way to transfer receipt
 //todo: handle 1 of 1s
 
@@ -22,7 +22,12 @@ trait IERC721MetadataCamelOnly<TState> {
 #[starknet::interface]
 trait BlobertTrait<TContractState> {
     fn mint(ref self: TContractState, recipient: ContractAddress);
-    fn whitelist_mint(ref self: TContractState, recipient: ContractAddress, merkle_proof: Span<felt252>, whitelist_class:WhitelistClass);
+    fn whitelist_mint(
+        ref self: TContractState,
+        recipient: ContractAddress,
+        merkle_proof: Span<felt252>,
+        whitelist_class: WhitelistClass
+    );
     fn update_seeder(ref self: TContractState, seeder: ContractAddress);
     fn update_descriptor(ref self: TContractState, descriptor: ContractAddress);
 }
@@ -30,25 +35,25 @@ trait BlobertTrait<TContractState> {
 
 #[starknet::contract]
 mod BlobertNFT {
+    use alexandria_merkle_tree::merkle_tree::{
+        Hasher, MerkleTree, poseidon::PoseidonHasherImpl, MerkleTreeTrait, HasherTrait,
+        MerkleTreeImpl
+    };
+    use blob::descriptor::{IDescriptorDispatcher, IDescriptorDispatcherTrait};
+
+    use blob::seeder::{Seed, ISeederDispatcher, ISeederDispatcherTrait};
+    use blob::types::erc721::WhitelistClass;
+    use core::hash::{HashStateTrait, HashStateExTrait};
+    use core::poseidon::PoseidonTrait;
+    use openzeppelin::access::ownable::OwnableComponent;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use openzeppelin::token::erc721::ERC721Component;
-    use super::{IERC721Metadata, IERC721MetadataCamelOnly};
-    use openzeppelin::access::ownable::OwnableComponent;
 
     use starknet::ContractAddress;
+    use super::{IERC721Metadata, IERC721MetadataCamelOnly};
 
-    use blob::seeder::{Seed, ISeederDispatcher, ISeederDispatcherTrait};
-    use blob::descriptor::{IDescriptorDispatcher, IDescriptorDispatcherTrait};
-    use blob::types::erc721::WhitelistClass;
 
-    use alexandria_merkle_tree::merkle_tree::{ 
-        Hasher, MerkleTree, poseidon::PoseidonHasherImpl,  MerkleTreeTrait, HasherTrait, MerkleTreeImpl
-    };
-    use core::poseidon::PoseidonTrait;
-    use core::hash::{HashStateTrait, HashStateExTrait};
-
-    
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
     component!(path: ERC721Component, storage: erc721, event: ERC721Event);
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
@@ -83,14 +88,11 @@ mod BlobertNFT {
         realm_holder_merkle_root: felt252,
         fee_token: IERC20Dispatcher,
         fee_amount: u128,
-
         whitelist_mint_starts_at: u64,
         regular_mint_starts_at: u64,
-
         regular_mint_count: LegacyMap<ContractAddress, u8>,
         dev_whitelist_mint_count: LegacyMap<ContractAddress, u8>,
         realm_holder_whitelist_mint_count: LegacyMap<ContractAddress, u8>,
-
         seeds: LegacyMap<u256, Seed>,
         seed_exists: LegacyMap<felt252, bool>,
         seeder: ISeederDispatcher,
@@ -112,7 +114,6 @@ mod BlobertNFT {
         ERC721Event: ERC721Component::Event,
         #[flat]
         SRC5Event: SRC5Component::Event,
-
     }
 
 
@@ -124,7 +125,7 @@ mod BlobertNFT {
         owner: ContractAddress,
         seeder: ContractAddress,
         descriptor: ContractAddress,
-        dev_merkle_root: felt252, 
+        dev_merkle_root: felt252,
         realm_holder_merkle_root: felt252,
         fee_token: ContractAddress,
         fee_amount: u128,
@@ -133,12 +134,17 @@ mod BlobertNFT {
     ) {
         self.ownable.initializer(owner);
         self.erc721.initializer(name, symbol);
-        self.initialize(
-            :seeder, :descriptor, 
-            :dev_merkle_root, :realm_holder_merkle_root, 
-            :whitelist_mint_starts_at, :regular_mint_starts_at,
-            :fee_token, :fee_amount
-        );
+        self
+            .initialize(
+                :seeder,
+                :descriptor,
+                :dev_merkle_root,
+                :realm_holder_merkle_root,
+                :whitelist_mint_starts_at,
+                :regular_mint_starts_at,
+                :fee_token,
+                :fee_amount
+            );
     }
 
 
@@ -170,13 +176,9 @@ mod BlobertNFT {
     }
 
 
-
-
     #[abi(embed_v0)]
     impl BlobertImpl of super::BlobertTrait<ContractState> {
-
-        fn mint(ref self: ContractState, recipient: ContractAddress){
-
+        fn mint(ref self: ContractState, recipient: ContractAddress) {
             // ensure this function can only be called once per transaction
             self.ensure_one_call_per_tx();
 
@@ -184,8 +186,8 @@ mod BlobertNFT {
             self.ensure_regular_mint_period();
 
             let caller = starknet::get_caller_address();
-            
-             // ensure that address has not max minted
+
+            // ensure that address has not max minted
             let regular_mint_count = self.regular_mint_count.read(caller);
             assert!(regular_mint_count < MAX_MINT_REGULAR, "blobert: max mint exceeded");
 
@@ -194,12 +196,12 @@ mod BlobertNFT {
         }
 
 
-
-
         fn whitelist_mint(
-            ref self: ContractState, recipient: ContractAddress,
-            merkle_proof: Span<felt252>, whitelist_class:WhitelistClass ){
-
+            ref self: ContractState,
+            recipient: ContractAddress,
+            merkle_proof: Span<felt252>,
+            whitelist_class: WhitelistClass
+        ) {
             // ensure this function can only be called once per transaction
             self.ensure_one_call_per_tx();
 
@@ -207,28 +209,29 @@ mod BlobertNFT {
             self.ensure_whitelist_mint_period();
 
             let caller = starknet::get_caller_address();
-            
+
             // @note we assume that none of the lists would contain the same address
 
             let merkle_root = match whitelist_class {
                 WhitelistClass::Dev(()) => {
-
                     // ensure that address has not max minted
                     let dev_whitelist_mint_count = self.dev_whitelist_mint_count.read(caller);
-                    assert!(dev_whitelist_mint_count < MAX_MINT_WHITELIST_DEV, "Blobert: max mint for address");
+                    assert!(
+                        dev_whitelist_mint_count < MAX_MINT_WHITELIST_DEV,
+                        "Blobert: max mint for address"
+                    );
 
                     // return merkle root for whitelist class
                     self.dev_merkle_root.read()
                 },
-
                 WhitelistClass::RealmHolder(()) => {
-
                     // ensure that address has not max minted
-                    let realm_holder_whitelist_mint_count 
-                        = self.realm_holder_whitelist_mint_count.read(caller);
+                    let realm_holder_whitelist_mint_count = self
+                        .realm_holder_whitelist_mint_count
+                        .read(caller);
                     assert!(
                         realm_holder_whitelist_mint_count < MAX_MINT_WHITELIST_REALM_HOLDER,
-                            "Blobert: max mint for address"
+                        "Blobert: max mint for address"
                     );
 
                     // return merkle root for whitelist class
@@ -237,16 +240,11 @@ mod BlobertNFT {
             };
 
             // verify merkle proof
-            self.ensure_valid_merkle_proof(
-                caller, :merkle_proof, :merkle_root
-            );
+            self.ensure_valid_merkle_proof(caller, :merkle_proof, :merkle_root);
 
             // mint token to recipient at no cost
             self._mint(:caller, :recipient, collect_fee: false);
         }
-
-
-
 
 
         fn update_seeder(ref self: ContractState, seeder: ContractAddress) {
@@ -264,31 +262,45 @@ mod BlobertNFT {
     #[generate_trait]
     impl Internal of InternalTrait {
         fn initialize(
-            ref self: ContractState, seeder: ContractAddress, descriptor: ContractAddress,
-            dev_merkle_root: felt252, realm_holder_merkle_root: felt252, 
-            whitelist_mint_starts_at : u64, regular_mint_starts_at: u64,
-            fee_token: ContractAddress, fee_amount: u128
+            ref self: ContractState,
+            seeder: ContractAddress,
+            descriptor: ContractAddress,
+            dev_merkle_root: felt252,
+            realm_holder_merkle_root: felt252,
+            whitelist_mint_starts_at: u64,
+            regular_mint_starts_at: u64,
+            fee_token: ContractAddress,
+            fee_amount: u128
         ) {
             self._update_seeder(seeder);
             self._update_descriptor(descriptor);
 
-            assert!(whitelist_mint_starts_at > starknet::get_block_timestamp(), "whitelist mint time is in past");
-            assert!(regular_mint_starts_at > whitelist_mint_starts_at, "regular mint time is <= whitelist time");
+            assert!(
+                whitelist_mint_starts_at > starknet::get_block_timestamp(),
+                "whitelist mint time is in past"
+            );
+            assert!(
+                regular_mint_starts_at > whitelist_mint_starts_at,
+                "regular mint time is <= whitelist time"
+            );
 
             self.whitelist_mint_starts_at.write(whitelist_mint_starts_at);
             self.regular_mint_starts_at.write(regular_mint_starts_at);
 
             self.dev_merkle_root.write(dev_merkle_root);
             self.realm_holder_merkle_root.write(realm_holder_merkle_root);
-            self.fee_token.write(IERC20Dispatcher{contract_address: fee_token});
+            self.fee_token.write(IERC20Dispatcher { contract_address: fee_token });
             self.fee_amount.write(fee_amount);
         }
 
 
-
         // @note recipient is not necessarily caller. check for risks
-        fn _mint(ref self: ContractState, caller: ContractAddress, recipient: ContractAddress, collect_fee: bool) -> u256 {
-
+        fn _mint(
+            ref self: ContractState,
+            caller: ContractAddress,
+            recipient: ContractAddress,
+            collect_fee: bool
+        ) -> u256 {
             // get next token id and increment counter
             let token_id = self.current_token_id.read() + 1;
             self.current_token_id.write(token_id);
@@ -297,12 +309,10 @@ mod BlobertNFT {
             self.erc721._mint(recipient, token_id);
 
             // collect fees from caller if necessary
-            if collect_fee {    
+            if collect_fee {
                 let this = starknet::get_contract_address();
                 let fee_token = self.fee_token.read();
-                fee_token.transfer_from(
-                    caller, this, self.fee_amount.read().into()
-                );
+                fee_token.transfer_from(caller, this, self.fee_amount.read().into());
             }
 
             // set token seed
@@ -312,21 +322,17 @@ mod BlobertNFT {
         }
 
 
-
-        fn _set_seed(ref self: ContractState, token_id: u256 ) {
+        fn _set_seed(ref self: ContractState, token_id: u256) {
             // todo@credence calculate prob of hash collision
 
             // set the token's seed
             let seeder = self.seeder.read();
             let descriptor = self.descriptor.read();
-        
 
             // ensure that seed is unique by using a salt
-            let mut salt = 0x74657874206d652062616279207844204063726564656e63653078; 
+            let mut salt = 0x74657874206d652062616279207844204063726564656e63653078;
             loop {
-                let seed: Seed = seeder.generate_seed(
-                    token_id, descriptor.contract_address, salt
-                );
+                let seed: Seed = seeder.generate_seed(token_id, descriptor.contract_address, salt);
 
                 // ensure that seed is unique by comparing the seed's hash
                 // with the hashes of seeds of minted tokens
@@ -340,7 +346,6 @@ mod BlobertNFT {
                 salt += 1;
             };
         }
-
 
 
         fn ensure_whitelist_mint_period(ref self: ContractState) {
@@ -371,12 +376,15 @@ mod BlobertNFT {
         }
 
         fn ensure_valid_merkle_proof(
-            self: @ContractState, address: ContractAddress, merkle_proof: Span<felt252>, merkle_root: felt252
-            ){
-
-            let mut merkle_tree: MerkleTree<Hasher> 
-                = MerkleTreeImpl::<_, PoseidonHasherImpl>::new();
-            let merkle_verified =  MerkleTreeImpl::<
+            self: @ContractState,
+            address: ContractAddress,
+            merkle_proof: Span<felt252>,
+            merkle_root: felt252
+        ) {
+            let mut merkle_tree: MerkleTree<Hasher> = MerkleTreeImpl::<
+                _, PoseidonHasherImpl
+            >::new();
+            let merkle_verified = MerkleTreeImpl::<
                 _, PoseidonHasherImpl
             >::verify(ref merkle_tree, merkle_root, address.into(), merkle_proof);
 
@@ -386,14 +394,13 @@ mod BlobertNFT {
 
         fn _update_seeder(ref self: ContractState, seeder: ContractAddress) {
             assert!(seeder != Zeroable::zero(), "Blobert: Seeder address cannot be zero");
-            self.seeder.write(ISeederDispatcher{contract_address: seeder});
+            self.seeder.write(ISeederDispatcher { contract_address: seeder });
         }
 
 
         fn _update_descriptor(ref self: ContractState, descriptor: ContractAddress) {
             assert!(descriptor != Zeroable::zero(), "Blobert: Descriptor address cannot be zero");
-            self.descriptor.write(IDescriptorDispatcher{contract_address: descriptor});
+            self.descriptor.write(IDescriptorDispatcher { contract_address: descriptor });
         }
     }
-   
 }
