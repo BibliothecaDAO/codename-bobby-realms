@@ -1,9 +1,9 @@
-use blob::generation::traits::mask;
+use blob::generation::traits::data::mask;
 
 
-const MASK_COUNT: u32 = 10;
-fn masks(index: u32) -> (ByteArray, ByteArray) {
-    assert(index < MASK_COUNT, 'wrong mask index');
+const SPECIAL_IMAGES_COUNT: u8 = 10;
+fn special_images(index: u8) -> (ByteArray, ByteArray) {
+    assert(index < SPECIAL_IMAGES_COUNT, 'wrong special img index');
     let index: felt252 = index.into();
 
     match index {

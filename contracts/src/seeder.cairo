@@ -12,7 +12,7 @@ trait ISeeder<TContractState> {
 
 #[starknet::contract]
 mod Seeder {
-    use alexandria_math::{BitShift, U256BitShift};
+    use alexandria_math::BitShift;
     use blob::descriptor::{IDescriptorDispatcher, IDescriptorDispatcherTrait};
     use blob::types::seeder::Seed;
     use core::box::BoxTrait;

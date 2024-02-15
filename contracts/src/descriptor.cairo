@@ -1,70 +1,83 @@
-use blob::seeder::Seed;
 use blob::types::descriptor::ImageType;
+use blob::types::seeder::Seed;
 
 #[starknet::interface]
 trait IDescriptor<TContractState> {
-    fn armour_count(self: @TContractState) -> u32;
-    fn armour(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn armour_count(self: @TContractState) -> u8;
+    fn armour(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
-    fn background_count(self: @TContractState) -> u32;
-    fn background(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn background_count(self: @TContractState) -> u8;
+    fn background(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
-    fn jewellry_count(self: @TContractState) -> u32;
-    fn jewellry(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn jewellry_count(self: @TContractState) -> u8;
+    fn jewellry(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
-    fn mask_count(self: @TContractState) -> u32;
-    fn mask(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn mask_count(self: @TContractState) -> u8;
+    fn mask(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
-    fn weapon_count(self: @TContractState) -> u32;
-    fn weapon(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn weapon_count(self: @TContractState) -> u8;
+    fn weapon(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
 
     fn token_uri(self: @TContractState, token_id: u256, seed: Seed) -> ByteArray;
     fn token_uri_no_image(self: @TContractState, token_id: u256, seed: Seed) -> ByteArray;
     fn generate_svg_image(self: @TContractState, seed: Seed) -> ByteArray;
+
+
+    fn token_uri_special(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
+    fn token_uri_no_image_special(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
+    fn generate_svg_image_special(self: @TContractState, index: u8) -> ByteArray;
 }
 
 
 #[starknet::interface]
 trait ITraitsDescriptor<TContractState> {
-    fn armour_count(self: @TContractState) -> u32;
-    fn armour(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn armour_count(self: @TContractState) -> u8;
+    fn armour(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
-    fn background_count(self: @TContractState) -> u32;
-    fn background(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn background_count(self: @TContractState) -> u8;
+    fn background(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
-    fn jewellry_count(self: @TContractState) -> u32;
-    fn jewellry(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn jewellry_count(self: @TContractState) -> u8;
+    fn jewellry(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
-    fn mask_count(self: @TContractState) -> u32;
-    fn mask(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn mask_count(self: @TContractState) -> u8;
+    fn mask(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
 
-    fn weapon_count(self: @TContractState) -> u32;
-    fn weapon(self: @TContractState, index: u32) -> (ByteArray, ByteArray);
+    fn weapon_count(self: @TContractState) -> u8;
+    fn weapon(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 }
 
 
 #[starknet::interface]
-trait IMetadataDescriptor<TContractState> {
+trait IMetadataTraitsDescriptor<TContractState> {
     fn token_uri(self: @TContractState, token_id: u256, seed: Seed) -> ByteArray;
     fn token_uri_no_image(self: @TContractState, token_id: u256, seed: Seed) -> ByteArray;
     fn generate_svg_image(self: @TContractState, seed: Seed) -> ByteArray;
 }
 
+#[starknet::interface]
+trait IMetadataSpecialImageDescriptor<TContractState> {
+    fn token_uri_special(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
+    fn token_uri_no_image_special(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
+    fn generate_svg_image_special(self: @TContractState, index: u8) -> ByteArray;
+}
+
 
 #[starknet::contract]
 mod Descriptor {
-    use blob::generation::{
+    use blob::generation::traits::{
         armour::{ARMOUR_COUNT}, mask::{MASK_COUNT}, background::{BACKGROUND_COUNT},
         jewellry::{JEWELLRY_COUNT}, weapon::{WEAPON_COUNT}
     };
-    use blob::generation::{
+    use blob::generation::traits::{
         armour::{armours}, mask::{masks}, background::{backgrounds}, jewellry::{jewellries},
         weapon::{weapons}
     };
-    use blob::seeder::Seed;
+    use blob::generation::{special::special_images};
     use blob::types::descriptor::ImageType;
+    use blob::types::seeder::Seed;
     use blob::utils::bytes_base64_encode;
     use core::array::ArrayTrait;
     use graffiti::json::JsonImpl;
@@ -83,50 +96,50 @@ mod Descriptor {
 
     #[abi(embed_v0)]
     impl TraitsMetadata of super::ITraitsDescriptor<ContractState> {
-        fn armour_count(self: @ContractState) -> u32 {
+        fn armour_count(self: @ContractState) -> u8 {
             return ARMOUR_COUNT;
         }
 
-        fn armour(self: @ContractState, index: u32) -> (ByteArray, ByteArray) {
+        fn armour(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
             armours(index)
         }
 
-        fn background_count(self: @ContractState) -> u32 {
+        fn background_count(self: @ContractState) -> u8 {
             return BACKGROUND_COUNT;
         }
 
-        fn background(self: @ContractState, index: u32) -> (ByteArray, ByteArray) {
+        fn background(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
             backgrounds(index)
         }
 
-        fn jewellry_count(self: @ContractState) -> u32 {
+        fn jewellry_count(self: @ContractState) -> u8 {
             return JEWELLRY_COUNT;
         }
 
-        fn jewellry(self: @ContractState, index: u32) -> (ByteArray, ByteArray) {
+        fn jewellry(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
             jewellries(index)
         }
 
-        fn mask_count(self: @ContractState) -> u32 {
+        fn mask_count(self: @ContractState) -> u8 {
             return MASK_COUNT;
         }
 
-        fn mask(self: @ContractState, index: u32) -> (ByteArray, ByteArray) {
+        fn mask(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
             masks(index)
         }
 
-        fn weapon_count(self: @ContractState) -> u32 {
+        fn weapon_count(self: @ContractState) -> u8 {
             return WEAPON_COUNT;
         }
 
-        fn weapon(self: @ContractState, index: u32) -> (ByteArray, ByteArray) {
+        fn weapon(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
             weapons(index)
         }
     }
 
 
     #[abi(embed_v0)]
-    impl TokenMetadata of super::IMetadataDescriptor<ContractState> {
+    impl MetadataTraitsDescriptorImpl of super::IMetadataTraitsDescriptor<ContractState> {
         fn token_uri(self: @ContractState, token_id: u256, seed: Seed) -> ByteArray {
             self.data_uri(token_id, seed)
         }
@@ -151,6 +164,28 @@ mod Descriptor {
                     weapon: weapon_bytes,
                     image_type: ImageType::Svg
                 )
+        }
+    }
+
+
+    #[abi(embed_v0)]
+    impl MetadataSpecialImageDescriptorImpl of super::IMetadataSpecialImageDescriptor<
+        ContractState
+    > {
+        fn token_uri_special(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
+            self.data_uri_special(token_id, index)
+        }
+
+        fn token_uri_no_image_special(
+            self: @ContractState, token_id: u256, index: u8
+        ) -> ByteArray {
+            self.data_uri_no_img_special(token_id, index)
+        }
+
+        fn generate_svg_image_special(self: @ContractState, index: u8) -> ByteArray {
+            let (image_bytes, _) = special_images(index);
+
+            self.construct_image_special(:image_bytes, image_type: ImageType::Svg)
         }
     }
 
@@ -195,6 +230,26 @@ mod Descriptor {
         }
 
 
+        fn data_uri_special(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
+            let (image_bytes, _) = special_images(index);
+
+            let image: ByteArray = self
+                .construct_image_special(:image_bytes, image_type: ImageType::Base64Encoded);
+
+            let attributes: Span<ByteArray> = array![].span();
+
+            let metadata: ByteArray = JsonImpl::new()
+                .add("name", self._make_token_name(token_id))
+                .add("description", self._make_token_description(token_id))
+                .add("image", image)
+                .add_array("attributes", attributes)
+                .build();
+
+            let base64_encoded_metadata: ByteArray = bytes_base64_encode(metadata);
+            format!("data:application/json;base64,{}", base64_encoded_metadata)
+        }
+
+
         fn data_uri_no_img(self: @ContractState, token_id: u256, seed: Seed) -> ByteArray {
             let (_, armour_name) = armours(seed.armour);
             let (_, mask_name) = masks(seed.mask);
@@ -211,6 +266,20 @@ mod Descriptor {
                     weapon: weapon_name
                 );
 
+            let metadata: ByteArray = JsonImpl::new()
+                .add("name", self._make_token_name(token_id))
+                .add("description", self._make_token_description(token_id))
+                .add("image", "")
+                .add_array("attributes", attributes)
+                .build();
+
+            let base64_encoded_metadata: ByteArray = bytes_base64_encode(metadata);
+            format!("data:application/json;base64,{}", base64_encoded_metadata)
+        }
+
+
+        fn data_uri_no_img_special(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
+            let attributes: Span<ByteArray> = array![].span();
             let metadata: ByteArray = JsonImpl::new()
                 .add("name", self._make_token_name(token_id))
                 .add("description", self._make_token_description(token_id))
@@ -293,6 +362,36 @@ mod Descriptor {
         }
 
 
+        fn construct_image_special(
+            self: @ContractState, image_bytes: ByteArray, image_type: ImageType
+        ) -> ByteArray {
+            // construct svg image
+
+            let image: Tag = TagImpl::new("image")
+                .attr("href", "data:image/png;base64," + image_bytes)
+                .attr("x", "0")
+                .attr("y", "0")
+                .attr("width", "350px")
+                .attr("height", "350px");
+
+            let svg_root: Tag = TagImpl::new("svg")
+                .attr("xmlns", "http://www.w3.org/2000/svg")
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", "0 0 350 350");
+
+            let svg = svg_root.insert(image).build();
+
+            match image_type {
+                ImageType::Svg(()) => { svg },
+                ImageType::Base64Encoded(()) => {
+                    // @note that will not work unless the node it is being called from
+                    // has a high enough max calls step
+                    format!("data:image/svg+xml;base64,{}", bytes_base64_encode(svg))
+                }
+            }
+        }
+
+
         fn construct_attributes(
             self: @ContractState,
             armour: ByteArray,
@@ -353,7 +452,7 @@ mod tests {
         IDescriptorDispatcher { contract_address }
     }
 
-    fn seed_splat(value: u32) -> Seed {
+    fn seed_splat(value: u8) -> Seed {
         Seed { background: value, armour: value, jewellry: value, mask: value, weapon: value }
     }
 

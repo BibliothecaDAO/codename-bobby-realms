@@ -40,26 +40,26 @@ function generateBase64(directory, outputFilePath) {
 
 generateBase64(
   "../art/traits/armour",
-  "../contracts/src/generation/traits/armour.cairo"
+  "../contracts/src/generation/traits/data/armour.cairo"
 );
 generateBase64(
   "../art/traits/backgrounds",
-  "../contracts/src/generation/traits/background.cairo"
+  "../contracts/src/generation/traits/data/background.cairo"
 );
 
 generateBase64(
   "../art/traits/jewellry",
-  "../contracts/src/generation/traits/jewellry.cairo"
+  "../contracts/src/generation/traits/data/jewellry.cairo"
 );
 
 generateBase64(
   "../art/traits/masks",
-  "../contracts/src/generation/traits/masks.cairo"
+  "../contracts/src/generation/traits/data/masks.cairo"
 );
 
 generateBase64(
   "../art/traits/weapons",
-  "../contracts/src/generation/traits/weapons.cairo"
+  "../contracts/src/generation/traits/data/weapons.cairo"
 );
 
 console.log("All conversions complete");

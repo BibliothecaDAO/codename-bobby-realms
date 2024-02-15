@@ -1,10 +1,6 @@
 use blob::types::erc721::WhitelistClass;
 use starknet::ContractAddress;
 
-//todo@credence add renounceOwnership function
-// so that seeder and descriptor may not be updated
-
-//todo: contract needs a way to transfer receipt
 //todo: handle 1 of 1s
 
 #[starknet::interface]
@@ -21,15 +17,18 @@ trait IERC721MetadataCamelOnly<TState> {
 
 #[starknet::interface]
 trait BlobertTrait<TContractState> {
-    fn mint(ref self: TContractState, recipient: ContractAddress);
+    fn mint(ref self: TContractState, recipient: ContractAddress) -> u256;
     fn whitelist_mint(
         ref self: TContractState,
         recipient: ContractAddress,
         merkle_proof: Span<felt252>,
         whitelist_class: WhitelistClass
-    );
-    fn update_seeder(ref self: TContractState, seeder: ContractAddress);
-    fn update_descriptor(ref self: TContractState, descriptor: ContractAddress);
+    ) -> u256;
+
+    fn special_assignment(ref self: TContractState, recipients: Span<(u8, ContractAddress)>);
+
+    fn admin_update_seeder(ref self: TContractState, seeder: ContractAddress);
+    fn admin_update_descriptor(ref self: TContractState, descriptor: ContractAddress);
 }
 
 
@@ -39,13 +38,17 @@ mod BlobertNFT {
         Hasher, MerkleTree, poseidon::PoseidonHasherImpl, MerkleTreeTrait, HasherTrait,
         MerkleTreeImpl
     };
-    use blob::descriptor::{IDescriptorDispatcher, IDescriptorDispatcherTrait};
 
+    use blob::descriptor::{IDescriptorDispatcher, IDescriptorDispatcherTrait};
     use blob::seeder::{Seed, ISeederDispatcher, ISeederDispatcherTrait};
     use blob::types::erc721::WhitelistClass;
+
     use core::hash::{HashStateTrait, HashStateExTrait};
     use core::poseidon::PoseidonTrait;
+    use core::traits::TryInto;
+
     use openzeppelin::access::ownable::OwnableComponent;
+    use openzeppelin::access::ownable::ownable::OwnableComponent::InternalTrait as OwnableInternalTrait;
     use openzeppelin::introspection::src5::SRC5Component;
     use openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     use openzeppelin::token::erc721::ERC721Component;
@@ -75,6 +78,12 @@ mod BlobertNFT {
     impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
 
 
+    const NUM_SPECIAL_TOKENS: u8 = 3;
+
+    const FEE_RECIPIENT_ADDRESS: felt252 = 0xADD;
+    const FEE_TOKEN_ADDRESS: felt252 = 0x1;
+    const FEE_TOKEN_AMOUNT: u8 = 100;
+
     const MAX_MINT_REGULAR: u8 = 10;
     const MAX_MINT_WHITELIST_DEV: u8 = 2;
     const MAX_MINT_WHITELIST_REALM_HOLDER: u8 = 5;
@@ -83,11 +92,9 @@ mod BlobertNFT {
     #[storage]
     struct Storage {
         tx_hash_tracker: LegacyMap<ContractAddress, felt252>,
-        current_token_id: u256,
+        token_count: u16,
         dev_merkle_root: felt252,
         realm_holder_merkle_root: felt252,
-        fee_token: IERC20Dispatcher,
-        fee_amount: u128,
         whitelist_mint_starts_at: u64,
         regular_mint_starts_at: u64,
         regular_mint_count: LegacyMap<ContractAddress, u8>,
@@ -97,6 +104,8 @@ mod BlobertNFT {
         seed_exists: LegacyMap<felt252, bool>,
         seeder: ISeederDispatcher,
         descriptor: IDescriptorDispatcher,
+        special_token_count: u8,
+        special_token_map: LegacyMap<u16, u8>,
         #[substorage(v0)]
         ownable: OwnableComponent::Storage,
         #[substorage(v0)]
@@ -127,8 +136,6 @@ mod BlobertNFT {
         descriptor: ContractAddress,
         dev_merkle_root: felt252,
         realm_holder_merkle_root: felt252,
-        fee_token: ContractAddress,
-        fee_amount: u128,
         whitelist_mint_starts_at: u64,
         regular_mint_starts_at: u64,
     ) {
@@ -141,9 +148,7 @@ mod BlobertNFT {
                 :dev_merkle_root,
                 :realm_holder_merkle_root,
                 :whitelist_mint_starts_at,
-                :regular_mint_starts_at,
-                :fee_token,
-                :fee_amount
+                :regular_mint_starts_at
             );
     }
 
@@ -162,8 +167,13 @@ mod BlobertNFT {
             assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
 
             let descriptor = self.descriptor.read();
-            let seed = self.seeds.read(token_id);
-            return descriptor.token_uri(token_id, seed);
+            let special_token_number = self.special_token_map.read(token_id.try_into().unwrap());
+            if special_token_number > 0 {
+                return descriptor.token_uri_special(token_id, special_token_number - 1);
+            } else {
+                let seed = self.seeds.read(token_id);
+                return descriptor.token_uri(token_id, seed);
+            }
         }
     }
 
@@ -178,7 +188,7 @@ mod BlobertNFT {
 
     #[abi(embed_v0)]
     impl BlobertImpl of super::BlobertTrait<ContractState> {
-        fn mint(ref self: ContractState, recipient: ContractAddress) {
+        fn mint(ref self: ContractState, recipient: ContractAddress) -> u256 {
             // ensure this function can only be called once per transaction
             self.ensure_one_call_per_tx();
 
@@ -191,8 +201,18 @@ mod BlobertNFT {
             let regular_mint_count = self.regular_mint_count.read(caller);
             assert!(regular_mint_count < MAX_MINT_REGULAR, "blobert: max mint exceeded");
 
+            // get next token id and increment counter
+            let token_id: u16 = (self.token_count.read() + 1);
+            self.token_count.write(token_id);
+
             // mint token to recipient and collect fee
-            self._mint(:caller, :recipient, collect_fee: true);
+            self._mint(:token_id, :caller, :recipient, collect_fee: true);
+
+            let token_id: u256 = token_id.into();
+            // set seed for image
+            self._set_seed(token_id);
+
+            token_id
         }
 
 
@@ -201,7 +221,7 @@ mod BlobertNFT {
             recipient: ContractAddress,
             merkle_proof: Span<felt252>,
             whitelist_class: WhitelistClass
-        ) {
+        ) -> u256 {
             // ensure this function can only be called once per transaction
             self.ensure_one_call_per_tx();
 
@@ -242,17 +262,71 @@ mod BlobertNFT {
             // verify merkle proof
             self.ensure_valid_merkle_proof(caller, :merkle_proof, :merkle_root);
 
+            // get next token id and increment counter
+            let token_id: u16 = (self.token_count.read() + 1);
+            self.token_count.write(token_id);
+
             // mint token to recipient at no cost
-            self._mint(:caller, :recipient, collect_fee: false);
+            self._mint(:token_id, :caller, :recipient, collect_fee: false);
+
+            let token_id: u256 = token_id.into();
+
+            // set seed for image
+            self._set_seed(token_id);
+
+            token_id
         }
 
 
-        fn update_seeder(ref self: ContractState, seeder: ContractAddress) {
+        fn special_assignment(
+            ref self: ContractState, mut recipients: Span<(u8, ContractAddress)>
+        ) {
+            self.ownable.assert_only_owner();
+
+            // ensure this function can only be called once by admin
+            let token_count: u16 = self.token_count.read();
+            let special_token_count = self.special_token_count.read();
+            assert!(token_count == 0, "token already minted");
+            assert!(special_token_count == 0, "special tokens already assigned");
+
+            let caller = starknet::get_caller_address();
+
+            let mut count: u8 = 0;
+            loop {
+                match recipients.pop_front() {
+                    Option::Some((
+                        image_index, recipient
+                    )) => {
+                        // @note we assume that image_index will be sequencial 
+
+                        let (image_index, recipient) = (*image_index, *recipient);
+
+                        // mint token to recipient at no cost
+                        let token_id: u16 = token_count + count.into() + 1;
+                        self._mint(:token_id, :caller, :recipient, collect_fee: false);
+
+                        // set special token image
+                        assert!(image_index < NUM_SPECIAL_TOKENS, "max special tokens minted");
+                        self.special_token_map.write(token_id, count + 1);
+
+                        count += 1;
+                    },
+                    Option::None(()) => { break; }
+                }
+            };
+
+            // increment token counters
+            self.token_count.write(count.into());
+            self.special_token_count.write(count);
+        }
+
+
+        fn admin_update_seeder(ref self: ContractState, seeder: ContractAddress) {
             self.ownable.assert_only_owner();
             self._update_seeder(seeder);
         }
 
-        fn update_descriptor(ref self: ContractState, descriptor: ContractAddress) {
+        fn admin_update_descriptor(ref self: ContractState, descriptor: ContractAddress) {
             self.ownable.assert_only_owner();
             self._update_descriptor(descriptor);
         }
@@ -268,9 +342,7 @@ mod BlobertNFT {
             dev_merkle_root: felt252,
             realm_holder_merkle_root: felt252,
             whitelist_mint_starts_at: u64,
-            regular_mint_starts_at: u64,
-            fee_token: ContractAddress,
-            fee_amount: u128
+            regular_mint_starts_at: u64
         ) {
             self._update_seeder(seeder);
             self._update_descriptor(descriptor);
@@ -283,42 +355,40 @@ mod BlobertNFT {
                 regular_mint_starts_at > whitelist_mint_starts_at,
                 "regular mint time is <= whitelist time"
             );
-
             self.whitelist_mint_starts_at.write(whitelist_mint_starts_at);
             self.regular_mint_starts_at.write(regular_mint_starts_at);
 
+            assert!(dev_merkle_root != 0, "no dev merkle root");
+            assert!(realm_holder_merkle_root != 0, "no realm holder merkle root");
             self.dev_merkle_root.write(dev_merkle_root);
             self.realm_holder_merkle_root.write(realm_holder_merkle_root);
-            self.fee_token.write(IERC20Dispatcher { contract_address: fee_token });
-            self.fee_amount.write(fee_amount);
         }
 
 
         // @note recipient is not necessarily caller. check for risks
         fn _mint(
             ref self: ContractState,
+            token_id: u16,
             caller: ContractAddress,
             recipient: ContractAddress,
             collect_fee: bool
-        ) -> u256 {
-            // get next token id and increment counter
-            let token_id = self.current_token_id.read() + 1;
-            self.current_token_id.write(token_id);
+        ) {
+            // type cast token_id
+            let token_id: u256 = token_id.into();
 
             // mint token to recipient
             self.erc721._mint(recipient, token_id);
 
             // collect fees from caller if necessary
             if collect_fee {
-                let this = starknet::get_contract_address();
-                let fee_token = self.fee_token.read();
-                fee_token.transfer_from(caller, this, self.fee_amount.read().into());
+                let fee_token = IERC20Dispatcher {
+                    contract_address: FEE_TOKEN_ADDRESS.try_into().unwrap()
+                };
+                fee_token
+                    .transfer_from(
+                        caller, FEE_RECIPIENT_ADDRESS.try_into().unwrap(), FEE_TOKEN_AMOUNT.into()
+                    );
             }
-
-            // set token seed
-            self._set_seed(token_id);
-
-            token_id
         }
 
 
@@ -404,3 +474,4 @@ mod BlobertNFT {
         }
     }
 }
+

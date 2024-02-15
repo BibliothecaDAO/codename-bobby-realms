@@ -4,18 +4,20 @@ mod seeder;
 mod types;
 mod utils;
 mod generation {
-    mod armour;
-    mod background;
-    mod jewellry;
-    mod mask;
-    mod weapon;
-
+    mod special;
     mod traits {
         mod armour;
         mod background;
         mod jewellry;
         mod mask;
         mod weapon;
+        mod data {
+            mod armour;
+            mod background;
+            mod jewellry;
+            mod mask;
+            mod weapon;
+        }
     }
 }
 
