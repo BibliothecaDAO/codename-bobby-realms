@@ -78,7 +78,7 @@ mod Descriptor {
     use blob::generation::{special::special_images};
     use blob::types::descriptor::ImageType;
     use blob::types::seeder::Seed;
-    use blob::utils::bytes_base64_encode;
+    use blob::utils::encoding::bytes_base64_encode;
     use core::array::ArrayTrait;
     use graffiti::json::JsonImpl;
 
