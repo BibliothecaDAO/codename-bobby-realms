@@ -40,7 +40,12 @@ mod Seeder {
 
             let block_timestamp = starknet::get_block_timestamp();
             let randomness: u256 = poseidon_hash_span(
-                array![block_timestamp.into(), token_id.low.into(), token_id.high.into()].span()
+                array![
+                    block_timestamp.into(), 
+                    token_id.low.into(), 
+                    token_id.high.into(), 
+                    salt
+                ].span()
             )
                 .into();
 

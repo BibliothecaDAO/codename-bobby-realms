@@ -9,7 +9,8 @@ mod descriptor {
 mod seeder {
     use starknet::{StorePacking};
 
-    #[derive(Copy, Drop, Serde, Hash)]
+
+    #[derive(Copy, Drop, Serde, Hash, PartialEq)]
     struct Seed {
         background: u8,
         armour: u8,
@@ -17,7 +18,6 @@ mod seeder {
         mask: u8,
         weapon: u8,
     }
-
 
     const TWO_POW_8: u64 = 0x100;
     const TWO_POW_16: u64 = 0x10000;
@@ -46,13 +46,44 @@ mod seeder {
             }
         }
     }
+
+
 }
 
 
 mod erc721 {
+    use starknet::{StorePacking};
+
+
     #[derive(Copy, Drop, Serde)]
     enum WhitelistClass {
         Dev,
         RealmHolder
     }
+
+
+    #[derive(Copy, Drop, Serde, PartialEq)]
+    struct MintTime {
+        regular: u64,
+        whitelist: u64
+    }
+
+
+    const TWO_POW_64: u128 = 0x10000000000000000;
+    const MASK_64: u128 = 0xffffffffffffffff;
+
+    impl MintTimeStorePacking of StorePacking<MintTime, u128> {
+        fn pack(value: MintTime) -> u128 {
+            value.regular.into()
+                + (value.whitelist.into() * TWO_POW_64)
+        }
+
+        fn unpack(value: u128) -> MintTime {
+            MintTime {
+                regular: (value & MASK_64).try_into().unwrap(),
+                whitelist: (value / TWO_POW_64).try_into().unwrap()
+            }
+        }
+    }
+
 }

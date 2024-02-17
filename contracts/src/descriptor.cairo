@@ -219,8 +219,8 @@ mod Descriptor {
                 );
 
             let metadata: ByteArray = JsonImpl::new()
-                .add("name", self._make_token_name(token_id))
-                .add("description", self._make_token_description(token_id))
+                .add("name", self.make_token_name(token_id))
+                .add("description", self.make_token_description(token_id))
                 .add("image", image)
                 .add_array("attributes", attributes)
                 .build();
@@ -239,8 +239,8 @@ mod Descriptor {
             let attributes: Span<ByteArray> = array![].span();
 
             let metadata: ByteArray = JsonImpl::new()
-                .add("name", self._make_token_name(token_id))
-                .add("description", self._make_token_description(token_id))
+                .add("name", self.make_token_name(token_id))
+                .add("description", self.make_token_description(token_id))
                 .add("image", image)
                 .add_array("attributes", attributes)
                 .build();
@@ -267,8 +267,8 @@ mod Descriptor {
                 );
 
             let metadata: ByteArray = JsonImpl::new()
-                .add("name", self._make_token_name(token_id))
-                .add("description", self._make_token_description(token_id))
+                .add("name", self.make_token_name(token_id))
+                .add("description", self.make_token_description(token_id))
                 .add("image", "")
                 .add_array("attributes", attributes)
                 .build();
@@ -281,8 +281,8 @@ mod Descriptor {
         fn data_uri_no_img_special(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
             let attributes: Span<ByteArray> = array![].span();
             let metadata: ByteArray = JsonImpl::new()
-                .add("name", self._make_token_name(token_id))
-                .add("description", self._make_token_description(token_id))
+                .add("name", self.make_token_name(token_id))
+                .add("description", self.make_token_description(token_id))
                 .add("image", "")
                 .add_array("attributes", attributes)
                 .build();
@@ -426,11 +426,11 @@ mod Descriptor {
         }
 
 
-        fn _make_token_name(self: @ContractState, token_id: u256) -> ByteArray {
+        fn make_token_name(self: @ContractState, token_id: u256) -> ByteArray {
             return format!("Blobert #{}", token_id);
         }
 
-        fn _make_token_description(self: @ContractState, token_id: u256) -> ByteArray {
+        fn make_token_description(self: @ContractState, token_id: u256) -> ByteArray {
             //todo@credence confirm this message
 
             return format!("Blobert #{} is a member of the BibliothecaDAO", token_id);

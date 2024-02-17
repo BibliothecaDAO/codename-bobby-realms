@@ -1,5 +1,5 @@
 mod descriptor;
-mod erc721;
+mod blobert;
 mod seeder;
 mod types;
 mod utils {
@@ -23,4 +23,12 @@ mod generation {
         }
     }
 }
-
+mod tests {
+    mod contracts {
+        mod erc20;
+    }
+    mod unit_tests {
+        mod test_blobert;
+        mod utils;
+    }
+}
