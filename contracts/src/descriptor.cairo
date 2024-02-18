@@ -442,7 +442,7 @@ mod tests {
     use super::Seed;
     use super::{Descriptor, IDescriptorDispatcher, IDescriptorDispatcherTrait};
 
-    fn delcare__deploy() -> IDescriptorDispatcher {
+    fn declare__deploy() -> IDescriptorDispatcher {
         let contract = declare('Descriptor');
         let contract_address = contract.deploy(@ArrayTrait::new()).unwrap();
         IDescriptorDispatcher { contract_address }
@@ -455,7 +455,7 @@ mod tests {
 
     #[test]
     fn test_token_uri_no_image() {
-        let dispatcher = delcare__deploy();
+        let dispatcher = declare__deploy();
 
         let seed = seed_splat(6);
         let metadata = dispatcher.token_uri_no_image(44, seed);
@@ -468,7 +468,7 @@ mod tests {
 
     #[test]
     fn test_generate_svg_image() {
-        let dispatcher = delcare__deploy();
+        let dispatcher = declare__deploy();
 
         let seed = seed_splat(6);
         let image_svg = dispatcher.generate_svg_image(seed);
@@ -481,7 +481,7 @@ mod tests {
 // #[test]
 // fn test_generate_attributes_with_seed_1() {
 
-//     let dispatcher = delcare__deploy();
+//     let dispatcher = declare__deploy();
 
 //     let seed = seed_splat(1);
 //     let attributes 
@@ -498,7 +498,7 @@ mod tests {
 // #[test]
 // fn test_generate_attributes_with_seed_3() {
 
-//     let dispatcher = delcare__deploy();
+//     let dispatcher = declare__deploy();
 
 //     let seed = seed_splat(3);
 //     let attributes 
