@@ -1,13 +1,16 @@
-use core::traits::TryInto;
-use core::serde::Serde;
-use blob::types::erc721::MintStartTime;
-use core::integer::BoundedInt;
-use starknet::ContractAddress;
-use snforge_std::{declare, ContractClassTrait};
-use openzeppelin::token::erc20::interface::IERC20Dispatcher;
-use blob::seeder::ISeederDispatcher;
+use alexandria_merkle_tree::merkle_tree::{
+    Hasher, MerkleTree, poseidon::PoseidonHasherImpl, MerkleTreeTrait, HasherTrait, MerkleTreeImpl
+};
 use blob::blobert::IBlobertDispatcher;
 use blob::descriptor::IDescriptorDispatcher;
+use blob::seeder::ISeederDispatcher;
+use blob::types::erc721::MintStartTime;
+use core::integer::BoundedInt;
+use core::serde::Serde;
+use core::traits::TryInto;
+use openzeppelin::token::erc20::interface::IERC20Dispatcher;
+use snforge_std::{declare, ContractClassTrait};
+use starknet::ContractAddress;
 
 
 fn deploy_blobert() -> IBlobertDispatcher {
@@ -27,8 +30,9 @@ fn deploy_blobert() -> IBlobertDispatcher {
 }
 
 
-            
-fn deploy_fee_token(deploy_at: ContractAddress, supply: u256, supply_recipient: ContractAddress ) -> IERC20Dispatcher {
+fn deploy_fee_token(
+    deploy_at: ContractAddress, supply: u256, supply_recipient: ContractAddress
+) -> IERC20Dispatcher {
     let contract = declare('ERC20');
     let mut calldata: Array<felt252> = array![];
 
@@ -46,15 +50,11 @@ fn deploy_fee_token(deploy_at: ContractAddress, supply: u256, supply_recipient: 
 }
 
 
-
 fn deploy_seeder() -> ISeederDispatcher {
     let contract = declare('Seeder');
     let mut calldata: Array<felt252> = array![];
 
-    let contract_address = contract.deploy_at(
-        @calldata,
-        'SEEDER'.try_into().unwrap()
-    ).unwrap();
+    let contract_address = contract.deploy_at(@calldata, 'SEEDER'.try_into().unwrap()).unwrap();
     ISeederDispatcher { contract_address }
 }
 
@@ -63,41 +63,27 @@ fn deploy_descriptor() -> IDescriptorDispatcher {
     let contract = declare('Descriptor');
     let mut calldata: Array<felt252> = array![];
 
-    let contract_address = contract.deploy_at(
-        @calldata,
-        'DESCRIPTOR'.try_into().unwrap()
-        ).unwrap();
+    let contract_address = contract.deploy_at(@calldata, 'DESCRIPTOR'.try_into().unwrap()).unwrap();
     IDescriptorDispatcher { contract_address }
 }
 
 
-
-use alexandria_merkle_tree::merkle_tree::{
-    Hasher, MerkleTree, poseidon::PoseidonHasherImpl, MerkleTreeTrait, HasherTrait,
-    MerkleTreeImpl
-};
-
-
 fn create_merkle_tree(leaf: ContractAddress) -> (Span<felt252>, felt252) {
-
     // [Setup] Merkle tree.
     let mut merkle_tree: MerkleTree<Hasher> = MerkleTreeImpl::<_, PoseidonHasherImpl>::new();
     let leaf: felt252 = leaf.into();
     let leaves = array![leaf, 0x2, 0x3, 0x9, 0x172, 0x132, 0x12333, 0x44];
     let leaf_index = 0;
 
-
     // compute merkle proof.
     let merkle_proof = MerkleTreeImpl::<
         _, PoseidonHasherImpl
     >::compute_proof(ref merkle_tree, leaves, leaf_index);
-    
 
     // compute merkle root.
     let merkle_root = MerkleTreeImpl::<
         _, PoseidonHasherImpl
     >::compute_root(ref merkle_tree, leaf, merkle_proof);
-
 
     // verify a valid proof.
     let verified = MerkleTreeImpl::<
@@ -106,9 +92,7 @@ fn create_merkle_tree(leaf: ContractAddress) -> (Span<felt252>, felt252) {
     assert(verified, 'verify valid proof failed');
 
     (merkle_proof, merkle_root)
-
 }
-
 
 
 // Constants 
@@ -134,11 +118,9 @@ fn MINTER_RECIPIENT() -> ContractAddress {
 }
 
 
-
 fn SEEDER() -> ContractAddress {
     deploy_seeder().contract_address
 }
-
 
 
 fn DESCRIPTOR() -> ContractAddress {
@@ -153,12 +135,14 @@ fn MERKLE_ROOTS() -> Span<felt252> {
         'merkle_root_tier_3_whitelist',
         'merkle_root_tier_4_whitelist',
         'merkle_root_tier_5_whitelist',
-    ].span()
+    ]
+        .span()
 }
 
 fn MINT_START_TIME() -> MintStartTime {
     MintStartTime {
-        regular: 104848548726390  - 4, // 104848548726390 timestamp  with tx hash of 1234 gives you a custom token in test environment
+        regular: 104848548726390
+            - 4, // 104848548726390 timestamp  with tx hash of 1234 gives you a custom token in test environment
         whitelist: 104848548726390 - 1_000_000
     }
 }
@@ -177,7 +161,6 @@ fn _50_ONE_OF_ONE_RECIPIENTS() -> Array<ContractAddress> {
         0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec547.try_into().unwrap(),
         0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec548.try_into().unwrap(),
         0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec549.try_into().unwrap(),
-
         0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae0eec546.try_into().unwrap(),
         0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae2eec546.try_into().unwrap(),
@@ -188,7 +171,6 @@ fn _50_ONE_OF_ONE_RECIPIENTS() -> Array<ContractAddress> {
         0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae7eec546.try_into().unwrap(),
         0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae8eec546.try_into().unwrap(),
         0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae9eec546.try_into().unwrap(),
-
         0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d14fae1eec546.try_into().unwrap(),
         0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d24fae1eec546.try_into().unwrap(),
@@ -199,7 +181,6 @@ fn _50_ONE_OF_ONE_RECIPIENTS() -> Array<ContractAddress> {
         0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d74fae1eec546.try_into().unwrap(),
         0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d84fae1eec546.try_into().unwrap(),
         0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d94fae1eec546.try_into().unwrap(),
-
         0x029f9205f50528a4c6308c69c675c14e65f31c02b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x029f9205f50528a4c6308c69c675c14e65f31c12b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x029f9205f50528a4c6308c69c675c14e65f31c22b1f7f1d2375d04fae1eec546.try_into().unwrap(),
@@ -210,7 +191,6 @@ fn _50_ONE_OF_ONE_RECIPIENTS() -> Array<ContractAddress> {
         0x029f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x029f9205f50528a4c6308c69c675c14e65f31c82b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x029f9205f50528a4c6308c69c675c14e65f31c92b1f7f1d2375d04fae1eec546.try_into().unwrap(),
-
         0x019f9205f50528a0c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x019f9205f50528a1c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x019f9205f50528a2c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
@@ -222,5 +202,4 @@ fn _50_ONE_OF_ONE_RECIPIENTS() -> Array<ContractAddress> {
         0x019f9205f50528a8c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x019f9205f50528a9c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap()
     ]
-
 }

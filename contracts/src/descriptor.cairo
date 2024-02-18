@@ -169,16 +169,12 @@ mod Descriptor {
 
 
     #[abi(embed_v0)]
-    impl MetadatacustomImageDescriptorImpl of super::IMetadatacustomImageDescriptor<
-        ContractState
-    > {
+    impl MetadatacustomImageDescriptorImpl of super::IMetadatacustomImageDescriptor<ContractState> {
         fn token_uri_custom(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
             self.data_uri_custom(token_id, index)
         }
 
-        fn token_uri_no_image_custom(
-            self: @ContractState, token_id: u256, index: u8
-        ) -> ByteArray {
+        fn token_uri_no_image_custom(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
             self.data_uri_no_img_custom(token_id, index)
         }
 

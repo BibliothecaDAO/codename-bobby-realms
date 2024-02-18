@@ -46,8 +46,6 @@ mod seeder {
             }
         }
     }
-
-
 }
 
 
@@ -59,9 +57,9 @@ mod erc721 {
     #[derive(Copy, Drop, Serde)]
     enum WhitelistTier {
         One,
-        Two, 
-        Three, 
-        Four, 
+        Two,
+        Three,
+        Four,
         Five
     }
 
@@ -85,8 +83,7 @@ mod erc721 {
 
     impl MintStartTimeStorePacking of StorePacking<MintStartTime, u128> {
         fn pack(value: MintStartTime) -> u128 {
-            value.regular.into()
-                + (value.whitelist.into() * TWO_POW_64)
+            value.regular.into() + (value.whitelist.into() * TWO_POW_64)
         }
 
         fn unpack(value: u128) -> MintStartTime {
@@ -96,7 +93,6 @@ mod erc721 {
             }
         }
     }
-
 
 
     #[derive(Copy, Drop, Serde, PartialEq)]
@@ -110,8 +106,7 @@ mod erc721 {
 
     impl SupplyStorePacking of StorePacking<Supply, u32> {
         fn pack(value: Supply) -> u32 {
-            value.total_nft.into()
-                + (value.custom_nft.into() * TWO_POW_16)
+            value.total_nft.into() + (value.custom_nft.into() * TWO_POW_16)
         }
 
         fn unpack(value: u32) -> Supply {
@@ -121,5 +116,4 @@ mod erc721 {
             }
         }
     }
-
 }
