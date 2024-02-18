@@ -277,6 +277,8 @@ mod Blobert {
         }
 
         fn token_identifier(self: @ContractState, token_id: u256) -> TokenIdentifier {
+            assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
+
             let custom_token_number = self
                 .custom_nft_to_supply_count
                 .read(token_id.try_into().unwrap());
@@ -290,6 +292,8 @@ mod Blobert {
         }
 
         fn svg_image(self: @ContractState, token_id: u256) -> ByteArray{
+            assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
+
             //todo ensure it only works for minted tokens
             let custom_token_number = self
                 .custom_nft_to_supply_count
