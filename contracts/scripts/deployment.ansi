@@ -1,0 +1,89 @@
+[31m   ____          _         [39m
+[31m  |    \ ___ ___| |___ _ _ [39m
+[31m  |  |  | -_| . | | . | | |[39m
+[31m  |____/|___|  _|_|___|_  |[39m
+[31m            |_|       |___|[39m
+[35m
+Declaring Seeder...
+
+[39m
+[35m- Class Hash: [39m 0x1bc54e32ded96748564639eac2591d6da79a3801ac3b0eb95081fa5416fe75c
+[35m- Tx Hash: [39m Already declared
+[32m
+Deploying Seeder ... 
+
+[39m
+[32mTx hash: [39m https://goerli.voyager.online/tx/0x5f99056562474d874d3e1116f6ae3b401c5b870c6f81e023b4bb2614dfef737)
+[32mContract Address: [39m 0x5f6e91f184a502a7e2dcfcf10586000ae89ae9b48a7c1f39b4d15a3aa536676 
+
+
+[35m
+Declaring DescriptorRegular...
+
+[39m
+[35m- Class Hash: [39m 0x24c2348d09ee12562716263a27d8749b448f2c5f0bf46331541f39c16dada0b
+[35m- Tx Hash: [39m Already declared
+[32m
+Deploying DescriptorRegular ... 
+
+[39m
+[32mTx hash: [39m https://goerli.voyager.online/tx/0x505be392821f3a0fff5dc0a539f155552f9ae141c60839e8c08d3e4a67512a7)
+[32mContract Address: [39m 0x757b77fdc07f4b6282305919fecae6500ffefcadfa3741515a129a298bf0f80 
+
+
+[35m
+Declaring DescriptorCustomData1...
+
+[39m
+[35m- Class Hash: [39m 0x3f48d9041e4e4dd54c0264338e471ff128c6c390e89cc346d795f876089c841
+[35m- Tx Hash: [39m Already declared
+[32m
+Deploying DescriptorCustomData1 ... 
+
+[39m
+[32mTx hash: [39m https://goerli.voyager.online/tx/0x7e9adedc45f039d1487128eec3344e5eb100bd52c6a9602178ee01449f57a00)
+[32mContract Address: [39m 0x1434298e13dd77e3f81cf5e93dd577d582c8324c8be5ac1d67b8355bac0694a 
+
+
+[35m
+Declaring DescriptorCustomData2...
+
+[39m
+[35m- Class Hash: [39m 0x1819a5e0ac3ae8d920a2038fe922cf7cc29e797621dec69b0bee501c3a9c981
+[35m- Tx Hash: [39m Already declared
+[32m
+Deploying DescriptorCustomData2 ... 
+
+[39m
+[32mTx hash: [39m https://goerli.voyager.online/tx/0x2ace49307f9da4e6d71d4c1bdc1c6c2ac6e7c84aef1906df61e6115e0cd809f)
+[32mContract Address: [39m 0x3730a015b9b4e9007862d766169391d2cef6191b665cf9bcd0b833765aa16 
+
+
+[35m
+Declaring DescriptorCustomData3...
+
+[39m
+[35m- Class Hash: [39m 0x9325698c4f39067f8d7e60804e0eb8fe1600a45a8b41b45617165f1c03801c
+[35m- Tx Hash: [39m Already declared
+[32m
+Deploying DescriptorCustomData3 ... 
+
+[39m
+[32mTx hash: [39m https://goerli.voyager.online/tx/0xe124bc02513453a0b9f9e0e21f70830255e5262049116fda2f9ed01c210ce5)
+[32mContract Address: [39m 0x71a09baad99ff46b5dd20f599825f99b4cc9fd7d65b175408828aa710ad731 
+
+
+[35m
+Declaring DescriptorCustom...
+
+[39m
+[35m- Class Hash: [39m 0x33d75c641f0d73a0f100cbca1483e08a17e6d5c5eb2729ed1a7e0309ec7c076
+[35m- Tx Hash: [39m Already declared
+[32m
+Deploying DescriptorCustom ... 
+
+[39m
+[32mTx hash: [39m https://goerli.voyager.online/tx/0x17a6a649254f057d131aab38cd8bd9c97fa60f483202da846d304df28c45b9f)
+[32mContract Address: [39m 0x4118b985b7f66a8012e3e3400767207a50e0bd90801c852c59b7895f2092063 
+
+

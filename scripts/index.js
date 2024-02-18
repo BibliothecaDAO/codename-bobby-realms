@@ -10,7 +10,7 @@ function convertImageToBase64(filePath) {
 
 function appendBase64ToFile(base64String, outputFilePath, functionName) {
   // Format the string as desired
-  const formattedString = `fn ${functionName}() -> ByteArray {\n"${base64String}"\n}\n`;
+  const formattedString = `fn ${functionName}() -> ByteArray {\n    "${base64String}"\n}\n`;
 
   // Append the formatted string to the output file
   fs.appendFileSync(outputFilePath, formattedString);
@@ -39,27 +39,54 @@ function generateBase64(directory, outputFilePath) {
 }
 
 generateBase64(
-  "../art/traits/armour",
-  "../contracts/src/generation/traits/data/armour.cairo"
+  "art/traits/armour",
+  "contracts/src/generation/traits/data/armour.cairo"
 );
 generateBase64(
-  "../art/traits/backgrounds",
-  "../contracts/src/generation/traits/data/background.cairo"
-);
-
-generateBase64(
-  "../art/traits/jewellry",
-  "../contracts/src/generation/traits/data/jewellry.cairo"
+  "art/traits/backgrounds",
+  "contracts/src/generation/traits/data/background.cairo"
 );
 
 generateBase64(
-  "../art/traits/masks",
-  "../contracts/src/generation/traits/data/masks.cairo"
+  "art/traits/jewellry",
+  "contracts/src/generation/traits/data/jewellry.cairo"
 );
 
 generateBase64(
-  "../art/traits/weapons",
-  "../contracts/src/generation/traits/data/weapons.cairo"
+  "art/traits/masks",
+  "contracts/src/generation/traits/data/masks.cairo"
+);
+
+generateBase64(
+  "art/traits/weapons",
+  "contracts/src/generation/traits/data/weapons.cairo"
+);
+
+
+
+function generateBase64Custom(directory, outputFilePath) {
+  const imagePaths = findPngFiles(directory);
+
+  // Clear the output file
+  fs.writeFileSync(outputFilePath, "");
+
+  imagePaths.forEach((imagePath) => {
+    const fullPath = path.join(directory, imagePath);
+    const base64String = convertImageToBase64(fullPath);
+    const functionName = path.basename(imagePath, path.extname(imagePath));
+  
+    let i = 0;
+    while (i < 50) { 
+      appendBase64ToFile(base64String, outputFilePath, functionName + i);
+      i++;
+    }    
+    console.log("Processed:", imagePath);
+  });
+}
+
+generateBase64Custom(
+  "art/custom",
+  "contracts/src/generation/custom/data/image.cairo"
 );
 
 console.log("All conversions complete");

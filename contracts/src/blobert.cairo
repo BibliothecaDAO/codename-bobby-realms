@@ -26,8 +26,11 @@ trait IBlobert<TContractState> {
     fn supply(self: @TContractState) -> Supply;
     fn max_supply(self: @TContractState) -> u16;
     fn token_identifier(self: @TContractState, token_id: u256) -> TokenIdentifier;
+    fn svg_image(self: @TContractState, token_id: u256) -> ByteArray;
+
     fn seeder(self: @TContractState) -> ContractAddress;
-    fn descriptor(self: @TContractState) -> ContractAddress;
+    fn descriptor_regular(self: @TContractState) -> ContractAddress;
+    fn descriptor_custom(self: @TContractState) -> ContractAddress;
     fn mint_time(self: @TContractState) -> MintStartTime;
 
 
@@ -40,7 +43,8 @@ trait IBlobert<TContractState> {
         whitelist_tier: WhitelistTier
     ) -> u256;
     fn owner_assign_custom(ref self: TContractState, recipients: Span<ContractAddress>);
-    fn owner_change_descriptor(ref self: TContractState, descriptor: ContractAddress);
+    fn owner_change_descriptor_regular(ref self: TContractState, descriptor: ContractAddress);
+    fn owner_change_descriptor_custom(ref self: TContractState, descriptor: ContractAddress);
 }
 
 
@@ -52,7 +56,8 @@ mod Blobert {
     };
     use blob::blobert::IBlobert;
 
-    use blob::descriptor::{IDescriptorDispatcher, IDescriptorDispatcherTrait};
+    use blob::descriptor::descriptor_regular::{IDescriptorRegularDispatcher, IDescriptorRegularDispatcherTrait};
+    use blob::descriptor::descriptor_custom::{IDescriptorCustomDispatcher, IDescriptorCustomDispatcherTrait};
     use blob::seeder::{Seed, ISeederDispatcher, ISeederDispatcherTrait};
     use blob::types::erc721::MintStartTime;
     use blob::types::erc721::Supply;
@@ -162,7 +167,8 @@ mod Blobert {
         regular_nft_exists: LegacyMap<felt252, bool>,
         regular_nft_seeder: ISeederDispatcher,
         //
-        descriptor: IDescriptorDispatcher,
+        descriptor_custom: IDescriptorCustomDispatcher,
+        descriptor_regular: IDescriptorRegularDispatcher,
         //
         mint_start_time: MintStartTime,
         //
@@ -194,7 +200,8 @@ mod Blobert {
         symbol: felt252,
         owner: ContractAddress,
         regular_nft_seeder: ContractAddress,
-        descriptor: ContractAddress,
+        descriptor_regular: ContractAddress,
+        descriptor_custom: ContractAddress,
         merkle_roots: Span<felt252>,
         mint_start_time: MintStartTime,
         initial_custom_nft_recipients: Span<ContractAddress>
@@ -210,7 +217,8 @@ mod Blobert {
         self
             .initialize(
                 :regular_nft_seeder,
-                :descriptor,
+                :descriptor_regular,
+                :descriptor_custom,
                 :merkle_roots,
                 :mint_start_time,
                 :initial_custom_nft_recipients
@@ -231,14 +239,15 @@ mod Blobert {
         fn token_uri(self: @ContractState, token_id: u256) -> ByteArray {
             assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
 
-            let descriptor = self.descriptor.read();
             let custom_token_number = self
                 .custom_nft_to_supply_count
                 .read(token_id.try_into().unwrap());
             if custom_token_number != 0 {
-                return descriptor.token_uri_custom(token_id, custom_token_number - 1);
+                let descriptor = self.descriptor_custom.read();
+                return descriptor.token_uri(token_id, custom_token_number - 1);
             } else {
                 let seed = self.regular_nft_seeds.read(token_id);
+                let descriptor = self.descriptor_regular.read();
                 return descriptor.token_uri(token_id, seed);
             }
         }
@@ -280,13 +289,33 @@ mod Blobert {
             }
         }
 
+        fn svg_image(self: @ContractState, token_id: u256) -> ByteArray{
+            //todo ensure it only works for minted tokens
+            let custom_token_number = self
+                .custom_nft_to_supply_count
+                .read(token_id.try_into().unwrap());
+            if custom_token_number != 0 {
+                let image_index = custom_token_number - 1;
+                let descriptor = self.descriptor_custom.read();
+                return descriptor.svg_image(image_index);
+            } else {
+                let seed = self.regular_nft_seeds.read(token_id);
+                let descriptor = self.descriptor_regular.read();
+                return descriptor.svg_image(seed);
+            }
+        }
+
 
         fn seeder(self: @ContractState) -> ContractAddress {
             self.regular_nft_seeder.read().contract_address
         }
 
-        fn descriptor(self: @ContractState) -> ContractAddress {
-            self.descriptor.read().contract_address
+        fn descriptor_regular(self: @ContractState) -> ContractAddress {
+            self.descriptor_regular.read().contract_address
+        }
+
+        fn descriptor_custom(self: @ContractState) -> ContractAddress {
+            self.descriptor_custom.read().contract_address
         }
 
         fn mint_time(self: @ContractState) -> MintStartTime {
@@ -376,9 +405,14 @@ mod Blobert {
         }
 
 
-        fn owner_change_descriptor(ref self: ContractState, descriptor: ContractAddress) {
+        fn owner_change_descriptor_regular(ref self: ContractState, descriptor: ContractAddress) {
             self.ownable.assert_only_owner();
-            self.set_descriptor(descriptor);
+            self.set_descriptor_regular(descriptor);
+        }
+
+        fn owner_change_descriptor_custom(ref self: ContractState, descriptor: ContractAddress) {
+            self.ownable.assert_only_owner();
+            self.set_descriptor_custom(descriptor);
         }
     }
 
@@ -388,7 +422,8 @@ mod Blobert {
         fn initialize(
             ref self: ContractState,
             regular_nft_seeder: ContractAddress,
-            descriptor: ContractAddress,
+            descriptor_regular: ContractAddress,
+            descriptor_custom: ContractAddress,
             merkle_roots: Span<felt252>,
             mint_start_time: MintStartTime,
             initial_custom_nft_recipients: Span<ContractAddress>
@@ -437,7 +472,8 @@ mod Blobert {
             self.merkle_root_tier_5_whitelist.write(merkle_root_tier_5);
 
             self.set_regular_nft_seeder(regular_nft_seeder);
-            self.set_descriptor(descriptor);
+            self.set_descriptor_regular(descriptor_regular);
+            self.set_descriptor_custom(descriptor_custom);
         }
 
         fn assign_custom(ref self: ContractState, mut recipients: Span<ContractAddress>) {
@@ -568,7 +604,7 @@ mod Blobert {
 
             // set the token's seed
             let regular_nft_seeder = self.regular_nft_seeder.read();
-            let descriptor = self.descriptor.read();
+            let descriptor = self.descriptor_regular.read();
 
             // ensure that seed is unique by using a salt
             let mut salt = 0;
@@ -656,9 +692,14 @@ mod Blobert {
         }
 
 
-        fn set_descriptor(ref self: ContractState, descriptor: ContractAddress) {
+        fn set_descriptor_regular(ref self: ContractState, descriptor: ContractAddress) {
             assert(descriptor != Zeroable::zero(), Errors::ZERO_ADDRESS_DESCRIPTOR);
-            self.descriptor.write(IDescriptorDispatcher { contract_address: descriptor });
+            self.descriptor_regular.write(IDescriptorRegularDispatcher { contract_address: descriptor });
+        }
+
+        fn set_descriptor_custom(ref self: ContractState, descriptor: ContractAddress) {
+            assert(descriptor != Zeroable::zero(), Errors::ZERO_ADDRESS_DESCRIPTOR);
+            self.descriptor_custom.write(IDescriptorCustomDispatcher { contract_address: descriptor });
         }
     }
 }

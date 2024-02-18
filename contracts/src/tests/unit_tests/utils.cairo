@@ -2,7 +2,8 @@ use alexandria_merkle_tree::merkle_tree::{
     Hasher, MerkleTree, poseidon::PoseidonHasherImpl, MerkleTreeTrait, HasherTrait, MerkleTreeImpl
 };
 use blob::blobert::IBlobertDispatcher;
-use blob::descriptor::IDescriptorDispatcher;
+use blob::descriptor::descriptor_regular::IDescriptorRegularDispatcher;
+use blob::descriptor::descriptor_custom::IDescriptorCustomDispatcher;
 use blob::seeder::ISeederDispatcher;
 use blob::types::erc721::MintStartTime;
 use core::integer::BoundedInt;
@@ -21,7 +22,8 @@ fn deploy_blobert() -> IBlobertDispatcher {
     ERC721_SYMBOL().serialize(ref calldata);
     OWNER().serialize(ref calldata);
     SEEDER().serialize(ref calldata);
-    DESCRIPTOR().serialize(ref calldata);
+    DESCRIPTOR_REGULAR().serialize(ref calldata);
+    DESCRIPTOR_CUSTOM().serialize(ref calldata);
     MERKLE_ROOTS().serialize(ref calldata);
     MINT_START_TIME().serialize(ref calldata);
 
@@ -59,12 +61,21 @@ fn deploy_seeder() -> ISeederDispatcher {
 }
 
 
-fn deploy_descriptor() -> IDescriptorDispatcher {
-    let contract = declare('Descriptor');
+fn deploy_descriptor_regular() -> IDescriptorRegularDispatcher {
+    let contract = declare('DescriptorRegular');
     let mut calldata: Array<felt252> = array![];
 
     let contract_address = contract.deploy_at(@calldata, 'DESCRIPTOR'.try_into().unwrap()).unwrap();
-    IDescriptorDispatcher { contract_address }
+    IDescriptorRegularDispatcher { contract_address }
+}
+
+
+fn deploy_descriptor_custom() -> IDescriptorCustomDispatcher {
+    let contract = declare('DescriptorCustom');
+    let mut calldata: Array<felt252> = array![];
+
+    let contract_address = contract.deploy_at(@calldata, 'DESCRIPTOR'.try_into().unwrap()).unwrap();
+    IDescriptorCustomDispatcher { contract_address }
 }
 
 
@@ -123,8 +134,12 @@ fn SEEDER() -> ContractAddress {
 }
 
 
-fn DESCRIPTOR() -> ContractAddress {
-    deploy_descriptor().contract_address
+fn DESCRIPTOR_REGULAR() -> ContractAddress {
+    deploy_descriptor_regular().contract_address
+}
+
+fn DESCRIPTOR_CUSTOM() -> ContractAddress {
+    deploy_descriptor_custom().contract_address
 }
 
 

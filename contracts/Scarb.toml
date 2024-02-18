@@ -22,3 +22,6 @@ sierra-replace-ids = true
 
 [tool.fmt]
 sort-module-level-items = true
+
+[scripts]
+deploy = "cd scripts && node deploy.js"

@@ -1,8 +1,13 @@
 mod descriptor {
     #[derive(Copy, Drop, Serde)]
-    enum ImageType {
+    enum RenderType {
         Svg,
         Base64Encoded
+    }
+
+    mod ImageType {
+        const REGULAR: felt252 = 1;
+        const CUSTOM: felt252 = 2;
     }
 }
 

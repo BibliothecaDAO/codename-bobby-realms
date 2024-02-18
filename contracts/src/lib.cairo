@@ -1,5 +1,8 @@
 mod blobert;
-mod descriptor;
+mod descriptor {
+    mod descriptor_custom;
+    mod descriptor_regular;
+}
 mod seeder;
 mod types;
 mod utils {
@@ -7,7 +10,12 @@ mod utils {
     mod randomness;
 }
 mod generation {
-    mod custom;
+    mod custom {
+        mod data {
+            mod image;
+        }
+        mod image;
+    }
     mod traits {
         mod armour;
         mod background;
