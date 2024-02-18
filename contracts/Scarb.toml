@@ -6,10 +6,10 @@ version = "0.1.0"
 starknet = "2.4.0"
 
 # External dependencies
-alexandria_merkle_tree = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
-alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.git" }
-graffiti = { git = "https://github.com/ponderingdemocritus/graffiti" }
-openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git"}
+alexandria_merkle_tree = { git = "https://github.com/keep-starknet-strange/alexandria.git", rev = "417c5a80ed2fef05ce159d643f3e34a5386ee06c" }
+alexandria_math = { git = "https://github.com/keep-starknet-strange/alexandria.git", rev = "417c5a80ed2fef05ce159d643f3e34a5386ee06c" }
+graffiti = { git = "https://github.com/ponderingdemocritus/graffiti", rev = "bc569531791dbc71c6cd8d9bc154c34eedad31fe" }
+openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.9.0" }
 snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry.git", tag = "v0.17.1" }
 
 

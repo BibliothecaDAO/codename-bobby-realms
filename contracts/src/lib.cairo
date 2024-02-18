@@ -7,7 +7,7 @@ mod utils {
     mod randomness;
 }
 mod generation {
-    mod special;
+    mod custom;
     mod traits {
         mod armour;
         mod background;

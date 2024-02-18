@@ -24,9 +24,9 @@ trait IDescriptor<TContractState> {
     fn generate_svg_image(self: @TContractState, seed: Seed) -> ByteArray;
 
 
-    fn token_uri_special(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
-    fn token_uri_no_image_special(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
-    fn generate_svg_image_special(self: @TContractState, index: u8) -> ByteArray;
+    fn token_uri_custom(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
+    fn token_uri_no_image_custom(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
+    fn generate_svg_image_custom(self: @TContractState, index: u8) -> ByteArray;
 }
 
 
@@ -58,10 +58,10 @@ trait IMetadataTraitsDescriptor<TContractState> {
 }
 
 #[starknet::interface]
-trait IMetadataSpecialImageDescriptor<TContractState> {
-    fn token_uri_special(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
-    fn token_uri_no_image_special(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
-    fn generate_svg_image_special(self: @TContractState, index: u8) -> ByteArray;
+trait IMetadatacustomImageDescriptor<TContractState> {
+    fn token_uri_custom(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
+    fn token_uri_no_image_custom(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
+    fn generate_svg_image_custom(self: @TContractState, index: u8) -> ByteArray;
 }
 
 
@@ -75,7 +75,7 @@ mod Descriptor {
         armour::{armours}, mask::{masks}, background::{backgrounds}, jewellry::{jewellries},
         weapon::{weapons}
     };
-    use blob::generation::{special::special_images};
+    use blob::generation::{custom::custom_images};
     use blob::types::descriptor::ImageType;
     use blob::types::seeder::Seed;
     use blob::utils::encoding::bytes_base64_encode;
@@ -169,23 +169,23 @@ mod Descriptor {
 
 
     #[abi(embed_v0)]
-    impl MetadataSpecialImageDescriptorImpl of super::IMetadataSpecialImageDescriptor<
+    impl MetadatacustomImageDescriptorImpl of super::IMetadatacustomImageDescriptor<
         ContractState
     > {
-        fn token_uri_special(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
-            self.data_uri_special(token_id, index)
+        fn token_uri_custom(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
+            self.data_uri_custom(token_id, index)
         }
 
-        fn token_uri_no_image_special(
+        fn token_uri_no_image_custom(
             self: @ContractState, token_id: u256, index: u8
         ) -> ByteArray {
-            self.data_uri_no_img_special(token_id, index)
+            self.data_uri_no_img_custom(token_id, index)
         }
 
-        fn generate_svg_image_special(self: @ContractState, index: u8) -> ByteArray {
-            let (image_bytes, _) = special_images(index);
+        fn generate_svg_image_custom(self: @ContractState, index: u8) -> ByteArray {
+            let (image_bytes, _) = custom_images(index);
 
-            self.construct_image_special(:image_bytes, image_type: ImageType::Svg)
+            self.construct_image_custom(:image_bytes, image_type: ImageType::Svg)
         }
     }
 
@@ -230,11 +230,11 @@ mod Descriptor {
         }
 
 
-        fn data_uri_special(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
-            let (image_bytes, _) = special_images(index);
+        fn data_uri_custom(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
+            let (image_bytes, _) = custom_images(index);
 
             let image: ByteArray = self
-                .construct_image_special(:image_bytes, image_type: ImageType::Base64Encoded);
+                .construct_image_custom(:image_bytes, image_type: ImageType::Base64Encoded);
 
             let attributes: Span<ByteArray> = array![].span();
 
@@ -278,7 +278,7 @@ mod Descriptor {
         }
 
 
-        fn data_uri_no_img_special(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
+        fn data_uri_no_img_custom(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
             let attributes: Span<ByteArray> = array![].span();
             let metadata: ByteArray = JsonImpl::new()
                 .add("name", self.make_token_name(token_id))
@@ -362,7 +362,7 @@ mod Descriptor {
         }
 
 
-        fn construct_image_special(
+        fn construct_image_custom(
             self: @ContractState, image_bytes: ByteArray, image_type: ImageType
         ) -> ByteArray {
             // construct svg image

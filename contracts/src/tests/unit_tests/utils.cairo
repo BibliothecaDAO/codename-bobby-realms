@@ -1,50 +1,8 @@
+use core::traits::TryInto;
 use core::serde::Serde;
-use blob::types::erc721::MintTime;
+use blob::types::erc721::MintStartTime;
 use core::integer::BoundedInt;
 use starknet::ContractAddress;
-
-
-
-// Constants 
-
-fn ERC721_NAME() -> felt252 {
-    'Blobert'
-}
-
-fn ERC721_SYMBOL() -> felt252 {
-    'BLOB'
-}
-
-fn OWNER() -> ContractAddress {
-    'OWNER'.try_into().unwrap()
-}
-
-fn SEEDER() -> ContractAddress {
-    'SEEDER'.try_into().unwrap()
-}
-
-fn DESCRIPTOR() -> ContractAddress {
-    'DESCRIPTOR'.try_into().unwrap()
-}
-
-
-fn DEV_MERKLE_ROOT() -> felt252 {
-    'DEV_MERKLE_ROOT'
-}
-
-fn REALM_HOLDER_MERKLE_ROOT() -> felt252 {
-    'REALM_HOLDER_MERKLE_ROOT'
-}
-
-fn MINT_TIME() -> MintTime {
-    MintTime {
-        regular: BoundedInt::<u64>::max() - 100,
-        whitelist: BoundedInt::<u64>::max() - 1_000
-    }
-}
-
-
-
 use snforge_std::{declare, ContractClassTrait};
 use openzeppelin::token::erc20::interface::IERC20Dispatcher;
 use blob::seeder::ISeederDispatcher;
@@ -61,9 +19,8 @@ fn deploy_blobert() -> IBlobertDispatcher {
     OWNER().serialize(ref calldata);
     SEEDER().serialize(ref calldata);
     DESCRIPTOR().serialize(ref calldata);
-    DEV_MERKLE_ROOT().serialize(ref calldata);
-    REALM_HOLDER_MERKLE_ROOT().serialize(ref calldata);
-    MINT_TIME().serialize(ref calldata);
+    MERKLE_ROOTS().serialize(ref calldata);
+    MINT_START_TIME().serialize(ref calldata);
 
     let contract_address = contract.deploy(@calldata).unwrap();
     IBlobertDispatcher { contract_address }
@@ -94,7 +51,10 @@ fn deploy_seeder() -> ISeederDispatcher {
     let contract = declare('Seeder');
     let mut calldata: Array<felt252> = array![];
 
-    let contract_address = contract.deploy(@calldata).unwrap();
+    let contract_address = contract.deploy_at(
+        @calldata,
+        'SEEDER'.try_into().unwrap()
+    ).unwrap();
     ISeederDispatcher { contract_address }
 }
 
@@ -103,7 +63,10 @@ fn deploy_descriptor() -> IDescriptorDispatcher {
     let contract = declare('Descriptor');
     let mut calldata: Array<felt252> = array![];
 
-    let contract_address = contract.deploy(@calldata).unwrap();
+    let contract_address = contract.deploy_at(
+        @calldata,
+        'DESCRIPTOR'.try_into().unwrap()
+        ).unwrap();
     IDescriptorDispatcher { contract_address }
 }
 
@@ -143,5 +106,121 @@ fn create_merkle_tree(leaf: ContractAddress) -> (Span<felt252>, felt252) {
     assert(verified, 'verify valid proof failed');
 
     (merkle_proof, merkle_root)
+
+}
+
+
+
+// Constants 
+
+fn ERC721_NAME() -> felt252 {
+    'Blobert'
+}
+
+fn ERC721_SYMBOL() -> felt252 {
+    'BLOB'
+}
+
+fn OWNER() -> ContractAddress {
+    'OWNER'.try_into().unwrap()
+}
+
+fn MINTER() -> ContractAddress {
+    'MINTER'.try_into().unwrap()
+}
+
+fn MINTER_RECIPIENT() -> ContractAddress {
+    'MINTER_RECIPIENT'.try_into().unwrap()
+}
+
+
+
+fn SEEDER() -> ContractAddress {
+    deploy_seeder().contract_address
+}
+
+
+
+fn DESCRIPTOR() -> ContractAddress {
+    deploy_descriptor().contract_address
+}
+
+
+fn MERKLE_ROOTS() -> Span<felt252> {
+    array![
+        'merkle_root_tier_1_whitelist',
+        'merkle_root_tier_2_whitelist',
+        'merkle_root_tier_3_whitelist',
+        'merkle_root_tier_4_whitelist',
+        'merkle_root_tier_5_whitelist',
+    ].span()
+}
+
+fn MINT_START_TIME() -> MintStartTime {
+    MintStartTime {
+        regular: 104848548726390  - 4, // 104848548726390 timestamp  with tx hash of 1234 gives you a custom token in test environment
+        whitelist: 104848548726390 - 1_000_000
+    }
+}
+
+
+fn _50_ONE_OF_ONE_RECIPIENTS() -> Array<ContractAddress> {
+    // 50 unique recipients
+    array![
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec540.try_into().unwrap(),
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec541.try_into().unwrap(),
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec542.try_into().unwrap(),
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec543.try_into().unwrap(),
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec544.try_into().unwrap(),
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec545.try_into().unwrap(),
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec547.try_into().unwrap(),
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec548.try_into().unwrap(),
+        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec549.try_into().unwrap(),
+
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae0eec546.try_into().unwrap(),
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae2eec546.try_into().unwrap(),
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae3eec546.try_into().unwrap(),
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae4eec546.try_into().unwrap(),
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae5eec546.try_into().unwrap(),
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae6eec546.try_into().unwrap(),
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae7eec546.try_into().unwrap(),
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae8eec546.try_into().unwrap(),
+        0x049f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae9eec546.try_into().unwrap(),
+
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d14fae1eec546.try_into().unwrap(),
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d24fae1eec546.try_into().unwrap(),
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d34fae1eec546.try_into().unwrap(),
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d44fae1eec546.try_into().unwrap(),
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d54fae1eec546.try_into().unwrap(),
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d64fae1eec546.try_into().unwrap(),
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d74fae1eec546.try_into().unwrap(),
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d84fae1eec546.try_into().unwrap(),
+        0x039f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d94fae1eec546.try_into().unwrap(),
+
+        0x029f9205f50528a4c6308c69c675c14e65f31c02b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x029f9205f50528a4c6308c69c675c14e65f31c12b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x029f9205f50528a4c6308c69c675c14e65f31c22b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x029f9205f50528a4c6308c69c675c14e65f31c32b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x029f9205f50528a4c6308c69c675c14e65f31c42b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x029f9205f50528a4c6308c69c675c14e65f31c52b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x029f9205f50528a4c6308c69c675c14e65f31c62b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x029f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x029f9205f50528a4c6308c69c675c14e65f31c82b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x029f9205f50528a4c6308c69c675c14e65f31c92b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+
+        0x019f9205f50528a0c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x019f9205f50528a1c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x019f9205f50528a2c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x019f9205f50528a3c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x019f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x019f9205f50528a5c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x019f9205f50528a6c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x019f9205f50528a7c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x019f9205f50528a8c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
+        0x019f9205f50528a9c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap()
+    ]
 
 }

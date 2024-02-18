@@ -53,17 +53,28 @@ mod seeder {
 
 mod erc721 {
     use starknet::{StorePacking};
+    use super::seeder::Seed;
 
 
     #[derive(Copy, Drop, Serde)]
-    enum WhitelistClass {
-        Dev,
-        RealmHolder
+    enum WhitelistTier {
+        One,
+        Two, 
+        Three, 
+        Four, 
+        Five
     }
 
 
     #[derive(Copy, Drop, Serde, PartialEq)]
-    struct MintTime {
+    enum TokenIdentifier {
+        RegularTokenSeed: Seed,
+        CustomTokenIndex: u8
+    }
+
+
+    #[derive(Copy, Drop, Serde, PartialEq)]
+    struct MintStartTime {
         regular: u64,
         whitelist: u64
     }
@@ -72,16 +83,41 @@ mod erc721 {
     const TWO_POW_64: u128 = 0x10000000000000000;
     const MASK_64: u128 = 0xffffffffffffffff;
 
-    impl MintTimeStorePacking of StorePacking<MintTime, u128> {
-        fn pack(value: MintTime) -> u128 {
+    impl MintStartTimeStorePacking of StorePacking<MintStartTime, u128> {
+        fn pack(value: MintStartTime) -> u128 {
             value.regular.into()
                 + (value.whitelist.into() * TWO_POW_64)
         }
 
-        fn unpack(value: u128) -> MintTime {
-            MintTime {
+        fn unpack(value: u128) -> MintStartTime {
+            MintStartTime {
                 regular: (value & MASK_64).try_into().unwrap(),
                 whitelist: (value / TWO_POW_64).try_into().unwrap()
+            }
+        }
+    }
+
+
+
+    #[derive(Copy, Drop, Serde, PartialEq)]
+    struct Supply {
+        total_nft: u16,
+        custom_nft: u8
+    }
+
+    const TWO_POW_16: u32 = 0x10000;
+    const MASK_16: u32 = 0xffff;
+
+    impl SupplyStorePacking of StorePacking<Supply, u32> {
+        fn pack(value: Supply) -> u32 {
+            value.total_nft.into()
+                + (value.custom_nft.into() * TWO_POW_16)
+        }
+
+        fn unpack(value: u32) -> Supply {
+            Supply {
+                total_nft: (value & MASK_16).try_into().unwrap(),
+                custom_nft: (value / TWO_POW_16).try_into().unwrap()
             }
         }
     }
