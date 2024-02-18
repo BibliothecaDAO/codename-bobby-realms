@@ -108,9 +108,8 @@ export const deployBlobert = async (seeder,descriptor_regular, descriptor_custom
   }
 
   // mint start time
-  constructorCalldata.push(1708283743)// regular mint start time
-  constructorCalldata.push(1708282508)// whitelist mint start time
-
+  constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 1000 * 60 * 12) // regular mint start time // 12 minutes from now
+  constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 1000 * 30 ) // whitelist mint start time // 30 seconds from now
 
   // custom nft recipients
   // let custom_nft_recips = [];
@@ -170,6 +169,8 @@ export const deploySeeder = async () => {
   await account.waitForTransaction(contract.transaction_hash);
   console.log("Contract Address: ".green, contract.address, "\n\n");
 
+  return contract.address
+
 }
 
 
@@ -203,6 +204,8 @@ export const deployDescriptorRegular = async () => {
   );
   await account.waitForTransaction(contract.transaction_hash);
   console.log("Contract Address: ".green, contract.address, "\n\n");
+
+  return contract.address
 
 }
 
@@ -328,43 +331,5 @@ export const deployDescriptorCustom = async () => {
   console.log("Contract Address: ".green, contract.address, "\n\n");
   descriptor_custom_data_addresses.push(contract.address)
 
+  return contract.address
 }
-
-// export const deployFactory = async () => {
-//   // Load account
-//   const account = getAccount();
-
-//   // Declare contracts
-//   const memecoin = await declare(
-//     getUnruggableMemecoinPath(),
-//     "UnruggableMemecoin",
-//   );
-//   const factory = await declare(getFactoryPath(), "Factory");
-
-//   // Deploy factory
-//   const exchanges = getExchanges(process.env.STARKNET_NETWORK);
-//   console.log(`\nDeploying Factory...`.green);
-//   console.log("Owner: ".green, process.env.STARKNET_ACCOUNT_ADDRESS);
-//   console.log("Memecoin class hash: ".green, memecoin.class_hash);
-//   console.log("Exchanges: ".green, exchanges);
-
-//   const contract = await account.deployContract({
-//     classHash: factory.class_hash,
-//     constructorCalldata: [
-//       process.env.STARKNET_ACCOUNT_ADDRESS,
-//       memecoin.class_hash,
-//       exchanges,
-//     ],
-//   });
-
-//   // Wait for transaction
-//   const network = getNetwork(process.env.STARKNET_NETWORK);
-//   console.log(
-//     "Tx hash: ".green,
-//     `${network.explorer_url}/tx/${contract.transaction_hash})`,
-//   );
-//   await account.waitForTransaction(contract.transaction_hash);
-// };
-
-
-// console.log(deployDescriptors())
