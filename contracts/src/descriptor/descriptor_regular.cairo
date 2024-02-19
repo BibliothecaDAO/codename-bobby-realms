@@ -23,8 +23,6 @@ trait IDescriptorRegular<TContractState> {
 }
 
 
-
-
 #[starknet::contract]
 mod DescriptorRegular {
     use blob::generation::traits::{
@@ -119,9 +117,6 @@ mod DescriptorRegular {
     }
 
 
-
-
-
     #[generate_trait]
     impl InternalImpl of InternalTrait {
         fn data_uri(self: @ContractState, token_id: u256, seed: Seed) -> ByteArray {
@@ -141,7 +136,6 @@ mod DescriptorRegular {
                     image_type: RenderType::Base64Encoded
                 );
 
-
             let attributes: Span<ByteArray> = self
                 .construct_attributes(
                     armour: armour_name,
@@ -150,7 +144,6 @@ mod DescriptorRegular {
                     jewelry: jewelry_name,
                     weapon: weapon_name
                 );
-
 
             let type_: ByteArray = format!("{}", ImageType::REGULAR);
 
@@ -165,7 +158,6 @@ mod DescriptorRegular {
             let base64_encoded_metadata: ByteArray = bytes_base64_encode(metadata);
             format!("data:application/json;base64,{}", base64_encoded_metadata)
         }
-
 
 
         fn construct_image(
@@ -236,7 +228,6 @@ mod DescriptorRegular {
                 }
             }
         }
-
 
 
         fn construct_attributes(

@@ -13,7 +13,9 @@ trait ISeeder<TContractState> {
 #[starknet::contract]
 mod Seeder {
     use alexandria_math::BitShift;
-    use blob::descriptor::descriptor_regular::{IDescriptorRegularDispatcher, IDescriptorRegularDispatcherTrait};
+    use blob::descriptor::descriptor_regular::{
+        IDescriptorRegularDispatcher, IDescriptorRegularDispatcherTrait
+    };
     use blob::types::seeder::Seed;
     use core::box::BoxTrait;
     use core::poseidon::poseidon_hash_span;
@@ -40,13 +42,10 @@ mod Seeder {
 
             let block_timestamp = starknet::get_block_timestamp();
             let randomness: u256 = poseidon_hash_span(
-                array![
-                    block_timestamp.into(), 
-                    token_id.low.into(), 
-                    token_id.high.into(), 
-                    salt
-                ].span()
-            ).into();
+                array![block_timestamp.into(), token_id.low.into(), token_id.high.into(), salt]
+                    .span()
+            )
+                .into();
 
             let background_count: u256 = descriptor.background_count().into();
             let armour_count: u256 = descriptor.armour_count().into();

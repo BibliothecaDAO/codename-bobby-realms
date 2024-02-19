@@ -11,13 +11,11 @@ trait IDescriptorCustom<TContractState> {
 }
 
 
-
 #[starknet::contract]
 mod DescriptorCustom {
-
     use blob::descriptor::descriptor_custom::IDescriptorCustom;
-    use blob::types::descriptor::{ImageType, RenderType};
     use blob::generation::{custom::image::CUSTOM_IMAGES_COUNT};
+    use blob::types::descriptor::{ImageType, RenderType};
 
     use blob::types::seeder::Seed;
     use blob::utils::encoding::bytes_base64_encode;
@@ -38,16 +36,12 @@ mod DescriptorCustom {
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, custom_data_contracts: Span<felt252>){
+    fn constructor(ref self: ContractState, custom_data_contracts: Span<felt252>) {
         assert(custom_data_contracts.len() == 3, 'expected 3 data contracts');
-        self.custom_data_contract_0_19
-            .write((*custom_data_contracts[0]).try_into().unwrap());
-        self.custom_data_contract_20_39
-            .write((*custom_data_contracts[1]).try_into().unwrap());
-        self.custom_data_contract_40_49
-            .write((*custom_data_contracts[2]).try_into().unwrap());
+        self.custom_data_contract_0_19.write((*custom_data_contracts[0]).try_into().unwrap());
+        self.custom_data_contract_20_39.write((*custom_data_contracts[1]).try_into().unwrap());
+        self.custom_data_contract_40_49.write((*custom_data_contracts[2]).try_into().unwrap());
     }
-
 
 
     #[abi(embed_v0)]
@@ -57,15 +51,15 @@ mod DescriptorCustom {
         }
 
         fn custom(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
-            assert(index < self.custom_count(),'descriptor: index out of range');
+            assert(index < self.custom_count(), 'descriptor: index out of range');
             let contract_address = if index < 20 {
                 self.custom_data_contract_0_19.read()
             } else if (index < 40) {
-                 self.custom_data_contract_20_39.read()
+                self.custom_data_contract_20_39.read()
             } else {
                 self.custom_data_contract_40_49.read()
             };
-            ICustomDataDescriptorDispatcher {contract_address}.custom(index)
+            ICustomDataDescriptorDispatcher { contract_address }.custom(index)
         }
 
         fn token_uri(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
@@ -79,12 +73,8 @@ mod DescriptorCustom {
     }
 
 
-
-
-
     #[generate_trait]
     impl InternalImpl of InternalTrait {
-     
         fn data_uri(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
             let (image_bytes, _) = self.custom(index);
 
@@ -106,9 +96,6 @@ mod DescriptorCustom {
             let base64_encoded_metadata: ByteArray = bytes_base64_encode(metadata);
             format!("data:application/json;base64,{}", base64_encoded_metadata)
         }
-
-
-
 
 
         fn construct_image(
@@ -157,7 +144,6 @@ mod DescriptorCustom {
 }
 
 
-
 #[starknet::interface]
 trait ICustomDataDescriptor<TContractState> {
     fn custom(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
@@ -165,9 +151,8 @@ trait ICustomDataDescriptor<TContractState> {
 
 #[starknet::contract]
 mod DescriptorCustomData1 {
-
     use blob::generation::{custom::image::custom_images_0_19};
-   
+
     #[storage]
     struct Storage {}
 
@@ -181,9 +166,8 @@ mod DescriptorCustomData1 {
 
 #[starknet::contract]
 mod DescriptorCustomData2 {
-
     use blob::generation::{custom::image::custom_images_20_39};
-   
+
     #[storage]
     struct Storage {}
 
@@ -197,9 +181,8 @@ mod DescriptorCustomData2 {
 
 #[starknet::contract]
 mod DescriptorCustomData3 {
-
     use blob::generation::{custom::image::custom_images_40_49};
-   
+
     #[storage]
     struct Storage {}
 

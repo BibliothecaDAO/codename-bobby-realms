@@ -1,13 +1,13 @@
-use core::result::ResultTrait;
 use alexandria_merkle_tree::merkle_tree::{
     Hasher, MerkleTree, poseidon::PoseidonHasherImpl, MerkleTreeTrait, HasherTrait, MerkleTreeImpl
 };
 use blob::blobert::IBlobertDispatcher;
-use blob::descriptor::descriptor_regular::IDescriptorRegularDispatcher;
 use blob::descriptor::descriptor_custom::IDescriptorCustomDispatcher;
+use blob::descriptor::descriptor_regular::IDescriptorRegularDispatcher;
 use blob::seeder::ISeederDispatcher;
 use blob::types::erc721::MintStartTime;
 use core::integer::BoundedInt;
+use core::result::ResultTrait;
 use core::serde::Serde;
 use core::traits::TryInto;
 use openzeppelin::token::erc20::interface::IERC20Dispatcher;
@@ -18,7 +18,6 @@ use starknet::ContractAddress;
 const FEE_TOKEN_ADDRESS: felt252 =
     0x0124aeb495b947201f5fac96fd1138e326ad86195b98df6dec9009158a533b49;
 const FEE_TOKEN_AMOUNT: u128 = 100_000_000_000_000_000_000; // 100 $LORDS
-
 
 
 fn deploy_blobert() -> IBlobertDispatcher {
@@ -72,9 +71,9 @@ fn deploy_descriptor_regular() -> IDescriptorRegularDispatcher {
     let contract = declare('DescriptorRegular');
     let mut calldata: Array<felt252> = array![];
 
-    let contract_address = contract.deploy_at(
-        @calldata, 'DESCRIPTOR_REGULAR'.try_into().unwrap()
-    ).unwrap();
+    let contract_address = contract
+        .deploy_at(@calldata, 'DESCRIPTOR_REGULAR'.try_into().unwrap())
+        .unwrap();
     IDescriptorRegularDispatcher { contract_address }
 }
 
@@ -89,20 +88,18 @@ fn deploy_descriptor_custom() -> IDescriptorCustomDispatcher {
     let custom_data3_contract = declare('DescriptorCustomData3');
     let custom_data3_addr = custom_data3_contract.deploy(@array![]).unwrap();
 
-
     let descriptor_custom_contract = declare('DescriptorCustom');
 
     let mut calldata: Array<felt252> = array![];
     let list_data_addr: Span<ContractAddress> = array![
-        custom_data1_addr,
-        custom_data2_addr,
-        custom_data3_addr,
-    ].span();
+        custom_data1_addr, custom_data2_addr, custom_data3_addr,
+    ]
+        .span();
     list_data_addr.serialize(ref calldata);
 
-    let contract_address = descriptor_custom_contract.deploy_at(
-        @calldata, 'DESCRIPTOR_CUSTOM'.try_into().unwrap()
-    ).unwrap();
+    let contract_address = descriptor_custom_contract
+        .deploy_at(@calldata, 'DESCRIPTOR_CUSTOM'.try_into().unwrap())
+        .unwrap();
     IDescriptorCustomDispatcher { contract_address }
 }
 

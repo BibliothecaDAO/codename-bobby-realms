@@ -1,20 +1,20 @@
 mod blobert;
+mod seeder;
+mod types;
 mod descriptor {
     mod descriptor_custom;
     mod descriptor_regular;
 }
-mod seeder;
-mod types;
 mod utils {
     mod encoding;
     mod randomness;
 }
 mod generation {
     mod custom {
+        mod image;
         mod data {
             mod image;
         }
-        mod image;
     }
     mod traits {
         mod armour;
@@ -37,8 +37,8 @@ mod tests {
     }
     mod unit_tests {
         mod test_blobert;
-        mod test_descriptor_regular;
         mod test_descriptor_custom;
+        mod test_descriptor_regular;
         mod test_seeder;
         mod test_types;
         mod utils;

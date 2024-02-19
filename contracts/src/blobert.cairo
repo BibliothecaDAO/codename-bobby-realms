@@ -55,9 +55,13 @@ mod Blobert {
         MerkleTreeImpl
     };
     use blob::blobert::IBlobert;
+    use blob::descriptor::descriptor_custom::{
+        IDescriptorCustomDispatcher, IDescriptorCustomDispatcherTrait
+    };
 
-    use blob::descriptor::descriptor_regular::{IDescriptorRegularDispatcher, IDescriptorRegularDispatcherTrait};
-    use blob::descriptor::descriptor_custom::{IDescriptorCustomDispatcher, IDescriptorCustomDispatcherTrait};
+    use blob::descriptor::descriptor_regular::{
+        IDescriptorRegularDispatcher, IDescriptorRegularDispatcherTrait
+    };
     use blob::seeder::{Seed, ISeederDispatcher, ISeederDispatcherTrait};
     use blob::types::erc721::MintStartTime;
     use blob::types::erc721::Supply;
@@ -246,12 +250,10 @@ mod Blobert {
             let traits = self.traits(token_id);
             match traits {
                 TokenTrait::Regular(seed) => {
-                    self.descriptor_regular.read()
-                        .token_uri(token_id, seed)
-                }, 
+                    self.descriptor_regular.read().token_uri(token_id, seed)
+                },
                 TokenTrait::Custom(index) => {
-                    self.descriptor_custom.read()
-                        .token_uri(token_id, index)
+                    self.descriptor_custom.read().token_uri(token_id, index)
                 }
             }
         }
@@ -283,9 +285,7 @@ mod Blobert {
         fn traits(self: @ContractState, token_id: u256) -> TokenTrait {
             assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
 
-            let custom_token_number = self
-                .custom_image_counts
-                .read(token_id.try_into().unwrap());
+            let custom_token_number = self.custom_image_counts.read(token_id.try_into().unwrap());
             if custom_token_number != 0 {
                 let image_index = custom_token_number - 1;
                 return TokenTrait::Custom(image_index);
@@ -295,17 +295,11 @@ mod Blobert {
             }
         }
 
-        fn svg_image(self: @ContractState, token_id: u256) -> ByteArray{
+        fn svg_image(self: @ContractState, token_id: u256) -> ByteArray {
             let traits = self.traits(token_id);
             match traits {
-                TokenTrait::Regular(seed) => {
-                    self.descriptor_regular.read()
-                        .svg_image(seed)
-                }, 
-                TokenTrait::Custom(index) => {
-                    self.descriptor_custom.read()
-                        .svg_image(index)
-                }
+                TokenTrait::Regular(seed) => { self.descriptor_regular.read().svg_image(seed) },
+                TokenTrait::Custom(index) => { self.descriptor_custom.read().svg_image(index) }
             }
         }
 
@@ -482,12 +476,10 @@ mod Blobert {
             self.fee_token_address.write(fee_token_address);
             self.fee_token_amount.write(fee_token_amount);
 
-
             self.set_regular_nft_seeder(regular_nft_seeder);
             self.set_descriptor_regular(descriptor_regular);
             self.set_descriptor_custom(descriptor_custom);
         }
-
 
 
         fn assign_custom(ref self: ContractState, mut recipients: Span<ContractAddress>) {
@@ -572,10 +564,7 @@ mod Blobert {
                     contract_address: self.fee_token_address.read()
                 };
                 let fee_amount = self.fee_token_amount.read();
-                assert(
-                    fee_token.balance_of(caller) >= fee_amount,
-                    Errors::INSUFFICIENT_FUND
-                );
+                assert(fee_token.balance_of(caller) >= fee_amount, Errors::INSUFFICIENT_FUND);
                 assert(
                     fee_token
                         .allowance(caller, starknet::get_contract_address()) >= fee_amount
@@ -584,9 +573,7 @@ mod Blobert {
                 );
 
                 fee_token
-                    .transfer_from(
-                        caller, FEE_RECIPIENT_ADDRESS.try_into().unwrap(), fee_amount
-                    );
+                    .transfer_from(caller, FEE_RECIPIENT_ADDRESS.try_into().unwrap(), fee_amount);
             }
         }
 
@@ -707,12 +694,16 @@ mod Blobert {
 
         fn set_descriptor_regular(ref self: ContractState, descriptor: ContractAddress) {
             assert(descriptor != Zeroable::zero(), Errors::ZERO_ADDRESS_DESCRIPTOR);
-            self.descriptor_regular.write(IDescriptorRegularDispatcher { contract_address: descriptor });
+            self
+                .descriptor_regular
+                .write(IDescriptorRegularDispatcher { contract_address: descriptor });
         }
 
         fn set_descriptor_custom(ref self: ContractState, descriptor: ContractAddress) {
             assert(descriptor != Zeroable::zero(), Errors::ZERO_ADDRESS_DESCRIPTOR);
-            self.descriptor_custom.write(IDescriptorCustomDispatcher { contract_address: descriptor });
+            self
+                .descriptor_custom
+                .write(IDescriptorCustomDispatcher { contract_address: descriptor });
         }
     }
 }

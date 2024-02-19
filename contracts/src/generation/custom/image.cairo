@@ -6,7 +6,7 @@ const CUSTOM_IMAGES_COUNT: u8 = 50;
 fn custom_images_0_19(index: u8) -> (ByteArray, ByteArray) {
     assert(index >= 0, 'wrong custom img index (2)');
     assert(index <= 19, 'wrong custom img index (2)');
-    let index: felt252 = index.into()  - 0 ;
+    let index: felt252 = index.into() - 0;
 
     match index {
         0 => (image::french0(), "French"),
@@ -37,7 +37,7 @@ fn custom_images_0_19(index: u8) -> (ByteArray, ByteArray) {
 fn custom_images_20_39(index: u8) -> (ByteArray, ByteArray) {
     assert(index >= 20, 'wrong custom img index (2)');
     assert(index <= 39, 'wrong custom img index (2)');
-    let index: felt252 = index.into()  - 20;
+    let index: felt252 = index.into() - 20;
 
     match index {
         0 => (image::french20(), "French"),
@@ -68,7 +68,7 @@ fn custom_images_20_39(index: u8) -> (ByteArray, ByteArray) {
 fn custom_images_40_49(index: u8) -> (ByteArray, ByteArray) {
     assert(index >= 40, 'wrong custom img index (3)');
     assert(index <= 49, 'wrong custom img index (3)');
-    let index: felt252 = index.into()  - 40;
+    let index: felt252 = index.into() - 40;
 
     match index {
         0 => (image::french40(), "French"),
@@ -84,5 +84,4 @@ fn custom_images_40_49(index: u8) -> (ByteArray, ByteArray) {
         _ => panic!("wrong image index")
     }
 }
-
 

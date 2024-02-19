@@ -1,20 +1,17 @@
-
 #[cfg(test)]
 mod seeder_tests {
-    use core::dict::Felt252DictTrait;
     use blob::seeder::ISeeder;
-    use core::traits::TryInto;
-    use blob::seeder::Seeder;
     use blob::seeder::Seed;
+    use blob::seeder::Seeder;
+
+    use blob::tests::unit_tests::utils::{SEEDER, DESCRIPTOR_REGULAR};
+    use core::dict::Felt252DictTrait;
     use core::hash::{HashStateTrait, HashStateExTrait};
     use core::poseidon::PoseidonTrait;
-
-    use blob::tests::unit_tests::utils::{
-        SEEDER, DESCRIPTOR_REGULAR
-    };
+    use core::traits::TryInto;
+    use snforge_std::{start_warp, CheatTarget};
 
     use starknet::contract_address_const;
-    use snforge_std::{start_warp, CheatTarget};
 
 
     #[test]
@@ -26,18 +23,15 @@ mod seeder_tests {
         let max_tokens = token_id + 90;
         let descriptor_regular_addr = DESCRIPTOR_REGULAR();
 
-        let mut hash_map : Felt252Dict<bool> = Default::default();
-
+        let mut hash_map: Felt252Dict<bool> = Default::default();
 
         loop {
             if token_id == max_tokens {
                 break;
             }
 
-            let seed = contract_state
-                .generate_seed(token_id, descriptor_regular_addr, 0);
-            let seed_hash: felt252 
-                = PoseidonTrait::new().update_with(seed).finalize();
+            let seed = contract_state.generate_seed(token_id, descriptor_regular_addr, 0);
+            let seed_hash: felt252 = PoseidonTrait::new().update_with(seed).finalize();
 
             // let exists = hash_map.get(seed_hash); 
             // println!("hash: {}, token_id: {}, exists: {}", seed_hash, token_id,exists);
@@ -51,8 +45,6 @@ mod seeder_tests {
     }
 
 
-
-
     #[test]
     fn test_generate_seed_different_salt() {
         // ensure seed is different for different salts
@@ -63,17 +55,15 @@ mod seeder_tests {
         let max_salts = 90;
         let descriptor_regular_addr = DESCRIPTOR_REGULAR();
 
-        let mut hash_map : Felt252Dict<bool> = Default::default();
+        let mut hash_map: Felt252Dict<bool> = Default::default();
 
         loop {
             if salt == max_salts {
                 break;
             }
 
-            let seed = contract_state
-                .generate_seed(token_id, descriptor_regular_addr, salt);
-            let seed_hash: felt252 
-                = PoseidonTrait::new().update_with(seed).finalize();
+            let seed = contract_state.generate_seed(token_id, descriptor_regular_addr, salt);
+            let seed_hash: felt252 = PoseidonTrait::new().update_with(seed).finalize();
 
             // let exists = hash_map.get(seed_hash); 
             // println!("hash: {}, token_id: {}, salt: {}, exists: {}", seed_hash, token_id, salt, exists);
@@ -97,7 +87,7 @@ mod seeder_tests {
         let max_ts = ts + 90;
         let descriptor_regular_addr = DESCRIPTOR_REGULAR();
 
-        let mut hash_map : Felt252Dict<bool> = Default::default();
+        let mut hash_map: Felt252Dict<bool> = Default::default();
 
         loop {
             if ts == max_ts {
@@ -105,12 +95,9 @@ mod seeder_tests {
             }
 
             start_warp(CheatTarget::One(starknet::get_contract_address()), ts);
-        
 
-            let seed = contract_state
-                .generate_seed(token_id, descriptor_regular_addr, 0);
-            let seed_hash: felt252 
-                = PoseidonTrait::new().update_with(seed).finalize();
+            let seed = contract_state.generate_seed(token_id, descriptor_regular_addr, 0);
+            let seed_hash: felt252 = PoseidonTrait::new().update_with(seed).finalize();
 
             // let exists = hash_map.get(seed_hash); 
             // println!("hash: {}, token_id: {}, ts: {}, exists: {}", seed_hash, token_id, ts, exists);
