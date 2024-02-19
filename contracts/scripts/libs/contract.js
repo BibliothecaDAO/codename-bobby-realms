@@ -4,7 +4,7 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 import { json } from "starknet";
 import { getNetwork, getAccount } from "./network.js";
-import { custom_nft_recipients } from "../custom_nft_assign.js";
+import { initial_assigned_recipients } from "../assigned_custom.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -88,6 +88,8 @@ export const deployBlobert = async (seeder,descriptor_regular, descriptor_custom
   let token_name = "Blobert";
   let token_symbol = "BLOB";
   let owner = account.address
+  let fee_token_address = account.address
+  let fee_token_amount = 100 * (10 ** 18)
 
   let constructorCalldata = [
     token_name,
@@ -96,6 +98,8 @@ export const deployBlobert = async (seeder,descriptor_regular, descriptor_custom
     seeder,
     descriptor_regular,
     descriptor_custom,
+    fee_token_address,
+    fee_token_amount, 0 // u256
   ]
 
   // merkle roots
@@ -111,13 +115,11 @@ export const deployBlobert = async (seeder,descriptor_regular, descriptor_custom
   constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 1000 * 60 * 12) // regular mint start time // 12 minutes from now
   constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 1000 * 30 ) // whitelist mint start time // 30 seconds from now
 
-  // custom nft recipients
-  // let custom_nft_recips = [];
-  let custom_nft_recips = custom_nft_recipients();
-  // console.log("\n\n Recips  \n\n",custom_nft_recips)
-  constructorCalldata.push(custom_nft_recips.length)
-  for (let j =0 ; j < custom_nft_recips.length; j++) {
-    constructorCalldata.push(custom_nft_recips[j]);
+  // initial custom nft recipients
+  let initial_assigned_recips = initial_assigned_recipients();
+  constructorCalldata.push(initial_assigned_recips.length)
+  for (let j =0 ; j < initial_assigned_recips.length; j++) {
+    constructorCalldata.push(initial_assigned_recips[j]);
   }
   
   // Deploy contract

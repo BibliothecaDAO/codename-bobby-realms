@@ -1,4 +1,4 @@
-export const custom_nft_recipients =  () => {
+export const initial_assigned_recipients =  () => {
     return [
       0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec540n,
       0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec541n,

@@ -2,7 +2,9 @@
 
 #[cfg(test)]
 mod blobert_constructor_tests {
-    use blob::blobert::Blobert::__member_module_descriptor::InternalContractMemberStateTrait as ___T;
+    use core::traits::TryInto;
+    use blob::blobert::Blobert::__member_module_descriptor_regular::InternalContractMemberStateTrait as ___T;
+    use blob::blobert::Blobert::__member_module_descriptor_custom::InternalContractMemberStateTrait as ___F;
 
     use blob::blobert::Blobert::__member_module_merkle_root_tier_1_whitelist::InternalContractMemberStateTrait as _A;
     use blob::blobert::Blobert::__member_module_merkle_root_tier_2_whitelist::InternalContractMemberStateTrait as __B;
@@ -12,11 +14,13 @@ mod blobert_constructor_tests {
     use blob::blobert::Blobert::__member_module_mint_start_time::InternalContractMemberStateTrait as _____T;
     use blob::blobert::Blobert::__member_module_regular_nft_seeder::InternalContractMemberStateTrait as ____T;
     use blob::blobert::Blobert::__member_module_supply::InternalContractMemberStateTrait as ______T;
+    use blob::blobert::Blobert::__member_module_fee_token_address::InternalContractMemberStateTrait as _DA;
+    use blob::blobert::Blobert::__member_module_fee_token_amount::InternalContractMemberStateTrait as _AD;
 
     use blob::blobert::Blobert;
     use blob::tests::unit_tests::utils::{
-        ERC721_NAME, ERC721_SYMBOL, OWNER, SEEDER, DESCRIPTOR, MERKLE_ROOTS, MINT_START_TIME,
-        _50_ONE_OF_ONE_RECIPIENTS
+        ERC721_NAME, ERC721_SYMBOL, OWNER, SEEDER, DESCRIPTOR_REGULAR, DESCRIPTOR_CUSTOM, MERKLE_ROOTS, MINT_START_TIME,
+        _50_ONE_OF_ONE_RECIPIENTS, FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT
     };
     use openzeppelin::access::ownable::interface::IOwnable;
     use openzeppelin::token::erc721::interface::IERC721Metadata;
@@ -25,17 +29,21 @@ mod blobert_constructor_tests {
 
 
     #[test]
-    fn test_constructor() {
+    fn test_constructor_f() {
         let mut contract_state = Blobert::contract_state_for_testing();
         let seeder = SEEDER();
-        let descriptor = DESCRIPTOR();
+        let descriptor_regular = DESCRIPTOR_REGULAR();
+        let descriptor_custom = DESCRIPTOR_CUSTOM();
         Blobert::constructor(
             ref contract_state,
             ERC721_NAME(),
             ERC721_SYMBOL(),
             OWNER(),
             seeder,
-            descriptor,
+            descriptor_regular,
+            descriptor_custom,
+            FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            FEE_TOKEN_AMOUNT.into(),
             MERKLE_ROOTS(),
             MINT_START_TIME(),
             _50_ONE_OF_ONE_RECIPIENTS().span()
@@ -58,7 +66,12 @@ mod blobert_constructor_tests {
             'wrong seeder address'
         );
         assert(
-            contract_state.descriptor.read().contract_address == descriptor,
+            contract_state.descriptor_regular.read().contract_address == descriptor_regular,
+            'wrong descriptor address'
+        );
+
+        assert(
+            contract_state.descriptor_custom.read().contract_address == descriptor_custom,
             'wrong descriptor address'
         );
 
@@ -86,6 +99,11 @@ mod blobert_constructor_tests {
             contract_state.merkle_root_tier_5_whitelist.read() == *MERKLE_ROOTS()[4],
             'wrong tier 5 merkle root'
         );
+
+
+        // ensure fee token address and amount are correct
+        assert(contract_state.fee_token_address.read().into() == FEE_TOKEN_ADDRESS, 'wrong fee token address');
+        assert(contract_state.fee_token_amount.read() == FEE_TOKEN_AMOUNT.into(), 'wrong fee token amount');
     }
 
     #[test]
@@ -99,7 +117,10 @@ mod blobert_constructor_tests {
             ERC721_SYMBOL(),
             owner,
             SEEDER(),
-            DESCRIPTOR(),
+            DESCRIPTOR_REGULAR(),
+            DESCRIPTOR_CUSTOM(),
+            FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            FEE_TOKEN_AMOUNT.into(),
             MERKLE_ROOTS(),
             MINT_START_TIME(),
             array![].span()
@@ -111,8 +132,9 @@ mod blobert_constructor_tests {
 #[cfg(test)]
 mod blobert_internal_tests {
     use blob::blobert::Blobert::InternalTrait;
-    use blob::blobert::Blobert::__member_module_custom_nft_to_supply_count::InternalContractMemberStateTrait as _H;
-    use blob::blobert::Blobert::__member_module_descriptor::InternalContractMemberStateTrait as _C;
+    use blob::blobert::Blobert::__member_module_custom_image_counts::InternalContractMemberStateTrait as _H;
+    use blob::blobert::Blobert::__member_module_descriptor_regular::InternalContractMemberStateTrait as _K;
+    use blob::blobert::Blobert::__member_module_descriptor_custom::InternalContractMemberStateTrait as _C;
     use blob::blobert::Blobert::__member_module_merkle_root_tier_1_whitelist::InternalContractMemberStateTrait as _A;
     use blob::blobert::Blobert::__member_module_merkle_root_tier_2_whitelist::InternalContractMemberStateTrait as _B;
     use blob::blobert::Blobert::__member_module_merkle_root_tier_3_whitelist::InternalContractMemberStateTrait as _J;
@@ -123,13 +145,16 @@ mod blobert_internal_tests {
     use blob::blobert::Blobert::__member_module_regular_nft_seeder::InternalContractMemberStateTrait as _D;
     use blob::blobert::Blobert::__member_module_regular_nft_seeds::InternalContractMemberStateTrait as _F;
     use blob::blobert::Blobert::__member_module_supply::InternalContractMemberStateTrait as _I;
+    use blob::blobert::Blobert::__member_module_fee_token_address::InternalContractMemberStateTrait as _DA;
+    use blob::blobert::Blobert::__member_module_fee_token_amount::InternalContractMemberStateTrait as _AD;
 
 
     use blob::blobert::Blobert;
     use blob::seeder::ISeederDispatcherTrait;
     use blob::tests::unit_tests::utils::{
-        SEEDER, DESCRIPTOR, MERKLE_ROOTS, MINT_START_TIME, MINTER, MINTER_RECIPIENT,
-        _50_ONE_OF_ONE_RECIPIENTS, deploy_fee_token, deploy_seeder, deploy_descriptor,
+        SEEDER, DESCRIPTOR_REGULAR, DESCRIPTOR_CUSTOM, MERKLE_ROOTS, MINT_START_TIME, MINTER, MINTER_RECIPIENT,
+        _50_ONE_OF_ONE_RECIPIENTS, FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT,
+        deploy_fee_token, deploy_seeder, deploy_descriptor_regular, deploy_descriptor_custom,
         create_merkle_tree
     };
     use blob::types::erc721::WhitelistTier;
@@ -160,11 +185,15 @@ mod blobert_internal_tests {
     fn test_initialize() {
         let mut contract_state = Blobert::contract_state_for_testing();
         let seeder = SEEDER();
-        let descriptor = DESCRIPTOR();
+        let descriptor_regular = DESCRIPTOR_REGULAR();
+        let descriptor_custom = DESCRIPTOR_CUSTOM();
         contract_state
             .initialize(
                 seeder,
-                descriptor,
+                descriptor_regular,
+                descriptor_custom,
+                FEE_TOKEN_ADDRESS.try_into().unwrap(),
+                FEE_TOKEN_AMOUNT.into(),
                 MERKLE_ROOTS(),
                 MINT_START_TIME(),
                 _50_ONE_OF_ONE_RECIPIENTS().span()
@@ -176,8 +205,13 @@ mod blobert_internal_tests {
             'wrong seeder address'
         );
         assert(
-            contract_state.descriptor.read().contract_address == descriptor,
-            'wrong descriptor address'
+            contract_state.descriptor_regular.read().contract_address == descriptor_regular,
+            'wrong descriptor ref address'
+        );
+
+        assert(
+            contract_state.descriptor_custom.read().contract_address == descriptor_custom,
+            'wrong descriptor cus address'
         );
 
         // ensure supply is correct
@@ -208,6 +242,12 @@ mod blobert_internal_tests {
             contract_state.merkle_root_tier_5_whitelist.read() == *MERKLE_ROOTS()[4],
             'wrong tier 5 merkle root'
         );
+
+
+        // ensure fee token address and amount are correct
+        assert(contract_state.fee_token_address.read().into() == FEE_TOKEN_ADDRESS, 'wrong fee token address');
+        assert(contract_state.fee_token_amount.read() == FEE_TOKEN_AMOUNT.into(), 'wrong fee token amount');
+
     }
 
 
@@ -219,9 +259,17 @@ mod blobert_internal_tests {
         // set current time to equal mint time
         let mint_start_time = MINT_START_TIME();
         start_warp(CheatTarget::One(starknet::get_contract_address()), mint_start_time.whitelist);
-
+        
         contract_state
-            .initialize(SEEDER(), DESCRIPTOR(), MERKLE_ROOTS(), mint_start_time, array![].span());
+            .initialize(
+                SEEDER(),
+                DESCRIPTOR_REGULAR(), 
+                DESCRIPTOR_CUSTOM(), 
+                FEE_TOKEN_ADDRESS.try_into().unwrap(), 
+                FEE_TOKEN_AMOUNT.into(), 
+                MERKLE_ROOTS(), 
+                mint_start_time, array![].span()
+        );
     }
 
 
@@ -235,7 +283,15 @@ mod blobert_internal_tests {
         mint_start_time.regular = mint_start_time.whitelist;
 
         contract_state
-            .initialize(SEEDER(), DESCRIPTOR(), MERKLE_ROOTS(), mint_start_time, array![].span());
+            .initialize(
+                SEEDER(),
+                DESCRIPTOR_REGULAR(), 
+                DESCRIPTOR_CUSTOM(), 
+                FEE_TOKEN_ADDRESS.try_into().unwrap(), 
+                FEE_TOKEN_AMOUNT.into(), 
+                MERKLE_ROOTS(), 
+                mint_start_time, array![].span()
+        );
     }
 
 
@@ -246,7 +302,10 @@ mod blobert_internal_tests {
         contract_state
             .initialize(
                 SEEDER(),
-                DESCRIPTOR(),
+                DESCRIPTOR_REGULAR(), 
+                DESCRIPTOR_CUSTOM(), 
+                FEE_TOKEN_ADDRESS.try_into().unwrap(), 
+                FEE_TOKEN_AMOUNT.into(), 
                 array![0, 1, 1, 1, 1].span(),
                 MINT_START_TIME(),
                 array![].span()
@@ -261,7 +320,10 @@ mod blobert_internal_tests {
         contract_state
             .initialize(
                 SEEDER(),
-                DESCRIPTOR(),
+                DESCRIPTOR_REGULAR(), 
+                DESCRIPTOR_CUSTOM(), 
+                FEE_TOKEN_ADDRESS.try_into().unwrap(), 
+                FEE_TOKEN_AMOUNT.into(), 
                 array![1, 0, 1, 1, 1].span(),
                 MINT_START_TIME(),
                 array![].span()
@@ -276,7 +338,10 @@ mod blobert_internal_tests {
         contract_state
             .initialize(
                 SEEDER(),
-                DESCRIPTOR(),
+                DESCRIPTOR_REGULAR(), 
+                DESCRIPTOR_CUSTOM(), 
+                FEE_TOKEN_ADDRESS.try_into().unwrap(), 
+                FEE_TOKEN_AMOUNT.into(), 
                 array![1, 1, 0, 1, 1].span(),
                 MINT_START_TIME(),
                 array![].span()
@@ -291,7 +356,10 @@ mod blobert_internal_tests {
         contract_state
             .initialize(
                 SEEDER(),
-                DESCRIPTOR(),
+                DESCRIPTOR_REGULAR(), 
+                DESCRIPTOR_CUSTOM(), 
+                FEE_TOKEN_ADDRESS.try_into().unwrap(), 
+                FEE_TOKEN_AMOUNT.into(), 
                 array![1, 1, 1, 0, 1].span(),
                 MINT_START_TIME(),
                 array![].span()
@@ -306,7 +374,10 @@ mod blobert_internal_tests {
         contract_state
             .initialize(
                 SEEDER(),
-                DESCRIPTOR(),
+                DESCRIPTOR_REGULAR(), 
+                DESCRIPTOR_CUSTOM(), 
+                FEE_TOKEN_ADDRESS.try_into().unwrap(), 
+                FEE_TOKEN_AMOUNT.into(), 
                 array![1, 1, 1, 1, 0].span(),
                 MINT_START_TIME(),
                 array![].span()
@@ -344,7 +415,7 @@ mod blobert_internal_tests {
                     );
                     assert(
                         contract_state
-                            .custom_nft_to_supply_count
+                            .custom_image_counts
                             .read(
                                 recipient_token_id.try_into().unwrap()
                             ) == (recipient_index.try_into().unwrap() + 1),
@@ -391,7 +462,7 @@ mod blobert_internal_tests {
                     );
                     assert(
                         contract_state
-                            .custom_nft_to_supply_count
+                            .custom_image_counts
                             .read(
                                 recipient_token_id.try_into().unwrap()
                             ) == (recipient_index.try_into().unwrap() + 1 - 4),
@@ -423,7 +494,7 @@ mod blobert_internal_tests {
                     );
                     assert(
                         contract_state
-                            .custom_nft_to_supply_count
+                            .custom_image_counts
                             .read(
                                 recipient_token_id.try_into().unwrap()
                             ) == (recipient_index.try_into().unwrap() + 1 + 46),
@@ -458,25 +529,29 @@ mod blobert_internal_tests {
 
         // deploy fee token 
         let fee_token = deploy_fee_token(
-            deploy_at: Blobert::FEE_TOKEN_ADDRESS.try_into().unwrap(),
-            supply: Blobert::FEE_TOKEN_AMOUNT.into(),
+            deploy_at: FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            supply: FEE_TOKEN_AMOUNT.into(),
             supply_recipient: minter
         );
 
         // ensure that the fee token address was successfully mocked
         assert(
-            fee_token.contract_address == Blobert::FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            fee_token.contract_address == FEE_TOKEN_ADDRESS.try_into().unwrap(),
             'wrong fee token address'
         );
         let minter_initial_balance = fee_token.balance_of(minter);
 
         // minter approves x $lords to be spent by blobert nft
         start_prank(CheatTarget::One(fee_token.contract_address), minter);
-        fee_token.approve(snforge_std::test_address(), Blobert::FEE_TOKEN_AMOUNT.into());
+        fee_token.approve(snforge_std::test_address(), FEE_TOKEN_AMOUNT.into());
         stop_prank(CheatTarget::One(fee_token.contract_address));
 
-        // call blobert internal mint
         let mut contract_state = Blobert::contract_state_for_testing();
+        // set fee token and amount
+        contract_state.fee_token_address.write(FEE_TOKEN_ADDRESS.try_into().unwrap());
+        contract_state.fee_token_amount.write(FEE_TOKEN_AMOUNT.into());        
+
+        // call blobert internal mint
         let token_id = 1;
         contract_state
             .mint_token(token_id, caller: minter, recipient: minter_recipient, collect_fee: true);
@@ -490,7 +565,7 @@ mod blobert_internal_tests {
         // ensure minter has accurate balance
         assert(
             fee_token.balance_of(minter) == minter_initial_balance
-                - Blobert::FEE_TOKEN_AMOUNT.into(),
+                - FEE_TOKEN_AMOUNT.into(),
             'wrong minter erc20 balance'
         );
 
@@ -499,7 +574,7 @@ mod blobert_internal_tests {
             fee_token
                 .balance_of(
                     Blobert::FEE_RECIPIENT_ADDRESS.try_into().unwrap()
-                ) == Blobert::FEE_TOKEN_AMOUNT
+                ) == FEE_TOKEN_AMOUNT
                 .into(),
             'wrong minter balance'
         );
@@ -516,16 +591,22 @@ mod blobert_internal_tests {
     fn test_mint_token_collect_fee_insuffifient_balance() {
         let minter = MINTER();
         let minter_recipient = MINTER_RECIPIENT();
+        
 
         // deploy fee token 
         let _ = deploy_fee_token(
-            deploy_at: Blobert::FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            deploy_at: FEE_TOKEN_ADDRESS.try_into().unwrap(),
             supply: 0, // mint nothing
             supply_recipient: minter
         );
 
-        // call blobert internal mint
         let mut contract_state = Blobert::contract_state_for_testing();
+        // set fee token and amount
+        contract_state.fee_token_address.write(FEE_TOKEN_ADDRESS.try_into().unwrap());
+        contract_state.fee_token_amount.write(FEE_TOKEN_AMOUNT.into());
+
+
+        // call blobert internal mint
         contract_state
             .mint_token(
                 token_id: 1, caller: minter, recipient: minter_recipient, collect_fee: true
@@ -541,13 +622,17 @@ mod blobert_internal_tests {
 
         // deploy fee token 
         let _ = deploy_fee_token(
-            deploy_at: Blobert::FEE_TOKEN_ADDRESS.try_into().unwrap(),
-            supply: Blobert::FEE_TOKEN_AMOUNT.into(),
+            deploy_at: FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            supply: FEE_TOKEN_AMOUNT.into(),
             supply_recipient: minter
         );
 
-        // call blobert internal mint
         let mut contract_state = Blobert::contract_state_for_testing();
+        // set fee token and amount
+        contract_state.fee_token_address.write(FEE_TOKEN_ADDRESS.try_into().unwrap());
+        contract_state.fee_token_amount.write(FEE_TOKEN_AMOUNT.into());
+
+        // call blobert internal mint
         contract_state
             .mint_token(
                 token_id: 1, caller: minter, recipient: minter_recipient, collect_fee: true
@@ -678,9 +763,9 @@ mod blobert_internal_tests {
 
         // deploy and set seeder and descriptor contracts
         let seeder = deploy_seeder();
-        let descriptor = deploy_descriptor();
+        let descriptor_regular = deploy_descriptor_regular();
         contract_state.regular_nft_seeder.write(seeder);
-        contract_state.descriptor.write(descriptor);
+        contract_state.descriptor_regular.write(descriptor_regular);
 
         let token_id = 1;
         contract_state.set_regular_image(token_id);
@@ -713,16 +798,16 @@ mod blobert_internal_tests {
 
         // deploy and set seeder and descriptor contracts
         let seeder = deploy_seeder();
-        let descriptor = deploy_descriptor();
+        let descriptor_regular = deploy_descriptor_regular();
         contract_state.regular_nft_seeder.write(seeder);
-        contract_state.descriptor.write(descriptor);
+        contract_state.descriptor_regular.write(descriptor_regular);
 
         let token_id = 1;
 
         // make first seed exist
         let first_seed_salt = 0;
         let first_seed = seeder
-            .generate_seed(token_id, descriptor.contract_address, first_seed_salt);
+            .generate_seed(token_id, descriptor_regular.contract_address, first_seed_salt);
         let first_seed_hash: felt252 = PoseidonTrait::new().update_with(first_seed).finalize();
         contract_state.regular_nft_exists.write(first_seed_hash, true);
 
@@ -732,7 +817,7 @@ mod blobert_internal_tests {
         let second_seed = contract_state.regular_nft_seeds.read(token_id);
         let second_seed_salt = first_seed_salt + 1;
         let expected_second_seed = seeder
-            .generate_seed(token_id, descriptor.contract_address, second_seed_salt);
+            .generate_seed(token_id, descriptor_regular.contract_address, second_seed_salt);
 
         assert!(second_seed == expected_second_seed, "wrong second seed");
     }
@@ -750,7 +835,7 @@ mod blobert_internal_tests {
         contract_state.set_custom_image(1);
 
         assert!(
-            contract_state.custom_nft_to_supply_count.read(1) == 1,
+            contract_state.custom_image_counts.read(1) == 1,
             "wrong token count map value (1)"
         );
 
@@ -761,11 +846,11 @@ mod blobert_internal_tests {
         contract_state.set_custom_image(3);
 
         assert!(
-            contract_state.custom_nft_to_supply_count.read(2) == 2,
+            contract_state.custom_image_counts.read(2) == 2,
             "wrong token count map value (2)"
         );
         assert!(
-            contract_state.custom_nft_to_supply_count.read(3) == 3,
+            contract_state.custom_image_counts.read(3) == 3,
             "wrong token count map value (3)"
         );
 
@@ -970,25 +1055,43 @@ mod blobert_internal_tests {
     ////////////////////////////////////////////////////
 
     #[test]
-    fn test_set_descriptor() {
+    fn test_set_descriptor_regular() {
         let mut contract_state = Blobert::contract_state_for_testing();
-        contract_state.set_descriptor(contract_address_const::<'descriptor'>())
+        let addr = contract_address_const::<'descriptor_regular'>();
+        contract_state.set_descriptor_regular(addr);
+        assert(contract_state.descriptor_regular.read().contract_address ==  addr, 'wrong descriptor reg');
     }
 
     #[test]
     #[should_panic(expected: ('Blobert: zero addr descriptor',))]
-    fn test_set_descriptor_zero() {
+    fn test_set_descriptor_regular_zero() {
         let mut contract_state = Blobert::contract_state_for_testing();
-        contract_state.set_descriptor(Zeroable::zero())
+        contract_state.set_descriptor_regular(Zeroable::zero())
+    }
+
+    #[test]
+    fn test_set_descriptor_custom() {
+        let mut contract_state = Blobert::contract_state_for_testing();
+        let addr = contract_address_const::<'descriptor_custom'>();
+        contract_state.set_descriptor_custom(addr);
+        assert(contract_state.descriptor_custom.read().contract_address ==  addr, 'wrong descriptor custom');
+    }
+
+    #[test]
+    #[should_panic(expected: ('Blobert: zero addr descriptor',))]
+    fn test_set_descriptor_custom_zero() {
+        let mut contract_state = Blobert::contract_state_for_testing();
+        contract_state.set_descriptor_custom(Zeroable::zero())
     }
 }
 
 
 #[cfg(test)]
 mod blobert_write_endpoint_tests {
-    use blob::blobert::Blobert::__member_module_custom_nft_to_supply_count::InternalContractMemberStateTrait as _F;
+    use blob::blobert::Blobert::__member_module_custom_image_counts::InternalContractMemberStateTrait as _F;
 
-    use blob::blobert::Blobert::__member_module_descriptor::InternalContractMemberStateTrait;
+    use blob::blobert::Blobert::__member_module_descriptor_regular::InternalContractMemberStateTrait;
+    use blob::blobert::Blobert::__member_module_descriptor_custom::InternalContractMemberStateTrait as _OO;
     use blob::blobert::Blobert::__member_module_num_regular_mints::InternalContractMemberStateTrait as _H;
     use blob::blobert::Blobert::__member_module_num_whitelist_mints::InternalContractMemberStateTrait as _D;
     use blob::blobert::Blobert::__member_module_regular_nft_seeds::InternalContractMemberStateTrait as _G;
@@ -998,12 +1101,13 @@ mod blobert_write_endpoint_tests {
 
     use blob::blobert::Blobert;
     use blob::blobert::IBlobert;
-    use blob::descriptor::IDescriptorDispatcherTrait;
+    use blob::descriptor::descriptor_regular::IDescriptorRegularDispatcherTrait;
+    use blob::descriptor::descriptor_custom::IDescriptorCustomDispatcherTrait;
     use blob::seeder::ISeederDispatcherTrait;
     use blob::tests::unit_tests::utils::{
-        ERC721_NAME, ERC721_SYMBOL, OWNER, MINTER, MINTER_RECIPIENT, SEEDER, DESCRIPTOR,
-        MERKLE_ROOTS, MINT_START_TIME, _50_ONE_OF_ONE_RECIPIENTS, deploy_fee_token, deploy_seeder,
-        deploy_descriptor, create_merkle_tree
+        ERC721_NAME, ERC721_SYMBOL, OWNER, MINTER, MINTER_RECIPIENT, SEEDER, DESCRIPTOR_REGULAR, DESCRIPTOR_CUSTOM,
+        MERKLE_ROOTS, MINT_START_TIME, _50_ONE_OF_ONE_RECIPIENTS, FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT, deploy_fee_token, deploy_seeder,
+        deploy_descriptor_regular, deploy_descriptor_custom ,  create_merkle_tree
     };
     use blob::types::erc721::WhitelistTier;
     use core::array::ArrayTrait;
@@ -1033,7 +1137,10 @@ mod blobert_write_endpoint_tests {
             ERC721_SYMBOL(),
             OWNER(),
             SEEDER(),
-            DESCRIPTOR(),
+            DESCRIPTOR_REGULAR(),
+            DESCRIPTOR_CUSTOM(),
+            FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            FEE_TOKEN_AMOUNT.into(),
             MERKLE_ROOTS(),
             MINT_START_TIME(),
             array![].span()
@@ -1087,8 +1194,8 @@ mod blobert_write_endpoint_tests {
 
         // deploy fee token 
         let fee_token = deploy_fee_token(
-            deploy_at: Blobert::FEE_TOKEN_ADDRESS.try_into().unwrap(),
-            supply: Blobert::FEE_TOKEN_AMOUNT.into(),
+            deploy_at: FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            supply: FEE_TOKEN_AMOUNT.into(),
             supply_recipient: minter
         );
 
@@ -1096,7 +1203,7 @@ mod blobert_write_endpoint_tests {
 
         // minter approves x $lords to be spent by blobert nft
         start_prank(CheatTarget::One(fee_token.contract_address), minter);
-        fee_token.approve(snforge_std::test_address(), Blobert::FEE_TOKEN_AMOUNT.into());
+        fee_token.approve(snforge_std::test_address(), FEE_TOKEN_AMOUNT.into());
         stop_prank(CheatTarget::One(fee_token.contract_address));
 
         // mock transaction hash so it isnt 0
@@ -1107,7 +1214,7 @@ mod blobert_write_endpoint_tests {
         // set current time to regular mint time
         let mint_start_time = MINT_START_TIME();
         start_warp(CheatTarget::One(starknet::get_contract_address()), mint_start_time.regular);
-
+        
         // call minter calls blobert mint
         start_prank(CheatTarget::One(starknet::get_contract_address()), minter);
         let token_id = contract_state.mint(minter_recipient);
@@ -1130,7 +1237,7 @@ mod blobert_write_endpoint_tests {
         // ensure minter has accurate balance
         assert(
             fee_token.balance_of(minter) == minter_initial_balance
-                - Blobert::FEE_TOKEN_AMOUNT.into(),
+                - FEE_TOKEN_AMOUNT.into(),
             'wrong minter erc20 balance'
         );
 
@@ -1139,7 +1246,7 @@ mod blobert_write_endpoint_tests {
             fee_token
                 .balance_of(
                     Blobert::FEE_RECIPIENT_ADDRESS.try_into().unwrap()
-                ) == Blobert::FEE_TOKEN_AMOUNT
+                ) == FEE_TOKEN_AMOUNT
                 .into(),
             'wrong minter balance'
         );
@@ -1176,14 +1283,14 @@ mod blobert_write_endpoint_tests {
 
         // deploy fee token 
         let fee_token = deploy_fee_token(
-            deploy_at: Blobert::FEE_TOKEN_ADDRESS.try_into().unwrap(),
-            supply: Blobert::FEE_TOKEN_AMOUNT.into(),
+            deploy_at: FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            supply: FEE_TOKEN_AMOUNT.into(),
             supply_recipient: minter
         );
 
         // minter approves x $lords to be spent by blobert nft
         start_prank(CheatTarget::One(fee_token.contract_address), minter);
-        fee_token.approve(snforge_std::test_address(), Blobert::FEE_TOKEN_AMOUNT.into());
+        fee_token.approve(snforge_std::test_address(), FEE_TOKEN_AMOUNT.into());
         stop_prank(CheatTarget::One(fee_token.contract_address));
 
         // mock transaction hash so it isnt 0
@@ -1213,14 +1320,14 @@ mod blobert_write_endpoint_tests {
 
         // deploy fee token 
         let fee_token = deploy_fee_token(
-            deploy_at: Blobert::FEE_TOKEN_ADDRESS.try_into().unwrap(),
-            supply: Blobert::FEE_TOKEN_AMOUNT.into(),
+            deploy_at: FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            supply: FEE_TOKEN_AMOUNT.into(),
             supply_recipient: minter
         );
 
         // minter approves x $lords to be spent by blobert nft
         start_prank(CheatTarget::One(fee_token.contract_address), minter);
-        fee_token.approve(snforge_std::test_address(), Blobert::FEE_TOKEN_AMOUNT.into());
+        fee_token.approve(snforge_std::test_address(), FEE_TOKEN_AMOUNT.into());
         stop_prank(CheatTarget::One(fee_token.contract_address));
 
         // mock transaction hash so it isnt 0
@@ -1249,14 +1356,14 @@ mod blobert_write_endpoint_tests {
 
         // deploy fee token 
         let fee_token = deploy_fee_token(
-            deploy_at: Blobert::FEE_TOKEN_ADDRESS.try_into().unwrap(),
-            supply: Blobert::FEE_TOKEN_AMOUNT.into() * 3,
+            deploy_at: FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            supply: FEE_TOKEN_AMOUNT.into() * 3,
             supply_recipient: minter
         );
 
         // minter approves x $lords to be spent by blobert nft
         start_prank(CheatTarget::One(fee_token.contract_address), minter);
-        fee_token.approve(snforge_std::test_address(), Blobert::FEE_TOKEN_AMOUNT.into() * 3);
+        fee_token.approve(snforge_std::test_address(), FEE_TOKEN_AMOUNT.into() * 3);
         stop_prank(CheatTarget::One(fee_token.contract_address));
 
         // mock transaction hash so it isnt 0
@@ -1292,8 +1399,8 @@ mod blobert_write_endpoint_tests {
 
         // deploy fee token 
         let fee_token = deploy_fee_token(
-            deploy_at: Blobert::FEE_TOKEN_ADDRESS.try_into().unwrap(),
-            supply: Blobert::FEE_TOKEN_AMOUNT.into(),
+            deploy_at: FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            supply: FEE_TOKEN_AMOUNT.into(),
             supply_recipient: minter
         );
 
@@ -1301,7 +1408,7 @@ mod blobert_write_endpoint_tests {
 
         // minter approves x $lords to be spent by blobert nft
         start_prank(CheatTarget::One(fee_token.contract_address), minter);
-        fee_token.approve(snforge_std::test_address(), Blobert::FEE_TOKEN_AMOUNT.into());
+        fee_token.approve(snforge_std::test_address(), FEE_TOKEN_AMOUNT.into());
         stop_prank(CheatTarget::One(fee_token.contract_address));
 
         // 104848548726390 timestamp  with tx hash of 1234
@@ -1333,7 +1440,7 @@ mod blobert_write_endpoint_tests {
         // ensure minter has accurate balance
         assert(
             fee_token.balance_of(minter) == minter_initial_balance
-                - Blobert::FEE_TOKEN_AMOUNT.into(),
+                - FEE_TOKEN_AMOUNT.into(),
             'wrong minter erc20 balance'
         );
 
@@ -1342,7 +1449,7 @@ mod blobert_write_endpoint_tests {
             fee_token
                 .balance_of(
                     Blobert::FEE_RECIPIENT_ADDRESS.try_into().unwrap()
-                ) == Blobert::FEE_TOKEN_AMOUNT
+                ) == FEE_TOKEN_AMOUNT
                 .into(),
             'wrong minter balance'
         );
@@ -1359,7 +1466,7 @@ mod blobert_write_endpoint_tests {
 
         // ensure custom image index was set 
         let image_index = contract_state
-            .custom_nft_to_supply_count
+            .custom_image_counts
             .read(token_id.try_into().unwrap())
             - 1;
         assert(image_index == 0, 'wrong image index');
@@ -1389,7 +1496,10 @@ mod blobert_write_endpoint_tests {
             ERC721_SYMBOL(),
             OWNER(),
             SEEDER(),
-            DESCRIPTOR(),
+            DESCRIPTOR_REGULAR(),
+            DESCRIPTOR_CUSTOM(),
+            FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            FEE_TOKEN_AMOUNT.into(),
             merkle_roots,
             MINT_START_TIME(),
             array![].span()
@@ -1488,7 +1598,10 @@ mod blobert_write_endpoint_tests {
             ERC721_SYMBOL(),
             OWNER(),
             SEEDER(),
-            DESCRIPTOR(),
+            DESCRIPTOR_REGULAR(),
+            DESCRIPTOR_CUSTOM(),
+            FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            FEE_TOKEN_AMOUNT.into(),
             merkle_roots,
             MINT_START_TIME(),
             array![].span()
@@ -1532,7 +1645,10 @@ mod blobert_write_endpoint_tests {
             ERC721_SYMBOL(),
             OWNER(),
             SEEDER(),
-            DESCRIPTOR(),
+            DESCRIPTOR_REGULAR(),
+            DESCRIPTOR_CUSTOM(),
+            FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            FEE_TOKEN_AMOUNT.into(),
             merkle_roots,
             MINT_START_TIME(),
             array![].span()
@@ -1554,17 +1670,18 @@ mod blobert_write_endpoint_tests {
     ////////////////////////////////////////////////////
 
     #[test]
-    // #[should_panic(expected: ('Blobert: not in merkletree',))]
-    fn test_update_descriptor() {
+    fn test_update_descriptor_regular() {
         let mut contract_state = call_constructor();
 
         // owner changes the descriptor
         start_prank(CheatTarget::One(starknet::get_contract_address()), OWNER());
-        contract_state.owner_change_descriptor(contract_address_const::<'new_descriptor'>());
+        contract_state.owner_change_descriptor_regular(
+            contract_address_const::<'new_descriptor'>()
+        );
 
         assert(
             contract_state
-                .descriptor
+                .descriptor_regular
                 .read()
                 .contract_address == contract_address_const::<'new_descriptor'>(),
             'wrong descriptor'
@@ -1573,7 +1690,7 @@ mod blobert_write_endpoint_tests {
 
     #[test]
     #[should_panic(expected: ('Caller is not the owner',))]
-    fn test_update_descriptor__caller_not_owner() {
+    fn test_update_descriptor_regular__caller_not_owner() {
         let mut contract_state = call_constructor();
 
         // unknown address changes the descriptor
@@ -1581,15 +1698,54 @@ mod blobert_write_endpoint_tests {
             CheatTarget::One(starknet::get_contract_address()),
             contract_address_const::<'unknown_caller'>()
         );
-        contract_state.owner_change_descriptor(contract_address_const::<'new_descriptor'>());
+        contract_state.owner_change_descriptor_regular(
+            contract_address_const::<'new_descriptor'>()
+        );
+    }
+
+
+    #[test]
+    fn test_update_descriptor_custom() {
+        let mut contract_state = call_constructor();
+
+        // owner changes the descriptor
+        start_prank(CheatTarget::One(starknet::get_contract_address()), OWNER());
+        contract_state.owner_change_descriptor_custom(
+            contract_address_const::<'new_descriptor'>()
+        );
+
+        assert(
+            contract_state
+                .descriptor_custom
+                .read()
+                .contract_address == contract_address_const::<'new_descriptor'>(),
+            'wrong descriptor'
+        );
+    }
+
+    #[test]
+    #[should_panic(expected: ('Caller is not the owner',))]
+    fn test_update_descriptor_custom__caller_not_owner() {
+        let mut contract_state = call_constructor();
+
+        // unknown address changes the descriptor
+        start_prank(
+            CheatTarget::One(starknet::get_contract_address()),
+            contract_address_const::<'unknown_caller'>()
+        );
+        contract_state.owner_change_descriptor_custom(
+            contract_address_const::<'new_descriptor'>()
+        );
     }
 }
 
 
 #[cfg(test)]
 mod blobert_read_endpoint_tests {
-    use blob::blobert::Blobert::__member_module_custom_nft_to_supply_count::InternalContractMemberStateTrait as _F;
-    use blob::blobert::Blobert::__member_module_descriptor::InternalContractMemberStateTrait as _P;
+    use openzeppelin::token::erc721::erc721::ERC721Component::InternalTrait;
+use blob::blobert::Blobert::__member_module_custom_image_counts::InternalContractMemberStateTrait as _F;
+    use blob::blobert::Blobert::__member_module_descriptor_regular::InternalContractMemberStateTrait as _P;
+    use blob::blobert::Blobert::__member_module_descriptor_custom::InternalContractMemberStateTrait as __P;
     use blob::blobert::Blobert::__member_module_mint_start_time::InternalContractMemberStateTrait as _K;
     use blob::blobert::Blobert::__member_module_regular_nft_seeder::InternalContractMemberStateTrait;
     use blob::blobert::Blobert::__member_module_regular_nft_seeds::InternalContractMemberStateTrait as _G;
@@ -1599,14 +1755,15 @@ mod blobert_read_endpoint_tests {
 
     use blob::blobert::Blobert;
     use blob::blobert::IBlobert;
-    use blob::descriptor::IDescriptorDispatcher;
-    use blob::descriptor::IDescriptorDispatcherTrait;
+    use blob::descriptor::descriptor_regular::IDescriptorRegularDispatcher;
+    use blob::descriptor::descriptor_custom::IDescriptorCustomDispatcher;
     use blob::seeder::ISeederDispatcher;
     use blob::seeder::ISeederDispatcherTrait;
     use blob::tests::unit_tests::utils::{
-        ERC721_NAME, ERC721_SYMBOL, OWNER, MINTER, MINTER_RECIPIENT, SEEDER, DESCRIPTOR,
-        MERKLE_ROOTS, MINT_START_TIME, _50_ONE_OF_ONE_RECIPIENTS, deploy_fee_token, deploy_seeder,
-        deploy_descriptor, create_merkle_tree
+        ERC721_NAME, ERC721_SYMBOL, OWNER, MINTER, MINTER_RECIPIENT, SEEDER, DESCRIPTOR_REGULAR, DESCRIPTOR_CUSTOM,
+        MERKLE_ROOTS, MINT_START_TIME, _50_ONE_OF_ONE_RECIPIENTS, FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT,
+        deploy_fee_token, deploy_seeder,
+        deploy_descriptor_regular, deploy_descriptor_custom, create_merkle_tree
     };
     use blob::types::erc721::Supply;
     use blob::types::erc721::TokenIdentifier;
@@ -1639,7 +1796,10 @@ mod blobert_read_endpoint_tests {
             ERC721_SYMBOL(),
             OWNER(),
             SEEDER(),
-            DESCRIPTOR(),
+            DESCRIPTOR_REGULAR(),
+            DESCRIPTOR_CUSTOM(),
+            FEE_TOKEN_ADDRESS.try_into().unwrap(),
+            FEE_TOKEN_AMOUNT.into(),
             MERKLE_ROOTS(),
             MINT_START_TIME(),
             _50_ONE_OF_ONE_RECIPIENTS().span()
@@ -1655,6 +1815,7 @@ mod blobert_read_endpoint_tests {
         contract_state.supply.write(supply);
         assert(contract_state.supply() == supply, 'wrong supply');
     }
+
 
     #[test]
     fn test_max_supply() {
@@ -1674,14 +1835,27 @@ mod blobert_read_endpoint_tests {
 
 
     #[test]
-    fn test_descriptor() {
+    fn test_descriptor_regular() {
         let mut contract_state = call_constructor();
-        let descriptor_dispatcher = IDescriptorDispatcher {
+        let descriptor_dispatcher = IDescriptorRegularDispatcher {
             contract_address: contract_address_const::<1337>()
         };
-        contract_state.descriptor.write(descriptor_dispatcher);
+        contract_state.descriptor_regular.write(descriptor_dispatcher);
         assert(
-            contract_state.descriptor() == descriptor_dispatcher.contract_address,
+            contract_state.descriptor_regular() == descriptor_dispatcher.contract_address,
+            'wrong descriptor'
+        );
+    }
+
+    #[test]
+    fn test_descriptor_custom() {
+        let mut contract_state = call_constructor();
+        let descriptor_dispatcher = IDescriptorCustomDispatcher {
+            contract_address: contract_address_const::<1337>()
+        };
+        contract_state.descriptor_custom.write(descriptor_dispatcher);
+        assert(
+            contract_state.descriptor_custom() == descriptor_dispatcher.contract_address,
             'wrong descriptor'
         );
     }
@@ -1698,13 +1872,15 @@ mod blobert_read_endpoint_tests {
     #[test]
     fn test_token_identifier() {
         let mut contract_state = call_constructor();
-        contract_state.custom_nft_to_supply_count.write(1337, 44);
+        contract_state.erc721._mint(contract_address_const::<'someone'>(), 1337);
+        contract_state.custom_image_counts.write(1337, 44);
         assert(
             contract_state.token_identifier(1337) == TokenIdentifier::CustomTokenIndex(44 - 1),
             'wrong first identifier'
         );
 
         let seed = Seed { background: 1, armour: 1, jewellry: 1, mask: 1, weapon: 1 };
+        contract_state.erc721._mint(contract_address_const::<'someone_else'>(), 1338);
         contract_state.regular_nft_seeds.write(1338, seed);
         assert(
             contract_state.token_identifier(1338) == TokenIdentifier::RegularTokenSeed(seed),

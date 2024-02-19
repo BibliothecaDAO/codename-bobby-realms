@@ -106,9 +106,6 @@ mod Blobert {
         50; // @todo review // ensure it matches generation::CUSTOM_IMAGE_COUNT
 
     const FEE_RECIPIENT_ADDRESS: felt252 = 0xADD;
-    const FEE_TOKEN_ADDRESS: felt252 =
-        0x0124aeb495b947201f5fac96fd1138e326ad86195b98df6dec9009158a533b49;
-    const FEE_TOKEN_AMOUNT: u128 = 100_000_000_000_000_000_000; // 100 $LORDS
 
     const MAX_REGULAR_MINT: u8 = 10; // max num of times `mint` can be called by an address
 
@@ -128,6 +125,8 @@ mod Blobert {
 
     mod Errors {
         const ZERO_OWNER: felt252 = 'Blobert: Owner is zero address';
+        const ZERO_FEE_TOKEN_ADDRESS: felt252 = 'Blobert: fee token addr is 0';
+        const ZERO_FEE_TOKEN_AMOUNT: felt252 = 'Blobert: fee token amount is 0';
         const WHITELIST_MINT_START_TIME_NOT_FUTURE: felt252 = 'Blobert: time whtlst not future';
         const REGULAR_MINT_START_TIME_BEFORE_WHITELIST_END: felt252 =
             'Blobert: time reg less whitelst';
@@ -152,7 +151,7 @@ mod Blobert {
     struct Storage {
         //
         supply: Supply,
-        custom_nft_to_supply_count: LegacyMap<u16, u8>, // map of nft id to custom image count
+        custom_image_counts: LegacyMap<u16, u8>, // map of nft id to custom image count
         //
         merkle_root_tier_1_whitelist: felt252,
         merkle_root_tier_2_whitelist: felt252,
@@ -171,6 +170,9 @@ mod Blobert {
         descriptor_regular: IDescriptorRegularDispatcher,
         //
         mint_start_time: MintStartTime,
+        //
+        fee_token_address: ContractAddress,
+        fee_token_amount: u256,
         //
         multicall_tracker: LegacyMap<ContractAddress, felt252>,
         #[substorage(v0)]
@@ -202,6 +204,8 @@ mod Blobert {
         regular_nft_seeder: ContractAddress,
         descriptor_regular: ContractAddress,
         descriptor_custom: ContractAddress,
+        fee_token_address: ContractAddress,
+        fee_token_amount: u256,
         merkle_roots: Span<felt252>,
         mint_start_time: MintStartTime,
         initial_custom_nft_recipients: Span<ContractAddress>
@@ -219,6 +223,8 @@ mod Blobert {
                 :regular_nft_seeder,
                 :descriptor_regular,
                 :descriptor_custom,
+                :fee_token_address,
+                :fee_token_amount,
                 :merkle_roots,
                 :mint_start_time,
                 :initial_custom_nft_recipients
@@ -240,7 +246,7 @@ mod Blobert {
             assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
 
             let custom_token_number = self
-                .custom_nft_to_supply_count
+                .custom_image_counts
                 .read(token_id.try_into().unwrap());
             if custom_token_number != 0 {
                 let descriptor = self.descriptor_custom.read();
@@ -280,7 +286,7 @@ mod Blobert {
             assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
 
             let custom_token_number = self
-                .custom_nft_to_supply_count
+                .custom_image_counts
                 .read(token_id.try_into().unwrap());
             if custom_token_number != 0 {
                 let image_index = custom_token_number - 1;
@@ -296,7 +302,7 @@ mod Blobert {
 
             //todo ensure it only works for minted tokens
             let custom_token_number = self
-                .custom_nft_to_supply_count
+                .custom_image_counts
                 .read(token_id.try_into().unwrap());
             if custom_token_number != 0 {
                 let image_index = custom_token_number - 1;
@@ -428,6 +434,8 @@ mod Blobert {
             regular_nft_seeder: ContractAddress,
             descriptor_regular: ContractAddress,
             descriptor_custom: ContractAddress,
+            fee_token_address: ContractAddress,
+            fee_token_amount: u256,
             merkle_roots: Span<felt252>,
             mint_start_time: MintStartTime,
             initial_custom_nft_recipients: Span<ContractAddress>
@@ -475,10 +483,18 @@ mod Blobert {
             assert(merkle_root_tier_5 != 0, Errors::ZERO_MERKLE_ROOT);
             self.merkle_root_tier_5_whitelist.write(merkle_root_tier_5);
 
+            assert(fee_token_address != Zeroable::zero(), Errors::ZERO_FEE_TOKEN_ADDRESS);
+            assert(fee_token_amount != 0, Errors::ZERO_FEE_TOKEN_AMOUNT);
+            self.fee_token_address.write(fee_token_address);
+            self.fee_token_amount.write(fee_token_amount);
+
+
             self.set_regular_nft_seeder(regular_nft_seeder);
             self.set_descriptor_regular(descriptor_regular);
             self.set_descriptor_custom(descriptor_custom);
         }
+
+
 
         fn assign_custom(ref self: ContractState, mut recipients: Span<ContractAddress>) {
             let mut supply: Supply = self.supply.read();
@@ -503,7 +519,7 @@ mod Blobert {
                         self.mint_token(:token_id, :caller, :recipient, collect_fee: false);
 
                         // set custom token image
-                        self.custom_nft_to_supply_count.write(token_id, supply.custom_nft + count);
+                        self.custom_image_counts.write(token_id, supply.custom_nft + count);
 
                         count += 1;
                     },
@@ -559,22 +575,23 @@ mod Blobert {
             // collect fees from caller if necessary
             if collect_fee {
                 let fee_token = IERC20Dispatcher {
-                    contract_address: FEE_TOKEN_ADDRESS.try_into().unwrap()
+                    contract_address: self.fee_token_address.read()
                 };
+                let fee_amount = self.fee_token_amount.read();
                 assert(
-                    fee_token.balance_of(caller) >= FEE_TOKEN_AMOUNT.into(),
+                    fee_token.balance_of(caller) >= fee_amount,
                     Errors::INSUFFICIENT_FUND
                 );
                 assert(
                     fee_token
-                        .allowance(caller, starknet::get_contract_address()) >= FEE_TOKEN_AMOUNT
+                        .allowance(caller, starknet::get_contract_address()) >= fee_amount
                         .into(),
                     Errors::INSUFFICIENT_APPROVAL
                 );
 
                 fee_token
                     .transfer_from(
-                        caller, FEE_RECIPIENT_ADDRESS.try_into().unwrap(), FEE_TOKEN_AMOUNT.into()
+                        caller, FEE_RECIPIENT_ADDRESS.try_into().unwrap(), fee_amount
                     );
             }
         }
@@ -608,13 +625,13 @@ mod Blobert {
 
             // set the token's seed
             let regular_nft_seeder = self.regular_nft_seeder.read();
-            let descriptor = self.descriptor_regular.read();
+            let descriptor_regular = self.descriptor_regular.read();
 
             // ensure that seed is unique by using a salt
             let mut salt = 0;
             loop {
                 let seed: Seed = regular_nft_seeder
-                    .generate_seed(token_id, descriptor.contract_address, salt);
+                    .generate_seed(token_id, descriptor_regular.contract_address, salt);
 
                 // ensure that seed is unique by comparing the seed's hash
                 // with the hashes of regular_nft_seeds of minted tokens
@@ -638,7 +655,7 @@ mod Blobert {
 
             assert(supply.custom_nft < MAX_CUSTOM_SUPPLY, Errors::MAX_SUPPLY_EXCEEDED);
 
-            self.custom_nft_to_supply_count.write(token_id, supply.custom_nft + 1);
+            self.custom_image_counts.write(token_id, supply.custom_nft + 1);
             supply.custom_nft += 1;
             self.supply.write(supply);
         }
@@ -694,7 +711,6 @@ mod Blobert {
                 .regular_nft_seeder
                 .write(ISeederDispatcher { contract_address: regular_nft_seeder });
         }
-
 
         fn set_descriptor_regular(ref self: ContractState, descriptor: ContractAddress) {
             assert(descriptor != Zeroable::zero(), Errors::ZERO_ADDRESS_DESCRIPTOR);

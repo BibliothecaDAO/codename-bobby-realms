@@ -1,103 +1,101 @@
-[31m   ____          _         [39m
-[31m  |    \ ___ ___| |___ _ _ [39m
-[31m  |  |  | -_| . | | . | | |[39m
-[31m  |____/|___|  _|_|___|_  |[39m
-[31m            |_|       |___|[39m
-[35m
+   ____          _         
+  |    \ ___ ___| |___ _ _ 
+  |  |  | -_| . | | . | | |
+  |____/|___|  _|_|___|_  |
+            |_|       |___|
+
 Declaring Seeder...
 
-[39m
-[35m- Class Hash: [39m 0x1bc54e32ded96748564639eac2591d6da79a3801ac3b0eb95081fa5416fe75c
-[35m- Tx Hash: [39m Already declared
-[32m
+
+- Class Hash:  0x1bc54e32ded96748564639eac2591d6da79a3801ac3b0eb95081fa5416fe75c
+- Tx Hash:  Already declared
+
 Deploying Seeder ... 
 
-[39m
-[32mTx hash: [39m https://sepolia.voyager.online/tx/0x2852fda4ad80c12552297e65d8c5f3d6ab2fb38a05cbd561abf309e75924375)
-[32mContract Address: [39m 0x41131aac04aad69cf0445b6c6f7c18b2dbdc880208b7cddbe4ff8bf27779645 
+
+Tx hash:  https://sepolia.voyager.online/tx/0x34c86150bc15154c37fd6887c2080a58ac89435a7cba44109774508013580f)
+Contract Address:  0x4f2e0d1b8ca0c6d57e39595b60f95d170ecb918e6e1cb03a803b9d67e560637 
 
 
-[35m
+
 Declaring DescriptorRegular...
 
-[39m
-[35m- Class Hash: [39m 0x24c2348d09ee12562716263a27d8749b448f2c5f0bf46331541f39c16dada0b
-[35m- Tx Hash: [39m Already declared
-[32m
+
+- Class Hash:  0x24c2348d09ee12562716263a27d8749b448f2c5f0bf46331541f39c16dada0b
+- Tx Hash:  Already declared
+
 Deploying DescriptorRegular ... 
 
-[39m
-[32mTx hash: [39m https://sepolia.voyager.online/tx/0x24b344814579d6c8436661a0b8b2ae659c6dbe130797cf5966dd277db1158f4)
-[32mContract Address: [39m 0x111b80c90f8c7c3b6a012b0af41b753897593d44eb729b2a05dde4006b03cc6 
+
+Tx hash:  https://sepolia.voyager.online/tx/0x2c7645a119ec34140fdaffe3a8a265de5cf6658a322ebcb583f8faef5370159)
+Contract Address:  0x2ead7d1f4c9dcfec05d989ce5b588cff26099bd2055fce7fe2f527839813224 
 
 
-[35m
+
 Declaring DescriptorCustomData1...
 
-[39m
-[35m- Class Hash: [39m 0x3f48d9041e4e4dd54c0264338e471ff128c6c390e89cc346d795f876089c841
-[35m- Tx Hash: [39m Already declared
-[32m
+
+- Class Hash:  0x3f48d9041e4e4dd54c0264338e471ff128c6c390e89cc346d795f876089c841
+- Tx Hash:  Already declared
+
 Deploying DescriptorCustomData1 ... 
 
-[39m
-[32mTx hash: [39m https://sepolia.voyager.online/tx/0x326d418ce09e2701245d28a68b3ae2ad363acb9711f9d34146608de8e8ecec7)
-[32mContract Address: [39m 0x765fdd3d4722a8bda77bbe2e6dc1a6d6706dffabcb915fe12a5a70442aaa392 
+
+Tx hash:  https://sepolia.voyager.online/tx/0x1bff258b16a796670265d7de1d20da307d91c16b07c14b8a9792a79efb761ee)
+Contract Address:  0x398c55f0979b085766122e7e16f23a6bcb062a398138d2bbba63cd1e3aea24c 
 
 
-[35m
+
 Declaring DescriptorCustomData2...
 
-[39m
-[35m- Class Hash: [39m 0x1819a5e0ac3ae8d920a2038fe922cf7cc29e797621dec69b0bee501c3a9c981
-[35m- Tx Hash: [39m Already declared
-[32m
+
+- Class Hash:  0x1819a5e0ac3ae8d920a2038fe922cf7cc29e797621dec69b0bee501c3a9c981
+- Tx Hash:  Already declared
+
 Deploying DescriptorCustomData2 ... 
 
-[39m
-[32mTx hash: [39m https://sepolia.voyager.online/tx/0x202242fec83c283d4441465cc5dc3c38c89e42ba7f62af5d725a64984414ddd)
-[32mContract Address: [39m 0x5990ea898dcd835ba9e7fdc929f5dd0b5af3a3b7f798e0ee6f03228843ed700 
+
+Tx hash:  https://sepolia.voyager.online/tx/0x53c131ae0ec567f1aa659b3c4c66d51619a5c546c3e3d1d9ea048073b553e9f)
+Contract Address:  0x57eb24425448042586f177a285c35d03b3c2e8b7c900542bedd2b6c71b365c 
 
 
-[35m
+
 Declaring DescriptorCustomData3...
 
-[39m
-[35m- Class Hash: [39m 0x9325698c4f39067f8d7e60804e0eb8fe1600a45a8b41b45617165f1c03801c
-[35m- Tx Hash: [39m Already declared
-[32m
+
+- Class Hash:  0x9325698c4f39067f8d7e60804e0eb8fe1600a45a8b41b45617165f1c03801c
+- Tx Hash:  Already declared
+
 Deploying DescriptorCustomData3 ... 
 
-[39m
-[32mTx hash: [39m https://sepolia.voyager.online/tx/0x7f05fd26ece32f54c6cd07b7057e5c0b9aa0d7761add33b98e04cc678dac484)
-[32mContract Address: [39m 0x4e431e4f85ba9a158b4bc8cd6837170a7d957eb46776d0bd407639c6bd833b4 
+
+Tx hash:  https://sepolia.voyager.online/tx/0xa0c04d2557995d6192aa18a369d7383ae3eea28c3fdf963fc7aba56e0909c8)
+Contract Address:  0x4c5c9988acf63c572231f6f1692c161e1729dfa6e6675c4e96b79e6ec52f740 
 
 
-[35m
+
 Declaring DescriptorCustom...
 
-[39m
-[35m- Class Hash: [39m 0x33d75c641f0d73a0f100cbca1483e08a17e6d5c5eb2729ed1a7e0309ec7c076
-[35m- Tx Hash: [39m Already declared
-[32m
+
+- Class Hash:  0x33d75c641f0d73a0f100cbca1483e08a17e6d5c5eb2729ed1a7e0309ec7c076
+- Tx Hash:  Already declared
+
 Deploying DescriptorCustom ... 
 
-[39m
-[32mTx hash: [39m https://sepolia.voyager.online/tx/0x5d09be9e2e392b3cde116c0a5672135276051b40009b703a94644c82ef23c74)
-[32mContract Address: [39m 0x2a2c4a711c4e97d31919c91b443d1d710d0972643b302cbd25598996e006854 
+
+Tx hash:  https://sepolia.voyager.online/tx/0x5ca56ead45f5a1e9b0fbf246165ad6afef9d5ac7b224387b9b489f72a2361e6)
+Contract Address:  0x7e45125ee64695c934b20b7c78eda6d7a5a0e45f214593898c665541350cc1e 
 
 
-[35m
+
 Declaring Blobert...
 
-[39m
-[35m- Class Hash: [39m 0x43c24ec378bf780855c3bd6e58af46f94cde2b7559318aa194f69f93771ef9f
-[35m- Tx Hash: [39m Already declared
-[32m
+
+- Class Hash:  0x3c490de87440ad3948b169f977cebb0d8d69a6598cd50e23cf6298b75f674fe
+- Tx Hash:  https://sepolia.voyager.online/tx/0x2224ef10c182a530fc62a8d147556df790778ad1b1e4ed57b216ec000c5d139)
+
 Deploying Blobert ... 
 
-[39m
-[32mTx hash: [39m https://sepolia.voyager.online/tx/0x19775724ee06cb75f44d2e161da41837b1904cb87f84158307eb78d211701c2)
-[32mContract Address: [39m 0x28c052aa14fc396e6b685c8c6bfa0483495b8776a052c084418c80fd2cae8fe 
 
-
+Tx hash:  https://sepolia.voyager.online/tx/0x21270f51ea7909e5b080cb846c238875df49f81588f9999f760c9a6cfa239fe)
+Contract Address:  0x2f7b0c38511f8ab906cf4d686df7b75a21c37379bae1b79403b75dae602d60f 
