@@ -5,7 +5,7 @@ use blob::blobert::IBlobertDispatcher;
 use blob::descriptor::descriptor_custom::IDescriptorCustomDispatcher;
 use blob::descriptor::descriptor_regular::IDescriptorRegularDispatcher;
 use blob::seeder::ISeederDispatcher;
-use blob::types::erc721::MintStartTime;
+use blob::types::blobert::MintStartTime;
 use core::integer::BoundedInt;
 use core::result::ResultTrait;
 use core::serde::Serde;

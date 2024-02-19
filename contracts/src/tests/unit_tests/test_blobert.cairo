@@ -163,7 +163,7 @@ mod blobert_internal_tests {
         deploy_fee_token, deploy_seeder, deploy_descriptor_regular, deploy_descriptor_custom,
         create_merkle_tree
     };
-    use blob::types::erc721::WhitelistTier;
+    use blob::types::blobert::WhitelistTier;
 
     use core::array::SpanTrait;
     use core::debug::PrintTrait;
@@ -1114,7 +1114,7 @@ mod blobert_write_endpoint_tests {
         FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT, deploy_fee_token, deploy_seeder,
         deploy_descriptor_regular, deploy_descriptor_custom, create_merkle_tree
     };
-    use blob::types::erc721::WhitelistTier;
+    use blob::types::blobert::WhitelistTier;
     use core::array::ArrayTrait;
     use core::array::SpanTrait;
     use core::hash::{HashStateTrait, HashStateExTrait};
@@ -1754,8 +1754,8 @@ mod blobert_read_endpoint_tests {
         FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT, deploy_fee_token, deploy_seeder,
         deploy_descriptor_regular, deploy_descriptor_custom, create_merkle_tree
     };
-    use blob::types::erc721::Supply;
-    use blob::types::erc721::TokenTrait;
+    use blob::types::blobert::Supply;
+    use blob::types::blobert::TokenTrait;
     use blob::types::seeder::Seed;
 
 

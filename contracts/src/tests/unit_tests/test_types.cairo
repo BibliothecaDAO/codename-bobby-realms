@@ -4,8 +4,8 @@ mod types_tests {
     use blob::blobert::Blobert::__member_module_regular_nft_seeds::InternalContractMemberStateTrait as _P;
     use blob::blobert::Blobert::__member_module_supply::InternalContractMemberStateTrait;
     use blob::blobert::Blobert;
-    use blob::types::erc721::MintStartTime;
-    use blob::types::erc721::Supply;
+    use blob::types::blobert::MintStartTime;
+    use blob::types::blobert::Supply;
     use blob::types::seeder::Seed;
     use core::integer::BoundedInt;
     use core::traits::TryInto;

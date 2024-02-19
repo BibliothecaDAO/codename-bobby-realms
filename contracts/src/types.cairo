@@ -54,7 +54,7 @@ mod seeder {
 }
 
 
-mod erc721 {
+mod blobert {
     use starknet::{StorePacking};
     use super::seeder::Seed;
 

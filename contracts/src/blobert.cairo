@@ -1,7 +1,7 @@
-use blob::types::erc721::MintStartTime;
-use blob::types::erc721::Supply;
-use blob::types::erc721::TokenTrait;
-use blob::types::erc721::WhitelistTier;
+use blob::types::blobert::MintStartTime;
+use blob::types::blobert::Supply;
+use blob::types::blobert::TokenTrait;
+use blob::types::blobert::WhitelistTier;
 use blob::types::seeder::Seed;
 use starknet::ContractAddress;
 
@@ -63,10 +63,10 @@ mod Blobert {
         IDescriptorRegularDispatcher, IDescriptorRegularDispatcherTrait
     };
     use blob::seeder::{Seed, ISeederDispatcher, ISeederDispatcherTrait};
-    use blob::types::erc721::MintStartTime;
-    use blob::types::erc721::Supply;
-    use blob::types::erc721::TokenTrait;
-    use blob::types::erc721::WhitelistTier;
+    use blob::types::blobert::MintStartTime;
+    use blob::types::blobert::Supply;
+    use blob::types::blobert::TokenTrait;
+    use blob::types::blobert::WhitelistTier;
     use blob::utils::randomness as rand;
 
     use core::hash::{HashStateTrait, HashStateExTrait};
