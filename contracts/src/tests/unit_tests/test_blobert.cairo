@@ -775,13 +775,13 @@ mod blobert_internal_tests {
         assert!(seed.armour != 0, "armour not set");
         assert!(seed.weapon != 0, "weapon not set");
         assert!(seed.mask != 0, "mask not set");
-        assert!(seed.jewellry != 0, "jewellry not set");
+        assert!(seed.jewelry != 0, "jewelry not set");
 
         let seed_hash = poseidon::poseidon_hash_span(
             array![
                 seed.background.into(),
                 seed.armour.into(),
-                seed.jewellry.into(),
+                seed.jewelry.into(),
                 seed.mask.into(),
                 seed.weapon.into()
             ]
@@ -1265,7 +1265,7 @@ mod blobert_write_endpoint_tests {
         let seed = contract_state.regular_nft_seeds.read(token_id);
         if seed.background == 0 {
             if seed.armour == 0 {
-                if seed.jewellry == 0 {
+                if seed.jewelry == 0 {
                     assert(false, 'seed not set');
                 }
             }
@@ -1552,7 +1552,7 @@ mod blobert_write_endpoint_tests {
             let seed = contract_state.regular_nft_seeds.read(token_id);
             if seed.background == 0 {
                 if seed.armour == 0 {
-                    if seed.jewellry == 0 {
+                    if seed.jewelry == 0 {
                         assert(false, 'seed not set');
                     }
                 }
@@ -1766,7 +1766,7 @@ use blob::blobert::Blobert::__member_module_custom_image_counts::InternalContrac
         deploy_descriptor_regular, deploy_descriptor_custom, create_merkle_tree
     };
     use blob::types::erc721::Supply;
-    use blob::types::erc721::TokenIdentifier;
+    use blob::types::erc721::TokenTrait;
     use blob::types::seeder::Seed;
 
 
@@ -1870,20 +1870,20 @@ use blob::blobert::Blobert::__member_module_custom_image_counts::InternalContrac
     }
 
     #[test]
-    fn test_token_identifier() {
+    fn test_traits() {
         let mut contract_state = call_constructor();
         contract_state.erc721._mint(contract_address_const::<'someone'>(), 1337);
         contract_state.custom_image_counts.write(1337, 44);
         assert(
-            contract_state.token_identifier(1337) == TokenIdentifier::CustomTokenIndex(44 - 1),
+            contract_state.traits(1337) == TokenTrait::Custom(44 - 1),
             'wrong first identifier'
         );
 
-        let seed = Seed { background: 1, armour: 1, jewellry: 1, mask: 1, weapon: 1 };
+        let seed = Seed { background: 1, armour: 1, jewelry: 1, mask: 1, weapon: 1 };
         contract_state.erc721._mint(contract_address_const::<'someone_else'>(), 1338);
         contract_state.regular_nft_seeds.write(1338, seed);
         assert(
-            contract_state.token_identifier(1338) == TokenIdentifier::RegularTokenSeed(seed),
+            contract_state.traits(1338) == TokenTrait::Regular(seed),
             'wrong second identifier'
         );
     }

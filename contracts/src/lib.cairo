@@ -19,13 +19,13 @@ mod generation {
     mod traits {
         mod armour;
         mod background;
-        mod jewellry;
+        mod jewelry;
         mod mask;
         mod weapon;
         mod data {
             mod armour;
             mod background;
-            mod jewellry;
+            mod jewelry;
             mod mask;
             mod weapon;
         }
@@ -37,6 +37,10 @@ mod tests {
     }
     mod unit_tests {
         mod test_blobert;
+        mod test_descriptor_regular;
+        mod test_descriptor_custom;
+        mod test_seeder;
+        mod test_types;
         mod utils;
     }
 }

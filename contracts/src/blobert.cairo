@@ -1,6 +1,6 @@
 use blob::types::erc721::MintStartTime;
 use blob::types::erc721::Supply;
-use blob::types::erc721::TokenIdentifier;
+use blob::types::erc721::TokenTrait;
 use blob::types::erc721::WhitelistTier;
 use blob::types::seeder::Seed;
 use starknet::ContractAddress;
@@ -25,7 +25,7 @@ trait IBlobert<TContractState> {
     // contract state read
     fn supply(self: @TContractState) -> Supply;
     fn max_supply(self: @TContractState) -> u16;
-    fn token_identifier(self: @TContractState, token_id: u256) -> TokenIdentifier;
+    fn traits(self: @TContractState, token_id: u256) -> TokenTrait;
     fn svg_image(self: @TContractState, token_id: u256) -> ByteArray;
 
     fn seeder(self: @TContractState) -> ContractAddress;
@@ -61,7 +61,7 @@ mod Blobert {
     use blob::seeder::{Seed, ISeederDispatcher, ISeederDispatcherTrait};
     use blob::types::erc721::MintStartTime;
     use blob::types::erc721::Supply;
-    use blob::types::erc721::TokenIdentifier;
+    use blob::types::erc721::TokenTrait;
     use blob::types::erc721::WhitelistTier;
     use blob::utils::randomness as rand;
 
@@ -243,18 +243,16 @@ mod Blobert {
         }
 
         fn token_uri(self: @ContractState, token_id: u256) -> ByteArray {
-            assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
-
-            let custom_token_number = self
-                .custom_image_counts
-                .read(token_id.try_into().unwrap());
-            if custom_token_number != 0 {
-                let descriptor = self.descriptor_custom.read();
-                return descriptor.token_uri(token_id, custom_token_number - 1);
-            } else {
-                let seed = self.regular_nft_seeds.read(token_id);
-                let descriptor = self.descriptor_regular.read();
-                return descriptor.token_uri(token_id, seed);
+            let traits = self.traits(token_id);
+            match traits {
+                TokenTrait::Regular(seed) => {
+                    self.descriptor_regular.read()
+                        .token_uri(token_id, seed)
+                }, 
+                TokenTrait::Custom(index) => {
+                    self.descriptor_custom.read()
+                        .token_uri(token_id, index)
+                }
             }
         }
     }
@@ -282,7 +280,7 @@ mod Blobert {
             MAX_SUPPLY
         }
 
-        fn token_identifier(self: @ContractState, token_id: u256) -> TokenIdentifier {
+        fn traits(self: @ContractState, token_id: u256) -> TokenTrait {
             assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
 
             let custom_token_number = self
@@ -290,28 +288,24 @@ mod Blobert {
                 .read(token_id.try_into().unwrap());
             if custom_token_number != 0 {
                 let image_index = custom_token_number - 1;
-                return TokenIdentifier::CustomTokenIndex(image_index);
+                return TokenTrait::Custom(image_index);
             } else {
                 let seed = self.regular_nft_seeds.read(token_id);
-                return TokenIdentifier::RegularTokenSeed(seed);
+                return TokenTrait::Regular(seed);
             }
         }
 
         fn svg_image(self: @ContractState, token_id: u256) -> ByteArray{
-            assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
-
-            //todo ensure it only works for minted tokens
-            let custom_token_number = self
-                .custom_image_counts
-                .read(token_id.try_into().unwrap());
-            if custom_token_number != 0 {
-                let image_index = custom_token_number - 1;
-                let descriptor = self.descriptor_custom.read();
-                return descriptor.svg_image(image_index);
-            } else {
-                let seed = self.regular_nft_seeds.read(token_id);
-                let descriptor = self.descriptor_regular.read();
-                return descriptor.svg_image(seed);
+            let traits = self.traits(token_id);
+            match traits {
+                TokenTrait::Regular(seed) => {
+                    self.descriptor_regular.read()
+                        .svg_image(seed)
+                }, 
+                TokenTrait::Custom(index) => {
+                    self.descriptor_custom.read()
+                        .svg_image(index)
+                }
             }
         }
 
@@ -674,7 +668,6 @@ mod Blobert {
             let now = starknet::get_block_timestamp();
             let mint_start_time = self.mint_start_time.read();
             assert(now >= mint_start_time.regular, Errors::BEFORE_REGULAR_MINT);
-        // @note confirm no mint end period
         }
 
 

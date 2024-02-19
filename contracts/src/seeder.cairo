@@ -40,21 +40,24 @@ mod Seeder {
 
             let block_timestamp = starknet::get_block_timestamp();
             let randomness: u256 = poseidon_hash_span(
-                array![block_timestamp.into(), token_id.low.into(), token_id.high.into(), salt]
-                    .span()
-            )
-                .into();
+                array![
+                    block_timestamp.into(), 
+                    token_id.low.into(), 
+                    token_id.high.into(), 
+                    salt
+                ].span()
+            ).into();
 
             let background_count: u256 = descriptor.background_count().into();
             let armour_count: u256 = descriptor.armour_count().into();
-            let jewellry_count: u256 = descriptor.jewellry_count().into();
+            let jewelry_count: u256 = descriptor.jewelry_count().into();
             let mask_count: u256 = descriptor.mask_count().into();
             let weapon_count: u256 = descriptor.weapon_count().into();
 
             return Seed {
                 background: (randomness % background_count).try_into().unwrap(),
                 armour: (BitShift::shr(randomness, 48) % armour_count).try_into().unwrap(),
-                jewellry: (BitShift::shr(randomness, 96) % jewellry_count).try_into().unwrap(),
+                jewelry: (BitShift::shr(randomness, 96) % jewelry_count).try_into().unwrap(),
                 mask: (BitShift::shr(randomness, 144) % mask_count).try_into().unwrap(),
                 weapon: (BitShift::shr(randomness, 192) % weapon_count).try_into().unwrap(),
             };

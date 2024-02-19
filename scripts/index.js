@@ -48,8 +48,8 @@ generateBase64(
 );
 
 generateBase64(
-  "art/traits/jewellry",
-  "contracts/src/generation/traits/data/jewellry.cairo"
+  "art/traits/jewelry",
+  "contracts/src/generation/traits/data/jewelry.cairo"
 );
 
 generateBase64(

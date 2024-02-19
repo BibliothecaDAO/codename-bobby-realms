@@ -19,7 +19,7 @@ mod seeder {
     struct Seed {
         background: u8,
         armour: u8,
-        jewellry: u8,
+        jewelry: u8,
         mask: u8,
         weapon: u8,
     }
@@ -36,7 +36,7 @@ mod seeder {
         fn pack(value: Seed) -> u64 {
             value.background.into()
                 + (value.armour.into() * (TWO_POW_8))
-                + (value.jewellry.into() * (TWO_POW_16))
+                + (value.jewelry.into() * (TWO_POW_16))
                 + (value.mask.into() * (TWO_POW_24))
                 + (value.weapon.into() * (TWO_POW_32))
         }
@@ -45,7 +45,7 @@ mod seeder {
             Seed {
                 background: (value & MASK_8).try_into().unwrap(),
                 armour: ((value / TWO_POW_8) & MASK_8).try_into().unwrap(),
-                jewellry: ((value / TWO_POW_16) & MASK_8).try_into().unwrap(),
+                jewelry: ((value / TWO_POW_16) & MASK_8).try_into().unwrap(),
                 mask: ((value / TWO_POW_24) & MASK_8).try_into().unwrap(),
                 weapon: (value / TWO_POW_32).try_into().unwrap()
             }
@@ -70,9 +70,11 @@ mod erc721 {
 
 
     #[derive(Copy, Drop, Serde, PartialEq)]
-    enum TokenIdentifier {
-        RegularTokenSeed: Seed,
-        CustomTokenIndex: u8
+    enum TokenTrait {
+        // regular tokens are identified by seed
+        Regular: Seed,
+        // custom tokens are indentified by index
+        Custom: u8
     }
 
 
