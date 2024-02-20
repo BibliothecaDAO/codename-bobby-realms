@@ -44,3 +44,5 @@ mod tests {
         mod utils;
     }
 }
+
+mod scripts;

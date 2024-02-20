@@ -1,6 +1,9 @@
 use alexandria_merkle_tree::merkle_tree::{
     Hasher, MerkleTree, poseidon::PoseidonHasherImpl, MerkleTreeTrait, HasherTrait, MerkleTreeImpl
 };
+
+use core::hash::{HashStateTrait, HashStateExTrait};
+use core::poseidon::PoseidonTrait;
 use blob::blobert::IBlobertDispatcher;
 use blob::descriptor::descriptor_custom::IDescriptorCustomDispatcher;
 use blob::descriptor::descriptor_regular::IDescriptorRegularDispatcher;
@@ -104,12 +107,13 @@ fn deploy_descriptor_custom() -> IDescriptorCustomDispatcher {
 }
 
 
-fn create_merkle_tree(leaf: ContractAddress) -> (Span<felt252>, felt252) {
+fn create_merkle_tree(include_address: ContractAddress) -> (Span<felt252>, felt252) {
     // [Setup] Merkle tree.
     let mut merkle_tree: MerkleTree<Hasher> = MerkleTreeImpl::<_, PoseidonHasherImpl>::new();
-    let leaf: felt252 = leaf.into();
-    let leaves = array![leaf, 0x2, 0x3, 0x9, 0x172, 0x132, 0x12333, 0x44];
-    let leaf_index = 0;
+    let original_addresses = array![0x2, 0x3, 0x9, include_address.into(), 0x132, 0x12333, 0x44];
+    let leaves = apply_poseidon_per_element(original_addresses);
+    let leaf_index = 3;
+    let leaf: felt252 = *leaves.at(leaf_index);
 
     // compute merkle proof.
     let merkle_proof = MerkleTreeImpl::<
@@ -128,6 +132,22 @@ fn create_merkle_tree(leaf: ContractAddress) -> (Span<felt252>, felt252) {
     assert(verified, 'verify valid proof failed');
 
     (merkle_proof, merkle_root)
+}
+
+
+fn apply_poseidon_per_element(mut values: Array<felt252>) -> Array<felt252> {
+    let mut hashed_addresses = array![];
+    loop {
+        match values.pop_front() {
+            Option::Some(address) => {
+                let hash =
+                        PoseidonTrait::new().update_with(address).finalize();
+                hashed_addresses.append(hash);
+            },
+            Option::None => {break;}
+        }
+    };
+    hashed_addresses
 }
 
 

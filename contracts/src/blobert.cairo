@@ -6,8 +6,6 @@ use blob::types::seeder::Seed;
 use starknet::ContractAddress;
 
 
-//todo: handle royalties
-
 #[starknet::interface]
 trait IERC721Metadata<TState> {
     fn name(self: @TState) -> felt252;
@@ -677,9 +675,15 @@ mod Blobert {
             let mut merkle_tree: MerkleTree<Hasher> = MerkleTreeImpl::<
                 _, PoseidonHasherImpl
             >::new();
+            let leaf = PoseidonTrait::new().update_with(address).finalize();
             let merkle_verified = MerkleTreeImpl::<
                 _, PoseidonHasherImpl
-            >::verify(ref merkle_tree, merkle_root, address.into(), merkle_proof);
+            >::verify(
+                ref merkle_tree, 
+                merkle_root, 
+                leaf, 
+                merkle_proof
+            );
 
             assert(merkle_verified, Errors::NOT_IN_MERKLE_TREE);
         }
