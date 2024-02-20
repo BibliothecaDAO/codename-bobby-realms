@@ -11,11 +11,11 @@ mod scarb_descriptor_custom_tests {
     use blob::tests::unit_tests::utils::{DESCRIPTOR_CUSTOM};
     use core::dict::Felt252DictTrait;
     use core::traits::TryInto;
-    use starknet::deploy_syscall;
     use starknet::ContractAddress;
     use starknet::SyscallResult;
 
     use starknet::contract_address_const;
+    use starknet::deploy_syscall;
 
     fn deploy_descriptor_custom_scarb() -> IDescriptorCustomDispatcher {
         let (custom_data1_addr, _) = deploy_syscall(
@@ -47,7 +47,6 @@ mod scarb_descriptor_custom_tests {
 
         IDescriptorCustomDispatcher { contract_address }
     }
-
 
 
     #[test]

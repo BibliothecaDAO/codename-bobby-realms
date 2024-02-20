@@ -38,7 +38,6 @@ mod blobert_fork_tests {
     #[test]
     // #[fork("SEPOLIA")]
     #[ignore]
-
     fn test_mint_fork() {
         let this = starknet::get_contract_address();
         let fee_token_address = 0x4ef0e2993abf44178d3a40f2818828ed1c09cde9009677b7a3323570b4c0f2e

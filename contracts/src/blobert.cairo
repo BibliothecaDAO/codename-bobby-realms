@@ -589,7 +589,6 @@ mod Blobert {
 
         // @note MUST not be called with same token id
         fn set_regular_image(ref self: ContractState, token_id: u16) {
-
             let token_id: u256 = token_id.into();
 
             // set the token's seed
