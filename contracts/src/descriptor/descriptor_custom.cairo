@@ -32,7 +32,7 @@ mod DescriptorCustom {
     struct Storage {
         custom_data_contract_0_19: ContractAddress,
         custom_data_contract_20_39: ContractAddress,
-        custom_data_contract_40_49: ContractAddress,
+        custom_data_contract_40_47: ContractAddress,
     }
 
     #[constructor]
@@ -40,7 +40,7 @@ mod DescriptorCustom {
         assert(custom_data_contracts.len() == 3, 'expected 3 data contracts');
         self.custom_data_contract_0_19.write((*custom_data_contracts[0]).try_into().unwrap());
         self.custom_data_contract_20_39.write((*custom_data_contracts[1]).try_into().unwrap());
-        self.custom_data_contract_40_49.write((*custom_data_contracts[2]).try_into().unwrap());
+        self.custom_data_contract_40_47.write((*custom_data_contracts[2]).try_into().unwrap());
     }
 
 
@@ -57,7 +57,7 @@ mod DescriptorCustom {
             } else if (index < 40) {
                 self.custom_data_contract_20_39.read()
             } else {
-                self.custom_data_contract_40_49.read()
+                self.custom_data_contract_40_47.read()
             };
             ICustomDataDescriptorDispatcher { contract_address }.custom(index)
         }
@@ -76,12 +76,12 @@ mod DescriptorCustom {
     #[generate_trait]
     impl InternalImpl of InternalTrait {
         fn data_uri(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
-            let (image_bytes, _) = self.custom(index);
+            let (image_bytes, image_name) = self.custom(index);
 
             let image: ByteArray = self
                 .construct_image(:image_bytes, image_type: RenderType::Base64Encoded);
 
-            let attributes: Span<ByteArray> = self.construct_attributes(index);
+            let attributes: Span<ByteArray> = self.construct_attributes(image_name);
 
             let type_: ByteArray = format!("{}", ImageType::CUSTOM);
 
@@ -127,8 +127,10 @@ mod DescriptorCustom {
             }
         }
 
-        fn construct_attributes(self: @ContractState, index: u8) -> Span<ByteArray> {
-            return array![].span();
+        fn construct_attributes(self: @ContractState, name: ByteArray) -> Span<ByteArray> {
+            let name: ByteArray = JsonImpl::new().add("name", name).build();
+
+            return array![name].span();
         }
 
 
@@ -181,7 +183,7 @@ mod DescriptorCustomData2 {
 
 #[starknet::contract]
 mod DescriptorCustomData3 {
-    use blob::generation::{custom::image::custom_images_40_49};
+    use blob::generation::{custom::image::custom_images_40_47};
 
     #[storage]
     struct Storage {}
@@ -189,7 +191,7 @@ mod DescriptorCustomData3 {
     #[abi(embed_v0)]
     impl CustomDataDescriptor of super::ICustomDataDescriptor<ContractState> {
         fn custom(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
-            custom_images_40_49(index)
+            custom_images_40_47(index)
         }
     }
 }

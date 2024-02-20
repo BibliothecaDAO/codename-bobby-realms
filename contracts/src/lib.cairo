@@ -1,4 +1,6 @@
 mod blobert;
+
+mod scripts;
 mod seeder;
 mod types;
 mod descriptor {
@@ -13,7 +15,7 @@ mod generation {
     mod custom {
         mod image;
         mod data {
-            mod image;
+            mod images;
         }
     }
     mod traits {
@@ -43,6 +45,7 @@ mod tests {
         mod test_types;
         mod utils;
     }
+    mod fork_tests {
+        mod test_blobert_fork;
+    }
 }
-
-mod scripts;

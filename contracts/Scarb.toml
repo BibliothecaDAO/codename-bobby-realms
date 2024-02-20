@@ -25,3 +25,10 @@ sort-module-level-items = true
 
 [scripts]
 deploy = "scarb --release build && cd scripts && node deploy.js"
+deploy_blobert = "scarb --release build && cd scripts && node deploy_blob.js"
+
+
+[[tool.snforge.fork]]
+name = "SEPOLIA"
+url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_6"
+block_id.tag = "Latest"

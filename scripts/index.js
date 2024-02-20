@@ -54,39 +54,18 @@ generateBase64(
 
 generateBase64(
   "art/traits/masks",
-  "contracts/src/generation/traits/data/masks.cairo"
+  "contracts/src/generation/traits/data/mask.cairo"
 );
 
 generateBase64(
   "art/traits/weapons",
-  "contracts/src/generation/traits/data/weapons.cairo"
+  "contracts/src/generation/traits/data/weapon.cairo"
 );
 
 
-
-function generateBase64Custom(directory, outputFilePath) {
-  const imagePaths = findPngFiles(directory);
-
-  // Clear the output file
-  fs.writeFileSync(outputFilePath, "");
-
-  imagePaths.forEach((imagePath) => {
-    const fullPath = path.join(directory, imagePath);
-    const base64String = convertImageToBase64(fullPath);
-    const functionName = path.basename(imagePath, path.extname(imagePath));
-  
-    let i = 0;
-    while (i < 50) { 
-      appendBase64ToFile(base64String, outputFilePath, functionName + i);
-      i++;
-    }    
-    console.log("Processed:", imagePath);
-  });
-}
-
-generateBase64Custom(
+generateBase64(
   "art/custom",
-  "contracts/src/generation/custom/data/image.cairo"
+  "contracts/src/generation/custom/data/images.cairo"
 );
 
 console.log("All conversions complete");

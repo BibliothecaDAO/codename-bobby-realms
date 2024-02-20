@@ -11,5 +11,8 @@ jobs:
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "2.5.3"
+      - uses: foundry-rs/setup-snfoundry@v2
+        with:
+          starknet-foundry-version: 0.17.1
       - run: cd contracts && scarb fmt --check
-      - run: cd contracts && scarb test --ignored && snforge test 
+      - run: cd contracts && scarb test -f scarb_descriptor --include-ignored && snforge test 

@@ -87,8 +87,9 @@ export const deployBlobert = async (seeder,descriptor_regular, descriptor_custom
 
   let token_name = "Blobert";
   let token_symbol = "BLOB";
-  let owner = account.address
-  let fee_token_address = account.address
+  let owner = 0x0140809B710276e2e07c06278DD8f7D4a2528acE2764Fce32200852CB3893e5Cn 
+  //todo change
+  let fee_token_address = 0x4ef0e2993abf44178d3a40f2818828ed1c09cde9009677b7a3323570b4c0f2en
   let fee_token_amount = 100 * (10 ** 18)
 
   let constructorCalldata = [
@@ -103,17 +104,17 @@ export const deployBlobert = async (seeder,descriptor_regular, descriptor_custom
   ]
 
   // merkle roots
-  let merkle_roots = [
-    1,2,3,4,5
-  ]
+  let merkle_roots = whitelist_merkle_roots()
   constructorCalldata.push(merkle_roots.length)
   for (let j =0 ; j < merkle_roots.length; j++) {
     constructorCalldata.push(merkle_roots[j]);
   }
 
+  // todo update whitelist time
+
   // mint start time
-  constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 1000 * 60 * 12) // regular mint start time // 12 minutes from now
-  constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 1000 * 30 ) // whitelist mint start time // 30 seconds from now
+  constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 60 * 20) // regular mint start time // 12 minutes from now
+  constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 30 ) // whitelist mint start time // 30 seconds from now
 
   // initial custom nft recipients
   let initial_assigned_recips = initial_assigned_recipients();
@@ -334,4 +335,15 @@ export const deployDescriptorCustom = async () => {
   descriptor_custom_data_addresses.push(contract.address)
 
   return contract.address
+}
+
+
+
+function whitelist_merkle_roots(){
+  return [
+    0x3a5f886e952da36285158c8e9e2cec6d4d17d1271cbb66d6c770bc0ea795025n, // tier 1
+    0x7355045c69306c4f0aa9b82ec8fe14cedc41f4e1ecf632f159d416d89b30a7n, // tier 2
+    0x5ae7c1084891066205bff66d47382b55de150e9e7f8807e76e33cc65b7e8a23n, // tier 3
+    0xe124d0eba590a8049e8a1107799a3ed7253f0eaa4c2c1d1e6927969dc1069dn, // tier 4
+  ]
 }

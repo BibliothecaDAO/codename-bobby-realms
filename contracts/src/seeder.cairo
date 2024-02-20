@@ -49,17 +49,23 @@ mod Seeder {
 
             let background_count: u256 = descriptor.background_count().into();
             let armour_count: u256 = descriptor.armour_count().into();
-            let jewelry_count: u256 = descriptor.jewelry_count().into();
-            let mask_count: u256 = descriptor.mask_count().into();
+            let JEWELRY_COUNT: u256 = descriptor.JEWELRY_COUNT().into();
             let weapon_count: u256 = descriptor.weapon_count().into();
+            let mut mask_count: u256 = descriptor.mask_count().into();
 
-            return Seed {
-                background: (randomness % background_count).try_into().unwrap(),
-                armour: (BitShift::shr(randomness, 48) % armour_count).try_into().unwrap(),
-                jewelry: (BitShift::shr(randomness, 96) % jewelry_count).try_into().unwrap(),
-                mask: (BitShift::shr(randomness, 144) % mask_count).try_into().unwrap(),
-                weapon: (BitShift::shr(randomness, 192) % weapon_count).try_into().unwrap(),
+            let background: u8 = (randomness % background_count).try_into().unwrap();
+            let armour: u8 = (BitShift::shr(randomness, 48) % armour_count).try_into().unwrap();
+
+            // only allow the mask to be one of the first 8 masks 
+            // where the armour is sheep wool or kigurumi
+            if armour == 0 || armour == 1 {
+                mask_count = 8;
             };
+
+            let jewelry: u8 = (BitShift::shr(randomness, 96) % JEWELRY_COUNT).try_into().unwrap();
+            let mask: u8 = (BitShift::shr(randomness, 144) % mask_count).try_into().unwrap();
+            let weapon: u8 = (BitShift::shr(randomness, 192) % weapon_count).try_into().unwrap();
+            return Seed { background, armour, jewelry, mask, weapon };
         }
     }
 }

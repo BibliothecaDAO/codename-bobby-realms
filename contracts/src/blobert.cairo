@@ -103,21 +103,20 @@ mod Blobert {
     impl SRC5Impl = SRC5Component::SRC5Impl<ContractState>;
 
 
-    const MAX_SUPPLY: u16 = 4844; // @todo review
-    const MAX_CUSTOM_SUPPLY: u8 =
-        50; // @todo review // ensure it matches generation::CUSTOM_IMAGE_COUNT
+    const MAX_SUPPLY: u16 = 4844;
+    const MAX_CUSTOM_SUPPLY: u8 = 48;
 
-    const FEE_RECIPIENT_ADDRESS: felt252 = 0xADD;
+    const FEE_RECIPIENT_ADDRESS: felt252 =
+        0x0140809B710276e2e07c06278DD8f7D4a2528acE2764Fce32200852CB3893e5C;
 
     const MAX_REGULAR_MINT: u8 = 10; // max num of times `mint` can be called by an address
 
-    const WHITELIST_TIER_COUNT: u8 = 5;
+    const WHITELIST_TIER_COUNT: u8 = 4;
 
-    const MAX_MINT_WHITELIST_TIER_1: u8 = 2;
-    const MAX_MINT_WHITELIST_TIER_2: u8 = 4;
-    const MAX_MINT_WHITELIST_TIER_3: u8 = 6;
-    const MAX_MINT_WHITELIST_TIER_4: u8 = 8;
-    const MAX_MINT_WHITELIST_TIER_5: u8 = 10;
+    const MAX_MINT_WHITELIST_TIER_1: u8 = 5;
+    const MAX_MINT_WHITELIST_TIER_2: u8 = 3;
+    const MAX_MINT_WHITELIST_TIER_3: u8 = 2;
+    const MAX_MINT_WHITELIST_TIER_4: u8 = 1;
 
     // define weights for custom token lottery
     // minter is 500 times more likely to lose than win
@@ -159,7 +158,6 @@ mod Blobert {
         merkle_root_tier_2_whitelist: felt252,
         merkle_root_tier_3_whitelist: felt252,
         merkle_root_tier_4_whitelist: felt252,
-        merkle_root_tier_5_whitelist: felt252,
         //
         num_whitelist_mints: LegacyMap<ContractAddress, u8>, // num whitelist mints per address
         num_regular_mints: LegacyMap<ContractAddress, u8>, // num regular mints per address
@@ -465,10 +463,6 @@ mod Blobert {
             assert(merkle_root_tier_4 != 0, Errors::ZERO_MERKLE_ROOT);
             self.merkle_root_tier_4_whitelist.write(merkle_root_tier_4);
 
-            let merkle_root_tier_5 = *merkle_roots.at(4);
-            assert(merkle_root_tier_5 != 0, Errors::ZERO_MERKLE_ROOT);
-            self.merkle_root_tier_5_whitelist.write(merkle_root_tier_5);
-
             assert(fee_token_address != Zeroable::zero(), Errors::ZERO_FEE_TOKEN_ADDRESS);
             assert(fee_token_amount != 0, Errors::ZERO_FEE_TOKEN_AMOUNT);
             self.fee_token_address.write(fee_token_address);
@@ -531,9 +525,6 @@ mod Blobert {
                 },
                 WhitelistTier::Four => {
                     (self.merkle_root_tier_4_whitelist.read(), MAX_MINT_WHITELIST_TIER_4)
-                },
-                WhitelistTier::Five => {
-                    (self.merkle_root_tier_5_whitelist.read(), MAX_MINT_WHITELIST_TIER_5)
                 }
             }
         }
@@ -598,7 +589,6 @@ mod Blobert {
 
         // @note MUST not be called with same token id
         fn set_regular_image(ref self: ContractState, token_id: u16) {
-            // todo@credence calculate prob of hash collision
 
             let token_id: u256 = token_id.into();
 
@@ -678,12 +668,7 @@ mod Blobert {
             let leaf = PoseidonTrait::new().update_with(address).finalize();
             let merkle_verified = MerkleTreeImpl::<
                 _, PoseidonHasherImpl
-            >::verify(
-                ref merkle_tree, 
-                merkle_root, 
-                leaf, 
-                merkle_proof
-            );
+            >::verify(ref merkle_tree, merkle_root, leaf, merkle_proof);
 
             assert(merkle_verified, Errors::NOT_IN_MERKLE_TREE);
         }

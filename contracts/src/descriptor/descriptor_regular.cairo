@@ -9,7 +9,7 @@ trait IDescriptorRegular<TContractState> {
     fn background_count(self: @TContractState) -> u8;
     fn background(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
-    fn jewelry_count(self: @TContractState) -> u8;
+    fn JEWELRY_COUNT(self: @TContractState) -> u8;
     fn jewelry(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
     fn mask_count(self: @TContractState) -> u8;
@@ -27,7 +27,7 @@ trait IDescriptorRegular<TContractState> {
 mod DescriptorRegular {
     use blob::generation::traits::{
         armour::{ARMOUR_COUNT}, mask::{MASK_COUNT}, background::{BACKGROUND_COUNT},
-        jewelry::{jewelry_COUNT}, weapon::{WEAPON_COUNT}
+        jewelry::{JEWELRY_COUNT}, weapon::{WEAPON_COUNT}
     };
     use blob::generation::traits::{
         armour::{armours}, mask::{masks}, background::{backgrounds}, jewelry::{jewellries},
@@ -69,8 +69,8 @@ mod DescriptorRegular {
             backgrounds(index)
         }
 
-        fn jewelry_count(self: @ContractState) -> u8 {
-            return jewelry_COUNT;
+        fn JEWELRY_COUNT(self: @ContractState) -> u8 {
+            return JEWELRY_COUNT;
         }
 
         fn jewelry(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {

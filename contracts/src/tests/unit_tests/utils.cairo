@@ -1,21 +1,27 @@
 use alexandria_merkle_tree::merkle_tree::{
     Hasher, MerkleTree, poseidon::PoseidonHasherImpl, MerkleTreeTrait, HasherTrait, MerkleTreeImpl
 };
-
-use core::hash::{HashStateTrait, HashStateExTrait};
-use core::poseidon::PoseidonTrait;
 use blob::blobert::IBlobertDispatcher;
+use blob::descriptor::descriptor_custom::DescriptorCustom;
+use blob::descriptor::descriptor_custom::DescriptorCustomData1;
+use blob::descriptor::descriptor_custom::DescriptorCustomData2;
+use blob::descriptor::descriptor_custom::DescriptorCustomData3;
 use blob::descriptor::descriptor_custom::IDescriptorCustomDispatcher;
 use blob::descriptor::descriptor_regular::IDescriptorRegularDispatcher;
 use blob::seeder::ISeederDispatcher;
 use blob::types::blobert::MintStartTime;
+
+use core::hash::{HashStateTrait, HashStateExTrait};
 use core::integer::BoundedInt;
+use core::poseidon::PoseidonTrait;
 use core::result::ResultTrait;
 use core::serde::Serde;
 use core::traits::TryInto;
 use openzeppelin::token::erc20::interface::IERC20Dispatcher;
 use snforge_std::{declare, ContractClassTrait};
 use starknet::ContractAddress;
+use starknet::deploy_syscall;
+use starknet::syscalls::SyscallResult;
 
 
 const FEE_TOKEN_ADDRESS: felt252 =
@@ -140,11 +146,10 @@ fn apply_poseidon_per_element(mut values: Array<felt252>) -> Array<felt252> {
     loop {
         match values.pop_front() {
             Option::Some(address) => {
-                let hash =
-                        PoseidonTrait::new().update_with(address).finalize();
+                let hash = PoseidonTrait::new().update_with(address).finalize();
                 hashed_addresses.append(hash);
             },
-            Option::None => {break;}
+            Option::None => { break; }
         }
     };
     hashed_addresses
@@ -194,7 +199,6 @@ fn MERKLE_ROOTS() -> Span<felt252> {
         'merkle_root_tier_2_whitelist',
         'merkle_root_tier_3_whitelist',
         'merkle_root_tier_4_whitelist',
-        'merkle_root_tier_5_whitelist',
     ]
         .span()
 }
@@ -208,16 +212,9 @@ fn MINT_START_TIME() -> MintStartTime {
 }
 
 
-fn _50_ONE_OF_ONE_RECIPIENTS() -> Array<ContractAddress> {
-    // 50 unique recipients
+fn _43_ONE_OF_ONE_RECIPIENTS() -> Array<ContractAddress> {
+    // 43 unique recipients
     array![
-        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec540.try_into().unwrap(),
-        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec541.try_into().unwrap(),
-        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec542.try_into().unwrap(),
-        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec543.try_into().unwrap(),
-        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec544.try_into().unwrap(),
-        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec545.try_into().unwrap(),
-        0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec546.try_into().unwrap(),
         0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec547.try_into().unwrap(),
         0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec548.try_into().unwrap(),
         0x059f9205f50528a4c6308c69c675c14e65f31c72b1f7f1d2375d04fae1eec549.try_into().unwrap(),

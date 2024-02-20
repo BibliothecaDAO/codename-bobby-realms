@@ -1,5 +1,3 @@
-// todo@ add new internal tests
-
 #[cfg(test)]
 mod blobert_constructor_tests {
     use blob::blobert::Blobert::__member_module_descriptor_custom::InternalContractMemberStateTrait as ___F;
@@ -11,7 +9,6 @@ mod blobert_constructor_tests {
     use blob::blobert::Blobert::__member_module_merkle_root_tier_2_whitelist::InternalContractMemberStateTrait as __B;
     use blob::blobert::Blobert::__member_module_merkle_root_tier_3_whitelist::InternalContractMemberStateTrait as __V;
     use blob::blobert::Blobert::__member_module_merkle_root_tier_4_whitelist::InternalContractMemberStateTrait as __F;
-    use blob::blobert::Blobert::__member_module_merkle_root_tier_5_whitelist::InternalContractMemberStateTrait as __E;
     use blob::blobert::Blobert::__member_module_mint_start_time::InternalContractMemberStateTrait as _____T;
     use blob::blobert::Blobert::__member_module_regular_nft_seeder::InternalContractMemberStateTrait as ____T;
     use blob::blobert::Blobert::__member_module_supply::InternalContractMemberStateTrait as ______T;
@@ -19,7 +16,7 @@ mod blobert_constructor_tests {
     use blob::blobert::Blobert;
     use blob::tests::unit_tests::utils::{
         ERC721_NAME, ERC721_SYMBOL, OWNER, SEEDER, DESCRIPTOR_REGULAR, DESCRIPTOR_CUSTOM,
-        MERKLE_ROOTS, MINT_START_TIME, _50_ONE_OF_ONE_RECIPIENTS, FEE_TOKEN_ADDRESS,
+        MERKLE_ROOTS, MINT_START_TIME, _43_ONE_OF_ONE_RECIPIENTS, FEE_TOKEN_ADDRESS,
         FEE_TOKEN_AMOUNT
     };
     use core::traits::TryInto;
@@ -47,7 +44,7 @@ mod blobert_constructor_tests {
             FEE_TOKEN_AMOUNT.into(),
             MERKLE_ROOTS(),
             MINT_START_TIME(),
-            _50_ONE_OF_ONE_RECIPIENTS().span()
+            _43_ONE_OF_ONE_RECIPIENTS().span()
         );
 
         // ensure erc721 name and symbol name are correct
@@ -58,8 +55,8 @@ mod blobert_constructor_tests {
         assert(contract_state.ownable.owner() == OWNER(), 'wrong owner address');
 
         // ensure supply is correct
-        assert(contract_state.supply.read().total_nft == 50, 'wrong total nft count');
-        assert(contract_state.supply.read().custom_nft == 50, 'wrong custom nft count');
+        assert(contract_state.supply.read().total_nft == 43, 'wrong total nft count');
+        assert(contract_state.supply.read().custom_nft == 43, 'wrong custom nft count');
 
         // ensure seeder and descriptor are correct
         assert(
@@ -95,10 +92,6 @@ mod blobert_constructor_tests {
         assert(
             contract_state.merkle_root_tier_4_whitelist.read() == *MERKLE_ROOTS()[3],
             'wrong tier 4 merkle root'
-        );
-        assert(
-            contract_state.merkle_root_tier_5_whitelist.read() == *MERKLE_ROOTS()[4],
-            'wrong tier 5 merkle root'
         );
 
         // ensure fee token address and amount are correct
@@ -147,7 +140,6 @@ mod blobert_internal_tests {
     use blob::blobert::Blobert::__member_module_merkle_root_tier_2_whitelist::InternalContractMemberStateTrait as _B;
     use blob::blobert::Blobert::__member_module_merkle_root_tier_3_whitelist::InternalContractMemberStateTrait as _J;
     use blob::blobert::Blobert::__member_module_merkle_root_tier_4_whitelist::InternalContractMemberStateTrait as _Q;
-    use blob::blobert::Blobert::__member_module_merkle_root_tier_5_whitelist::InternalContractMemberStateTrait as _P;
     use blob::blobert::Blobert::__member_module_mint_start_time::InternalContractMemberStateTrait as _E;
     use blob::blobert::Blobert::__member_module_regular_nft_exists::InternalContractMemberStateTrait as _G;
     use blob::blobert::Blobert::__member_module_regular_nft_seeder::InternalContractMemberStateTrait as _D;
@@ -159,7 +151,7 @@ mod blobert_internal_tests {
     use blob::seeder::ISeederDispatcherTrait;
     use blob::tests::unit_tests::utils::{
         SEEDER, DESCRIPTOR_REGULAR, DESCRIPTOR_CUSTOM, MERKLE_ROOTS, MINT_START_TIME, MINTER,
-        MINTER_RECIPIENT, _50_ONE_OF_ONE_RECIPIENTS, FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT,
+        MINTER_RECIPIENT, _43_ONE_OF_ONE_RECIPIENTS, FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT,
         deploy_fee_token, deploy_seeder, deploy_descriptor_regular, deploy_descriptor_custom,
         create_merkle_tree
     };
@@ -202,7 +194,7 @@ mod blobert_internal_tests {
                 FEE_TOKEN_AMOUNT.into(),
                 MERKLE_ROOTS(),
                 MINT_START_TIME(),
-                _50_ONE_OF_ONE_RECIPIENTS().span()
+                _43_ONE_OF_ONE_RECIPIENTS().span()
             );
 
         // ensure seeder and descriptor are correct
@@ -221,8 +213,8 @@ mod blobert_internal_tests {
         );
 
         // ensure supply is correct
-        assert(contract_state.supply.read().total_nft == 50, 'wrong total nft count');
-        assert(contract_state.supply.read().custom_nft == 50, 'wrong custom nft count');
+        assert(contract_state.supply.read().total_nft == 43, 'wrong total nft count');
+        assert(contract_state.supply.read().custom_nft == 43, 'wrong custom nft count');
 
         // ensure mint time is accurate
         assert(contract_state.mint_start_time.read() == MINT_START_TIME(), 'wrong mint time');
@@ -243,10 +235,6 @@ mod blobert_internal_tests {
         assert(
             contract_state.merkle_root_tier_4_whitelist.read() == *MERKLE_ROOTS()[3],
             'wrong tier 4 merkle root'
-        );
-        assert(
-            contract_state.merkle_root_tier_5_whitelist.read() == *MERKLE_ROOTS()[4],
-            'wrong tier 5 merkle root'
         );
 
         // ensure fee token address and amount are correct
@@ -318,7 +306,7 @@ mod blobert_internal_tests {
                 DESCRIPTOR_CUSTOM(),
                 FEE_TOKEN_ADDRESS.try_into().unwrap(),
                 FEE_TOKEN_AMOUNT.into(),
-                array![0, 1, 1, 1, 1].span(),
+                array![0, 1, 1, 1].span(),
                 MINT_START_TIME(),
                 array![].span()
             );
@@ -336,7 +324,7 @@ mod blobert_internal_tests {
                 DESCRIPTOR_CUSTOM(),
                 FEE_TOKEN_ADDRESS.try_into().unwrap(),
                 FEE_TOKEN_AMOUNT.into(),
-                array![1, 0, 1, 1, 1].span(),
+                array![1, 0, 1, 1].span(),
                 MINT_START_TIME(),
                 array![].span()
             );
@@ -354,7 +342,7 @@ mod blobert_internal_tests {
                 DESCRIPTOR_CUSTOM(),
                 FEE_TOKEN_ADDRESS.try_into().unwrap(),
                 FEE_TOKEN_AMOUNT.into(),
-                array![1, 1, 0, 1, 1].span(),
+                array![1, 1, 0, 1].span(),
                 MINT_START_TIME(),
                 array![].span()
             );
@@ -372,29 +360,12 @@ mod blobert_internal_tests {
                 DESCRIPTOR_CUSTOM(),
                 FEE_TOKEN_ADDRESS.try_into().unwrap(),
                 FEE_TOKEN_AMOUNT.into(),
-                array![1, 1, 1, 0, 1].span(),
+                array![1, 1, 1, 0].span(),
                 MINT_START_TIME(),
                 array![].span()
             );
     }
 
-
-    #[test]
-    #[should_panic(expected: ('Blobert: no merkle root',))]
-    fn test_initialize_no_merkle_root_tier_5_whitelist() {
-        let mut contract_state = Blobert::contract_state_for_testing();
-        contract_state
-            .initialize(
-                SEEDER(),
-                DESCRIPTOR_REGULAR(),
-                DESCRIPTOR_CUSTOM(),
-                FEE_TOKEN_ADDRESS.try_into().unwrap(),
-                FEE_TOKEN_AMOUNT.into(),
-                array![1, 1, 1, 1, 0].span(),
-                MINT_START_TIME(),
-                array![].span()
-            );
-    }
 
 
     ////////////////////////////////////////////////////
@@ -405,15 +376,15 @@ mod blobert_internal_tests {
     fn test_assign_custom() {
         let mut contract_state = Blobert::contract_state_for_testing();
 
-        let recipients = _50_ONE_OF_ONE_RECIPIENTS();
+        let recipients = _43_ONE_OF_ONE_RECIPIENTS();
         contract_state.assign_custom(recipients.span());
 
         // ensure total supply is correcct
-        assert(contract_state.supply.read().total_nft == 50, 'wrong total supply');
-        assert(contract_state.supply.read().custom_nft == 50, 'wrong total supply');
+        assert(contract_state.supply.read().total_nft == 43, 'wrong total supply');
+        assert(contract_state.supply.read().custom_nft == 43, 'wrong total supply');
 
         // ensure the right token was minted to each address
-        let mut recipient_index_in_original_list: Array<u8> = array![4, 23, 14, 49];
+        let mut recipient_index_in_original_list: Array<u8> = array![4, 23, 14, 42];
         loop {
             match recipient_index_in_original_list.pop_front() {
                 Option::Some(recipient_index) => {
@@ -443,8 +414,8 @@ mod blobert_internal_tests {
     fn test_assign_custom_twice() {
         let mut contract_state = Blobert::contract_state_for_testing();
 
-        let original_recipients = _50_ONE_OF_ONE_RECIPIENTS();
-        let mut first_batch_recipients = _50_ONE_OF_ONE_RECIPIENTS();
+        let original_recipients = _43_ONE_OF_ONE_RECIPIENTS();
+        let mut first_batch_recipients = _43_ONE_OF_ONE_RECIPIENTS();
         let mut second_batch_recipients = array![];
 
         // remove 4 recipients and add to second batch
@@ -456,11 +427,11 @@ mod blobert_internal_tests {
         // assign first batch 
         contract_state.assign_custom(first_batch_recipients.span());
         // ensure total supply is correcct
-        assert(contract_state.supply.read().total_nft == 46, 'wrong total supply (1)');
-        assert(contract_state.supply.read().custom_nft == 46, 'wrong total supply (1)');
+        assert(contract_state.supply.read().total_nft == 39, 'wrong total supply (1)');
+        assert(contract_state.supply.read().custom_nft == 39, 'wrong total supply (1)');
 
         // ensure the right token was minted to each address
-        let mut recipient_index_in_original_list: Array<u8> = array![4, 23, 14, 49];
+        let mut recipient_index_in_original_list: Array<u8> = array![4, 23, 14, 42];
         let (mut contract_state, original_recipients) = loop {
             match recipient_index_in_original_list.pop_front() {
                 Option::Some(recipient_index) => {
@@ -488,8 +459,8 @@ mod blobert_internal_tests {
         // assign second batch 
         contract_state.assign_custom(second_batch_recipients.span());
         // ensure total supply is correcct
-        assert(contract_state.supply.read().total_nft == 50, 'wrong total supply (2)');
-        assert(contract_state.supply.read().custom_nft == 50, 'wrong total supply (2)');
+        assert(contract_state.supply.read().total_nft == 43, 'wrong total supply (2)');
+        assert(contract_state.supply.read().custom_nft == 43, 'wrong total supply (2)');
 
         // ensure the right token was minted to each address
         let mut recipient_index_in_original_list: Array<u8> = array![0, 1, 2, 3];
@@ -497,7 +468,7 @@ mod blobert_internal_tests {
             match recipient_index_in_original_list.pop_front() {
                 Option::Some(recipient_index) => {
                     let recipient_index = recipient_index.into();
-                    let recipient_token_id = recipient_index + 1 + 46;
+                    let recipient_token_id = recipient_index + 1 + 39;
                     let recipient = *original_recipients[recipient_index];
                     assert(contract_state.balance_of(recipient) == 1, 'wrong balance (2)');
                     assert(
@@ -509,7 +480,7 @@ mod blobert_internal_tests {
                             .custom_image_counts
                             .read(
                                 recipient_token_id.try_into().unwrap()
-                            ) == (recipient_index.try_into().unwrap() + 1 + 46),
+                            ) == (recipient_index.try_into().unwrap() + 1 + 39),
                         'wrong custom map to supply (2)'
                     );
                 },
@@ -524,8 +495,17 @@ mod blobert_internal_tests {
     fn test_assign_custom__recipients_greater_than_max() {
         let mut contract_state = Blobert::contract_state_for_testing();
 
-        let mut recipients = _50_ONE_OF_ONE_RECIPIENTS();
-        recipients.append(contract_address_const::<1>());
+        let mut recipients = _43_ONE_OF_ONE_RECIPIENTS();
+
+        let mut i = 0;
+        loop {
+            if (i + 43) > Blobert::MAX_CUSTOM_SUPPLY {
+                break;
+            }
+            recipients.append(contract_address_const::<1>());
+            i += 1;
+        };
+
         contract_state.assign_custom(recipients.span());
     }
 
@@ -676,12 +656,10 @@ mod blobert_internal_tests {
         let merkle_root_tier_2 = 'merkle_root_tier_2';
         let merkle_root_tier_3 = 'merkle_root_tier_3';
         let merkle_root_tier_4 = 'merkle_root_tier_4';
-        let merkle_root_tier_5 = 'merkle_root_tier_5';
         contract_state.merkle_root_tier_1_whitelist.write(merkle_root_tier_1);
         contract_state.merkle_root_tier_2_whitelist.write(merkle_root_tier_2);
         contract_state.merkle_root_tier_3_whitelist.write(merkle_root_tier_3);
         contract_state.merkle_root_tier_4_whitelist.write(merkle_root_tier_4);
-        contract_state.merkle_root_tier_5_whitelist.write(merkle_root_tier_5);
 
         let (response_merkle_root_tier_1, max_mint_tier_1) = contract_state
             .tier_merkle_root(WhitelistTier::One);
@@ -691,8 +669,6 @@ mod blobert_internal_tests {
             .tier_merkle_root(WhitelistTier::Three);
         let (response_merkle_root_tier_4, max_mint_tier_4) = contract_state
             .tier_merkle_root(WhitelistTier::Four);
-        let (response_merkle_root_tier_5, max_mint_tier_5) = contract_state
-            .tier_merkle_root(WhitelistTier::Five);
 
         assert(response_merkle_root_tier_1 == merkle_root_tier_1, 'wrong root 1');
         assert(max_mint_tier_1 == Blobert::MAX_MINT_WHITELIST_TIER_1, 'wrong allowance 1');
@@ -705,9 +681,6 @@ mod blobert_internal_tests {
 
         assert(response_merkle_root_tier_4 == merkle_root_tier_4, 'wrong root 4');
         assert(max_mint_tier_4 == Blobert::MAX_MINT_WHITELIST_TIER_4, 'wrong allowance 4');
-
-        assert(response_merkle_root_tier_5 == merkle_root_tier_5, 'wrong root 5');
-        assert(max_mint_tier_5 == Blobert::MAX_MINT_WHITELIST_TIER_5, 'wrong allowance 5');
     }
 
 
@@ -1110,7 +1083,7 @@ mod blobert_write_endpoint_tests {
     use blob::seeder::ISeederDispatcherTrait;
     use blob::tests::unit_tests::utils::{
         ERC721_NAME, ERC721_SYMBOL, OWNER, MINTER, MINTER_RECIPIENT, SEEDER, DESCRIPTOR_REGULAR,
-        DESCRIPTOR_CUSTOM, MERKLE_ROOTS, MINT_START_TIME, _50_ONE_OF_ONE_RECIPIENTS,
+        DESCRIPTOR_CUSTOM, MERKLE_ROOTS, MINT_START_TIME, _43_ONE_OF_ONE_RECIPIENTS,
         FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT, deploy_fee_token, deploy_seeder,
         deploy_descriptor_regular, deploy_descriptor_custom, create_merkle_tree
     };
@@ -1166,12 +1139,12 @@ mod blobert_write_endpoint_tests {
         // make caller the admin
         start_prank(CheatTarget::One(this), OWNER());
 
-        let recipients = _50_ONE_OF_ONE_RECIPIENTS();
+        let recipients = _43_ONE_OF_ONE_RECIPIENTS();
         contract_state.owner_assign_custom(recipients.span());
 
         // ensure total supply is correcct
-        assert(contract_state.supply.read().total_nft == 50, 'wrong total supply');
-        assert(contract_state.supply.read().custom_nft == 50, 'wrong total supply');
+        assert(contract_state.supply.read().total_nft == 43, 'wrong total supply');
+        assert(contract_state.supply.read().custom_nft == 43, 'wrong total supply');
     }
 
 
@@ -1483,7 +1456,7 @@ mod blobert_write_endpoint_tests {
         let minter_recipient = MINTER_RECIPIENT();
         let (second_tier_merkle_proof, second_tier_merkle_root) = create_merkle_tree(minter);
         let whitelist_tier = WhitelistTier::Two;
-        let merkle_roots = array![1, second_tier_merkle_root, 3, 4, 5].span();
+        let merkle_roots = array![1, second_tier_merkle_root, 3, 4].span();
 
         let mut contract_state = Blobert::contract_state_for_testing();
         Blobert::constructor(
@@ -1585,7 +1558,7 @@ mod blobert_write_endpoint_tests {
         let minter_recipient = MINTER_RECIPIENT();
         let (second_tier_merkle_proof, second_tier_merkle_root) = create_merkle_tree(minter);
         let whitelist_tier = WhitelistTier::Two;
-        let merkle_roots = array![1, second_tier_merkle_root, 3, 4, 5].span();
+        let merkle_roots = array![1, second_tier_merkle_root, 3, 4].span();
 
         let mut contract_state = Blobert::contract_state_for_testing();
         Blobert::constructor(
@@ -1632,7 +1605,7 @@ mod blobert_write_endpoint_tests {
         let minter_recipient = MINTER_RECIPIENT();
         let (second_tier_merkle_proof, second_tier_merkle_root) = create_merkle_tree(minter);
         let whitelist_tier = WhitelistTier::Two;
-        let merkle_roots = array![1, second_tier_merkle_root, 3, 4, 5].span();
+        let merkle_roots = array![1, second_tier_merkle_root, 3, 4].span();
 
         let mut contract_state = Blobert::contract_state_for_testing();
         Blobert::constructor(
@@ -1750,7 +1723,7 @@ mod blobert_read_endpoint_tests {
     use blob::seeder::ISeederDispatcherTrait;
     use blob::tests::unit_tests::utils::{
         ERC721_NAME, ERC721_SYMBOL, OWNER, MINTER, MINTER_RECIPIENT, SEEDER, DESCRIPTOR_REGULAR,
-        DESCRIPTOR_CUSTOM, MERKLE_ROOTS, MINT_START_TIME, _50_ONE_OF_ONE_RECIPIENTS,
+        DESCRIPTOR_CUSTOM, MERKLE_ROOTS, MINT_START_TIME, _43_ONE_OF_ONE_RECIPIENTS,
         FEE_TOKEN_ADDRESS, FEE_TOKEN_AMOUNT, deploy_fee_token, deploy_seeder,
         deploy_descriptor_regular, deploy_descriptor_custom, create_merkle_tree
     };
@@ -1792,7 +1765,7 @@ mod blobert_read_endpoint_tests {
             FEE_TOKEN_AMOUNT.into(),
             MERKLE_ROOTS(),
             MINT_START_TIME(),
-            _50_ONE_OF_ONE_RECIPIENTS().span()
+            _43_ONE_OF_ONE_RECIPIENTS().span()
         );
 
         return contract_state;

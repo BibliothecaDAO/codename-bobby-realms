@@ -64,8 +64,7 @@ mod blobert {
         One,
         Two,
         Three,
-        Four,
-        Five
+        Four
     }
 
 

@@ -6,6 +6,11 @@
 /// The ERC20 contract offers basic functionality and provides a
 /// fixed-supply mechanism for token distribution. The fixed supply is
 /// set in the constructor.
+#[starknet::interface]
+trait IERC20Mintable<TContractState> {
+    fn mint(ref self: TContractState, amount: u256);
+}
+
 #[starknet::contract]
 mod ERC20 {
     use openzeppelin::token::erc20::ERC20Component;
