@@ -282,15 +282,11 @@ mod Blobert {
         }
 
         fn whitelist_mint_count(self: @ContractState, address: ContractAddress) -> u8 {
-            self.num_whitelist_mints.read(
-               address
-            )
+            self.num_whitelist_mints.read(address)
         }
 
         fn regular_mint_count(self: @ContractState, address: ContractAddress) -> u8 {
-            self.num_regular_mints.read(
-                address
-            )
+            self.num_regular_mints.read(address)
         }
 
         fn traits(self: @ContractState, token_id: u256) -> TokenTrait {
@@ -310,11 +306,14 @@ mod Blobert {
         fn content_uri(self: @ContractState, token_id: u256) -> ByteArray {
             let traits = self.traits(token_id);
             match traits {
-                TokenTrait::Regular(seed) => { self.descriptor_regular.read().content_uri(token_id, seed) },
-                TokenTrait::Custom(index) => { self.descriptor_custom.read().content_uri(token_id, index) }
+                TokenTrait::Regular(seed) => {
+                    self.descriptor_regular.read().content_uri(token_id, seed)
+                },
+                TokenTrait::Custom(index) => {
+                    self.descriptor_custom.read().content_uri(token_id, index)
+                }
             }
         }
-
 
 
         fn svg_image(self: @ContractState, token_id: u256) -> ByteArray {

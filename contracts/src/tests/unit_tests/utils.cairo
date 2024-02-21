@@ -85,7 +85,6 @@ fn deploy_descriptor_regular() -> IDescriptorRegularDispatcher {
 
 
 fn deploy_descriptor_custom() -> IDescriptorCustomDispatcher {
-
     let descriptor_custom_contract = declare('DescriptorCustom');
     let mut calldata: Array<felt252> = array![];
     let contract_address = descriptor_custom_contract

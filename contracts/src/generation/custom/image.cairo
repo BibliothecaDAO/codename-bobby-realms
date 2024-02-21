@@ -60,6 +60,3 @@ fn custom_images(index: u8) -> (ByteArray, ByteArray) {
     }
 }
 
-
-
-

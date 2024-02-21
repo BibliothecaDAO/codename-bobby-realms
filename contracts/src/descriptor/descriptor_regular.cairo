@@ -124,7 +124,9 @@ mod DescriptorRegular {
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
-        fn data_uri(self: @ContractState, token_id: u256, seed: Seed, include_image: bool) -> ByteArray {
+        fn data_uri(
+            self: @ContractState, token_id: u256, seed: Seed, include_image: bool
+        ) -> ByteArray {
             let (armour_bytes, armour_name) = armours(seed.armour);
             let (mask_bytes, mask_name) = masks(seed.mask);
             let (background_bytes, background_name) = backgrounds(seed.background);
@@ -156,12 +158,13 @@ mod DescriptorRegular {
                 .add("name", self.get_token_name(token_id))
                 .add("description", self.get_token_description(token_id))
                 .add("type", type_);
-            let metadata 
-                = if include_image {metadata.add("image", image)} else {metadata};
-                
-            let metadata = metadata
-                .add_array("attributes", attributes)
-                .build();
+            let metadata = if include_image {
+                metadata.add("image", image)
+            } else {
+                metadata
+            };
+
+            let metadata = metadata.add_array("attributes", attributes).build();
 
             let base64_encoded_metadata: ByteArray = bytes_base64_encode(metadata);
             format!("data:application/json;base64,{}", base64_encoded_metadata)

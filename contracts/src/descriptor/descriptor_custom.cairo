@@ -29,7 +29,6 @@ mod DescriptorCustom {
     struct Storage {}
 
 
-
     #[abi(embed_v0)]
     impl DescriptorCustomImpl of super::IDescriptorCustom<ContractState> {
         fn custom_count(self: @ContractState) -> u8 {
@@ -48,8 +47,7 @@ mod DescriptorCustom {
         fn content_uri(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
             self.data_uri(token_id, index, include_image: false)
         }
-        
-        
+
 
         fn svg_image(self: @ContractState, index: u8) -> ByteArray {
             let (image_bytes, _) = self.custom(index);
@@ -60,7 +58,9 @@ mod DescriptorCustom {
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
-        fn data_uri(self: @ContractState, token_id: u256, index: u8, include_image: bool) -> ByteArray {
+        fn data_uri(
+            self: @ContractState, token_id: u256, index: u8, include_image: bool
+        ) -> ByteArray {
             let (image_bytes, image_name) = self.custom(index);
 
             let image: ByteArray = self
@@ -74,10 +74,12 @@ mod DescriptorCustom {
                 .add("name", self.get_token_name(image_name.clone(), token_id))
                 .add("description", self.get_token_description(image_name.clone(), token_id))
                 .add("type", type_);
-            let metadata = if include_image {metadata.add("image", image)} else {metadata};
-            let metadata = metadata
-                .add_array("attributes", attributes)
-                .build();
+            let metadata = if include_image {
+                metadata.add("image", image)
+            } else {
+                metadata
+            };
+            let metadata = metadata.add_array("attributes", attributes).build();
 
             let base64_encoded_metadata: ByteArray = bytes_base64_encode(metadata);
             format!("data:application/json;base64,{}", base64_encoded_metadata)
@@ -122,10 +124,12 @@ mod DescriptorCustom {
 
 
         fn get_token_name(self: @ContractState, name: ByteArray, token_id: u256) -> ByteArray {
-            return format!("{} #{}", name,  token_id);
+            return format!("{} #{}", name, token_id);
         }
 
-        fn get_token_description(self: @ContractState, name: ByteArray, token_id: u256) -> ByteArray {
+        fn get_token_description(
+            self: @ContractState, name: ByteArray, token_id: u256
+        ) -> ByteArray {
             return format!("{} #{} is a squire from Realms World", name, token_id);
         }
     }
