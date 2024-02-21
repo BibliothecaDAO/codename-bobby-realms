@@ -3,9 +3,6 @@ use alexandria_merkle_tree::merkle_tree::{
 };
 use blob::blobert::IBlobertDispatcher;
 use blob::descriptor::descriptor_custom::DescriptorCustom;
-use blob::descriptor::descriptor_custom::DescriptorCustomData1;
-use blob::descriptor::descriptor_custom::DescriptorCustomData2;
-use blob::descriptor::descriptor_custom::DescriptorCustomData3;
 use blob::descriptor::descriptor_custom::IDescriptorCustomDispatcher;
 use blob::descriptor::descriptor_regular::IDescriptorRegularDispatcher;
 use blob::seeder::ISeederDispatcher;
@@ -88,24 +85,9 @@ fn deploy_descriptor_regular() -> IDescriptorRegularDispatcher {
 
 
 fn deploy_descriptor_custom() -> IDescriptorCustomDispatcher {
-    let custom_data1_contract = declare('DescriptorCustomData1');
-    let custom_data1_addr = custom_data1_contract.deploy(@array![]).unwrap();
-
-    let custom_data2_contract = declare('DescriptorCustomData2');
-    let custom_data2_addr = custom_data2_contract.deploy(@array![]).unwrap();
-
-    let custom_data3_contract = declare('DescriptorCustomData3');
-    let custom_data3_addr = custom_data3_contract.deploy(@array![]).unwrap();
 
     let descriptor_custom_contract = declare('DescriptorCustom');
-
     let mut calldata: Array<felt252> = array![];
-    let list_data_addr: Span<ContractAddress> = array![
-        custom_data1_addr, custom_data2_addr, custom_data3_addr,
-    ]
-        .span();
-    list_data_addr.serialize(ref calldata);
-
     let contract_address = descriptor_custom_contract
         .deploy_at(@calldata, 'DESCRIPTOR_CUSTOM'.try_into().unwrap())
         .unwrap();

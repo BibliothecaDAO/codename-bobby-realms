@@ -3,10 +3,8 @@ use blob::generation::custom::data::images;
 
 const CUSTOM_IMAGES_COUNT: u8 = 48;
 
-fn custom_images_0_19(index: u8) -> (ByteArray, ByteArray) {
-    assert(index >= 0, 'wrong custom img index (2)');
-    assert(index <= 19, 'wrong custom img index (2)');
-    let index: felt252 = index.into() - 0;
+fn custom_images(index: u8) -> (ByteArray, ByteArray) {
+    let index: felt252 = index.into();
 
     match index {
         0 => (images::udbert(), "Udbert"),
@@ -29,58 +27,39 @@ fn custom_images_0_19(index: u8) -> (ByteArray, ByteArray) {
         17 => (images::chelbert(), "Chelbert"),
         18 => (images::pobert(), "Pobert"),
         19 => (images::squibert(), "Squibert"),
-        _ => panic!("wrong image index")
-    }
-}
-
-
-fn custom_images_20_39(index: u8) -> (ByteArray, ByteArray) {
-    assert(index >= 20, 'wrong custom img index (2)');
-    assert(index <= 39, 'wrong custom img index (2)');
-    let index: felt252 = index.into() - 20;
-
-    match index {
-        0 => (images::bulbert(), "Bulbert"),
-        1 => (images::devbert(), "Devbert"),
-        2 => (images::blobhetti(), "Blobhetti"),
-        3 => (images::hambert(), "Hambert"),
-        4 => (images::calbert(), "Calbert"),
-        5 => (images::raubert(), "Raubert"),
-        6 => (images::tbert(), "Tbert"),
-        7 => (images::_1337bert(), "1337bert"),
-        8 => (images::mirbert(), "Mirbert"),
-        9 => (images::credbert(), "Credbert"),
-        10 => (images::redbert(), "Redbert"),
-        11 => (images::pleurbert(), "Pleurbert"),
-        12 => (images::shelbert(), "Shelbert"),
-        13 => (images::rebert(), "Rebert"),
-        14 => (images::lootbert(), "Lootbert"),
-        15 => (images::breadbert(), "Breadbert"),
-        16 => (images::grugbert(), "Grugbert"),
-        17 => (images::duckbert(), "Duckbert"),
-        18 => (images::wenbert(), "Wenbert"),
-        19 => (images::guthbert(), "Guthbert"),
-        _ => panic!("wrong image index")
-    }
-}
-
-
-fn custom_images_40_47(index: u8) -> (ByteArray, ByteArray) {
-    assert(index >= 40, 'wrong custom img index (3)');
-    assert(index <= 47, 'wrong custom img index (3)');
-    let index: felt252 = index.into() - 40;
-
-    match index {
-        0 => (images::moodbert(), "Moodbert"),
-        1 => (images::francaisbert(), "Francaisbert"),
-        2 => (images::odbert(), "Odbert"),
+        20 => (images::bulbert(), "Bulbert"),
+        21 => (images::devbert(), "Devbert"),
+        22 => (images::blobhetti(), "Blobhetti"),
+        23 => (images::hambert(), "Hambert"),
+        24 => (images::calbert(), "Calbert"),
+        25 => (images::raubert(), "Raubert"),
+        26 => (images::tbert(), "Tbert"),
+        27 => (images::_1337bert(), "1337bert"),
+        28 => (images::mirbert(), "Mirbert"),
+        29 => (images::credbert(), "Credbert"),
+        30 => (images::redbert(), "Redbert"),
+        31 => (images::pleurbert(), "Pleurbert"),
+        32 => (images::shelbert(), "Shelbert"),
+        33 => (images::rebert(), "Rebert"),
+        34 => (images::lootbert(), "Lootbert"),
+        35 => (images::breadbert(), "Breadbert"),
+        36 => (images::grugbert(), "Grugbert"),
+        37 => (images::duckbert(), "Duckbert"),
+        38 => (images::wenbert(), "Wenbert"),
+        39 => (images::guthbert(), "Guthbert"),
+        40 => (images::moodbert(), "Moodbert"),
+        41 => (images::francaisbert(), "Francaisbert"),
+        42 => (images::odbert(), "Odbert"),
         // to be won in mint lottery
-        3 => (images::butterbert(), "Butterbert"),
-        4 => (images::bobbyrealms(), "Bobby Realms"),
-        5 => (images::goldbert(), "Goldbert"),
-        6 => (images::GOATbert(), "GOATbert"),
-        7 => (images::blobert(), "Blobert"),
+        43 => (images::butterbert(), "Butterbert"),
+        44 => (images::bobbyrealms(), "Bobby Realms"),
+        45 => (images::goldbert(), "Goldbert"),
+        46 => (images::GOATbert(), "GOATbert"),
+        47 => (images::blobert(), "Genesis Blobert"),
         _ => panic!("wrong image index")
     }
 }
+
+
+
 

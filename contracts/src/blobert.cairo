@@ -23,6 +23,9 @@ trait IBlobert<TContractState> {
     // contract state read
     fn supply(self: @TContractState) -> Supply;
     fn max_supply(self: @TContractState) -> u16;
+    fn whitelist_mint_count(self: @TContractState, address: ContractAddress) -> u8;
+    fn regular_mint_count(self: @TContractState, address: ContractAddress) -> u8;
+    fn content_uri(self: @TContractState, token_id: u256) -> ByteArray;
     fn traits(self: @TContractState, token_id: u256) -> TokenTrait;
     fn svg_image(self: @TContractState, token_id: u256) -> ByteArray;
 
@@ -119,9 +122,9 @@ mod Blobert {
     const MAX_MINT_WHITELIST_TIER_4: u8 = 1;
 
     // define weights for custom token lottery
-    // minter is 500 times more likely to lose than win
+    // minter is 300 times more likely to lose than win
     const WIN_CUSTOM_TOKEN_DRAW_WEIGHT: u128 = 1;
-    const LOSE_CUSTOM_TOKEN_DRAW_WEIGHT: u128 = 500;
+    const LOSE_CUSTOM_TOKEN_DRAW_WEIGHT: u128 = 300;
 
 
     mod Errors {
@@ -278,6 +281,18 @@ mod Blobert {
             MAX_SUPPLY
         }
 
+        fn whitelist_mint_count(self: @ContractState, address: ContractAddress) -> u8 {
+            self.num_whitelist_mints.read(
+               address
+            )
+        }
+
+        fn regular_mint_count(self: @ContractState, address: ContractAddress) -> u8 {
+            self.num_regular_mints.read(
+                address
+            )
+        }
+
         fn traits(self: @ContractState, token_id: u256) -> TokenTrait {
             assert(self.erc721._exists(token_id), ERC721Component::Errors::INVALID_TOKEN_ID);
 
@@ -290,6 +305,17 @@ mod Blobert {
                 return TokenTrait::Regular(seed);
             }
         }
+
+
+        fn content_uri(self: @ContractState, token_id: u256) -> ByteArray {
+            let traits = self.traits(token_id);
+            match traits {
+                TokenTrait::Regular(seed) => { self.descriptor_regular.read().content_uri(token_id, seed) },
+                TokenTrait::Custom(index) => { self.descriptor_custom.read().content_uri(token_id, index) }
+            }
+        }
+
+
 
         fn svg_image(self: @ContractState, token_id: u256) -> ByteArray {
             let traits = self.traits(token_id);
@@ -538,7 +564,7 @@ mod Blobert {
             recipient: ContractAddress,
             collect_fee: bool
         ) {
-            // ensure that token count is less than max supply
+            // ensure that token count is less than or equal max supply
             assert(token_id <= self.max_supply(), Errors::MAX_SUPPLY_EXCEEDED);
 
             // type cast token_id

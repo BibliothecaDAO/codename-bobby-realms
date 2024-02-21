@@ -19,6 +19,7 @@ trait IDescriptorRegular<TContractState> {
     fn weapon(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
 
     fn token_uri(self: @TContractState, token_id: u256, seed: Seed) -> ByteArray;
+    fn content_uri(self: @TContractState, token_id: u256, seed: Seed) -> ByteArray;
     fn svg_image(self: @TContractState, seed: Seed) -> ByteArray;
 }
 
@@ -94,7 +95,11 @@ mod DescriptorRegular {
         }
 
         fn token_uri(self: @ContractState, token_id: u256, seed: Seed) -> ByteArray {
-            self.data_uri(token_id, seed)
+            self.data_uri(token_id, seed, include_image: true)
+        }
+
+        fn content_uri(self: @ContractState, token_id: u256, seed: Seed) -> ByteArray {
+            self.data_uri(token_id, seed, include_image: false)
         }
 
         fn svg_image(self: @ContractState, seed: Seed) -> ByteArray {
@@ -119,7 +124,7 @@ mod DescriptorRegular {
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
-        fn data_uri(self: @ContractState, token_id: u256, seed: Seed) -> ByteArray {
+        fn data_uri(self: @ContractState, token_id: u256, seed: Seed, include_image: bool) -> ByteArray {
             let (armour_bytes, armour_name) = armours(seed.armour);
             let (mask_bytes, mask_name) = masks(seed.mask);
             let (background_bytes, background_name) = backgrounds(seed.background);
@@ -147,11 +152,14 @@ mod DescriptorRegular {
 
             let type_: ByteArray = format!("{}", ImageType::REGULAR);
 
-            let metadata: ByteArray = JsonImpl::new()
+            let metadata = JsonImpl::new()
                 .add("name", self.get_token_name(token_id))
                 .add("description", self.get_token_description(token_id))
-                .add("type", type_)
-                .add("image", image)
+                .add("type", type_);
+            let metadata 
+                = if include_image {metadata.add("image", image)} else {metadata};
+                
+            let metadata = metadata
                 .add_array("attributes", attributes)
                 .build();
 
@@ -209,14 +217,15 @@ mod DescriptorRegular {
             let svg_root: Tag = TagImpl::new("svg")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("style", "image-rendering: pixelated")
                 .attr("viewBox", "0 0 350 350");
 
             let svg = svg_root
                 .insert(image_background)
                 .insert(image_head)
                 .insert(image_body)
-                .insert(image_weapon)
                 .insert(image_jewelry)
+                .insert(image_weapon)
                 .build();
 
             match image_type {
@@ -269,9 +278,7 @@ mod DescriptorRegular {
         }
 
         fn get_token_description(self: @ContractState, token_id: u256) -> ByteArray {
-            //todo@credence confirm this message
-
-            return format!("Blobert #{} is a member of the BibliothecaDAO", token_id);
+            return format!("Blobert #{} is a squire from Realms World", token_id);
         }
     }
 }

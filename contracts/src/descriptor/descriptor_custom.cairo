@@ -5,8 +5,8 @@ use blob::types::seeder::Seed;
 trait IDescriptorCustom<TContractState> {
     fn custom_count(self: @TContractState) -> u8;
     fn custom(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
-
     fn token_uri(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
+    fn content_uri(self: @TContractState, token_id: u256, index: u8) -> ByteArray;
     fn svg_image(self: @TContractState, index: u8) -> ByteArray;
 }
 
@@ -15,6 +15,7 @@ trait IDescriptorCustom<TContractState> {
 mod DescriptorCustom {
     use blob::descriptor::descriptor_custom::IDescriptorCustom;
     use blob::generation::{custom::image::CUSTOM_IMAGES_COUNT};
+    use blob::generation::{custom::image::custom_images};
     use blob::types::descriptor::{ImageType, RenderType};
 
     use blob::types::seeder::Seed;
@@ -24,24 +25,9 @@ mod DescriptorCustom {
 
     use starknet::ContractAddress;
 
-    use super::ICustomDataDescriptorDispatcher;
-    use super::ICustomDataDescriptorDispatcherTrait;
-
-
     #[storage]
-    struct Storage {
-        custom_data_contract_0_19: ContractAddress,
-        custom_data_contract_20_39: ContractAddress,
-        custom_data_contract_40_47: ContractAddress,
-    }
+    struct Storage {}
 
-    #[constructor]
-    fn constructor(ref self: ContractState, custom_data_contracts: Span<felt252>) {
-        assert(custom_data_contracts.len() == 3, 'expected 3 data contracts');
-        self.custom_data_contract_0_19.write((*custom_data_contracts[0]).try_into().unwrap());
-        self.custom_data_contract_20_39.write((*custom_data_contracts[1]).try_into().unwrap());
-        self.custom_data_contract_40_47.write((*custom_data_contracts[2]).try_into().unwrap());
-    }
 
 
     #[abi(embed_v0)]
@@ -52,19 +38,18 @@ mod DescriptorCustom {
 
         fn custom(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
             assert(index < self.custom_count(), 'descriptor: index out of range');
-            let contract_address = if index < 20 {
-                self.custom_data_contract_0_19.read()
-            } else if (index < 40) {
-                self.custom_data_contract_20_39.read()
-            } else {
-                self.custom_data_contract_40_47.read()
-            };
-            ICustomDataDescriptorDispatcher { contract_address }.custom(index)
+            custom_images(index)
         }
 
         fn token_uri(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
-            self.data_uri(token_id, index)
+            self.data_uri(token_id, index, include_image: true)
         }
+
+        fn content_uri(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
+            self.data_uri(token_id, index, include_image: false)
+        }
+        
+        
 
         fn svg_image(self: @ContractState, index: u8) -> ByteArray {
             let (image_bytes, _) = self.custom(index);
@@ -75,21 +60,22 @@ mod DescriptorCustom {
 
     #[generate_trait]
     impl InternalImpl of InternalTrait {
-        fn data_uri(self: @ContractState, token_id: u256, index: u8) -> ByteArray {
+        fn data_uri(self: @ContractState, token_id: u256, index: u8, include_image: bool) -> ByteArray {
             let (image_bytes, image_name) = self.custom(index);
 
             let image: ByteArray = self
                 .construct_image(:image_bytes, image_type: RenderType::Base64Encoded);
 
-            let attributes: Span<ByteArray> = self.construct_attributes(image_name);
+            let attributes: Span<ByteArray> = self.construct_attributes(image_name.clone());
 
             let type_: ByteArray = format!("{}", ImageType::CUSTOM);
 
-            let metadata: ByteArray = JsonImpl::new()
-                .add("name", self.get_token_name(token_id))
-                .add("description", self.get_token_description(token_id))
-                .add("type", type_)
-                .add("image", image)
+            let metadata = JsonImpl::new()
+                .add("name", self.get_token_name(image_name.clone(), token_id))
+                .add("description", self.get_token_description(image_name.clone(), token_id))
+                .add("type", type_);
+            let metadata = if include_image {metadata.add("image", image)} else {metadata};
+            let metadata = metadata
                 .add_array("attributes", attributes)
                 .build();
 
@@ -113,6 +99,7 @@ mod DescriptorCustom {
             let svg_root: Tag = TagImpl::new("svg")
                 .attr("xmlns", "http://www.w3.org/2000/svg")
                 .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("style", "image-rendering: pixelated")
                 .attr("viewBox", "0 0 350 350");
 
             let svg = svg_root.insert(image).build();
@@ -134,64 +121,12 @@ mod DescriptorCustom {
         }
 
 
-        fn get_token_name(self: @ContractState, token_id: u256) -> ByteArray {
-            return format!("Blobert #{}", token_id);
+        fn get_token_name(self: @ContractState, name: ByteArray, token_id: u256) -> ByteArray {
+            return format!("{} #{}", name,  token_id);
         }
 
-        fn get_token_description(self: @ContractState, token_id: u256) -> ByteArray {
-            //todo@credence confirm this message
-            return format!("Blobert #{} is a member of the BibliothecaDAO", token_id);
-        }
-    }
-}
-
-
-#[starknet::interface]
-trait ICustomDataDescriptor<TContractState> {
-    fn custom(self: @TContractState, index: u8) -> (ByteArray, ByteArray);
-}
-
-#[starknet::contract]
-mod DescriptorCustomData1 {
-    use blob::generation::{custom::image::custom_images_0_19};
-
-    #[storage]
-    struct Storage {}
-
-    #[abi(embed_v0)]
-    impl CustomDataDescriptor of super::ICustomDataDescriptor<ContractState> {
-        fn custom(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
-            custom_images_0_19(index)
-        }
-    }
-}
-
-#[starknet::contract]
-mod DescriptorCustomData2 {
-    use blob::generation::{custom::image::custom_images_20_39};
-
-    #[storage]
-    struct Storage {}
-
-    #[abi(embed_v0)]
-    impl CustomDataDescriptor of super::ICustomDataDescriptor<ContractState> {
-        fn custom(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
-            custom_images_20_39(index)
-        }
-    }
-}
-
-#[starknet::contract]
-mod DescriptorCustomData3 {
-    use blob::generation::{custom::image::custom_images_40_47};
-
-    #[storage]
-    struct Storage {}
-
-    #[abi(embed_v0)]
-    impl CustomDataDescriptor of super::ICustomDataDescriptor<ContractState> {
-        fn custom(self: @ContractState, index: u8) -> (ByteArray, ByteArray) {
-            custom_images_40_47(index)
+        fn get_token_description(self: @ContractState, name: ByteArray, token_id: u256) -> ByteArray {
+            return format!("{} #{} is a squire from Realms World", name, token_id);
         }
     }
 }

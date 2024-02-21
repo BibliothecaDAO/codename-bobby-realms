@@ -1,6 +1,4 @@
 mod blobert;
-
-mod scripts;
 mod seeder;
 mod types;
 mod descriptor {
