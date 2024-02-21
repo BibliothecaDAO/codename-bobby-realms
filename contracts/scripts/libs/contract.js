@@ -5,6 +5,8 @@ import { fileURLToPath } from "url";
 import { json } from "starknet";
 import { getNetwork, getAccount } from "./network.js";
 import { initial_assigned_recipients } from "../assigned_custom.js";
+// import merkle_data  from "../test_merkle_data.json" assert { type: "json" };
+import merkle_data  from "../merkle_data.json" assert { type: "json" };
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -88,8 +90,8 @@ export const deployBlobert = async (seeder,descriptor_regular, descriptor_custom
   let token_name = "Blobert";
   let token_symbol = "BLOB";
   let owner = 0x0140809B710276e2e07c06278DD8f7D4a2528acE2764Fce32200852CB3893e5Cn 
-  //todo change
-  let fee_token_address = 0x4ef0e2993abf44178d3a40f2818828ed1c09cde9009677b7a3323570b4c0f2en
+  let fee_token_address = 0x0124aeb495b947201f5fac96fd1138e326ad86195b98df6dec9009158a533b49n
+  // let fee_token_address = 0x4ef0e2993abf44178d3a40f2818828ed1c09cde9009677b7a3323570b4c0f2en
   let fee_token_amount = 100 * (10 ** 18)
 
   let constructorCalldata = [
@@ -100,28 +102,26 @@ export const deployBlobert = async (seeder,descriptor_regular, descriptor_custom
     descriptor_regular,
     descriptor_custom,
     fee_token_address,
-    fee_token_amount, 0 // u256
+    fee_token_amount, 0 // u256 high
   ]
 
-  // merkle roots
-  let merkle_roots = whitelist_merkle_roots()
-  constructorCalldata.push(merkle_roots.length)
-  for (let j =0 ; j < merkle_roots.length; j++) {
-    constructorCalldata.push(merkle_roots[j]);
-  }
-
-  // todo update whitelist time
+  // add merkle roots
+  constructorCalldata 
+    = addArrayToCalldata(constructorCalldata, whitelist_merkle_roots())
 
   // mint start time
-  constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 60 * 20) // regular mint start time // 12 minutes from now
-  constructorCalldata.push(Math.round(new Date().getTime() / 1000) + 30 ) // whitelist mint start time // 30 seconds from now
+  let wltime = Math.round(new Date().getTime() / 1000) + (50 * 60)
+  let regtime = wltime + (60 * 60 * 24)
+  constructorCalldata
+    .push( regtime )
+  constructorCalldata
+    .push( wltime) 
 
   // initial custom nft recipients
   let initial_assigned_recips = initial_assigned_recipients();
-  constructorCalldata.push(initial_assigned_recips.length)
-  for (let j =0 ; j < initial_assigned_recips.length; j++) {
-    constructorCalldata.push(initial_assigned_recips[j]);
-  }
+  constructorCalldata 
+  = addArrayToCalldata(constructorCalldata, initial_assigned_recips)
+
   
   // Deploy contract
   console.log(`\nDeploying ${name} ... \n\n`.green);
@@ -137,7 +137,7 @@ export const deployBlobert = async (seeder,descriptor_regular, descriptor_custom
     "Tx hash: ".green,
     `${network.explorer_url}/tx/${contract.transaction_hash})`,
   );
-  await account.waitForTransaction(contract.transaction_hash);
+  let a = await account.waitForTransaction(contract.transaction_hash);
   console.log("Contract Address: ".green, contract.address, "\n\n");
 
 }
@@ -213,94 +213,9 @@ export const deployDescriptorRegular = async () => {
 }
 
 export const deployDescriptorCustom = async () => {
-
+  
   // Load account
   const account = getAccount();
-
-  ///////////////////////////////////////////
-  ///////////////////////////////////////////
-  ///////////////////////////////////////////
-
-  let descriptor_custom_data_addresses = [];
-
-  // Declare custom data 1
-  let descriptor_custom_data_1 = "DescriptorCustomData1"
-  const descriptor_custom_data_1_class_hash 
-    = (await declare(getPath(descriptor_custom_data_1), descriptor_custom_data_1)).class_hash;
-
-  // Deploy contract
-  console.log(`\nDeploying ${descriptor_custom_data_1} ... \n\n`.green);
-  let contract = await account.deployContract({
-    classHash: descriptor_custom_data_1_class_hash
-  });
-
-  // Wait for transaction
-  let network = getNetwork(process.env.STARKNET_NETWORK);
-  console.log(
-      "Tx hash: ".green,
-      `${network.explorer_url}/tx/${contract.transaction_hash})`,
-    );
-  await account.waitForTransaction(contract.transaction_hash);
-  console.log("Contract Address: ".green, contract.address, "\n\n");
-  descriptor_custom_data_addresses.push(contract.address)
-  
-
-  ///////////////////////////////////////////
-  ///////////////////////////////////////////
-  ///////////////////////////////////////////
-
-
-  // Declare custom data 2
-  let descriptor_custom_data_2 = "DescriptorCustomData2"
-  const descriptor_custom_data_2_class_hash 
-    = (await declare(getPath(descriptor_custom_data_2), descriptor_custom_data_2)).class_hash;
-
-  // Deploy contract
-  console.log(`\nDeploying ${descriptor_custom_data_2} ... \n\n`.green);
-  contract = await account.deployContract({
-    classHash: descriptor_custom_data_2_class_hash,
-    constructorCalldata: [],
-  });
-
-  // Wait for transaction
-  network = getNetwork(process.env.STARKNET_NETWORK);
-  console.log(
-    "Tx hash: ".green,
-    `${network.explorer_url}/tx/${contract.transaction_hash})`,
-  );
-  await account.waitForTransaction(contract.transaction_hash);
-  console.log("Contract Address: ".green, contract.address, "\n\n");
-  descriptor_custom_data_addresses.push(contract.address)
-
-  
-  ///////////////////////////////////////////
-  ///////////////////////////////////////////
-  ///////////////////////////////////////////
-
-    
-  // // Declare custom data 3
-  let descriptor_custom_data_3 = "DescriptorCustomData3"
-  const descriptor_custom_data_3_class_hash 
-    = (await declare(getPath(descriptor_custom_data_3), descriptor_custom_data_3)).class_hash;
-
-  // Deploy contract
-  console.log(`\nDeploying ${descriptor_custom_data_3} ... \n\n`.green);
-  contract = await account.deployContract({
-    classHash: descriptor_custom_data_3_class_hash,
-    constructorCalldata: [],
-  });
-
-
-  // Wait for transaction
-  network = getNetwork(process.env.STARKNET_NETWORK);
-  console.log(
-    "Tx hash: ".green,
-    `${network.explorer_url}/tx/${contract.transaction_hash})`,
-  );
-  await account.waitForTransaction(contract.transaction_hash);
-  console.log("Contract Address: ".green, contract.address, "\n\n");
-  descriptor_custom_data_addresses.push(contract.address)
-
 
   ///////////////////////////////////////////
   ///////////////////////////////////////////
@@ -313,26 +228,19 @@ export const deployDescriptorCustom = async () => {
   
     // Deploy contract
   console.log(`\nDeploying ${descriptor_custom} ... \n\n`.green);
-  contract = await account.deployContract({
-    classHash: descriptor_custom_class_hash,
-    constructorCalldata: [
-      descriptor_custom_data_addresses.length,
-      descriptor_custom_data_addresses[0],
-      descriptor_custom_data_addresses[1],
-      descriptor_custom_data_addresses[2],
-    ],
+  let contract = await account.deployContract({
+    classHash: descriptor_custom_class_hash
   });
 
 
   // Wait for transaction
-  network = getNetwork(process.env.STARKNET_NETWORK);
+ let network = getNetwork(process.env.STARKNET_NETWORK);
   console.log(
     "Tx hash: ".green,
     `${network.explorer_url}/tx/${contract.transaction_hash})`,
   );
   await account.waitForTransaction(contract.transaction_hash);
   console.log("Contract Address: ".green, contract.address, "\n\n");
-  descriptor_custom_data_addresses.push(contract.address)
 
   return contract.address
 }
@@ -341,9 +249,20 @@ export const deployDescriptorCustom = async () => {
 
 function whitelist_merkle_roots(){
   return [
-    0x3a5f886e952da36285158c8e9e2cec6d4d17d1271cbb66d6c770bc0ea795025n, // tier 1
-    0x7355045c69306c4f0aa9b82ec8fe14cedc41f4e1ecf632f159d416d89b30a7n, // tier 2
-    0x5ae7c1084891066205bff66d47382b55de150e9e7f8807e76e33cc65b7e8a23n, // tier 3
-    0xe124d0eba590a8049e8a1107799a3ed7253f0eaa4c2c1d1e6927969dc1069dn, // tier 4
+    BigInt(merkle_data["1"]["root"]),
+    BigInt(merkle_data["2"]["root"]),
+    BigInt(merkle_data["3"]["root"]),
+    BigInt(merkle_data["4"]["root"]),
   ]
+}
+
+
+const addArrayToCalldata = (calldata, arr) => {
+
+  calldata.push(arr.length)
+  for (let j =0 ; j < arr.length; j++) {
+    calldata.push(arr[j]);
+  }
+
+  return calldata
 }

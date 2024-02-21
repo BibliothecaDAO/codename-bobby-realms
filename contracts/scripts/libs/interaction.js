@@ -5,7 +5,7 @@ import colors from "colors";
 
 import * as fs from "fs";
 
-const blobertAddress = 0x42f5f669ae20b76fa38badec759f4c25b099ae05e167595f81964f796f8bb80n;
+const blobertAddress = 0x007075083c7f643a2009cf1dfa28dfec9366f7d374743c2e378e03c01e16c3afn;
 export const generateSvgImage = async () => {
 
   ///////////////////////////////////////////
@@ -14,17 +14,6 @@ export const generateSvgImage = async () => {
 
   // Load account
   const account = getAccount();
-
-  // read abi of Test contract
-  let res = await account.callContract(
-    {contractAddress: blobertAddress, entrypoint: "svg_image", calldata:[39,0] } // 36 fails
-    )
-
-  let pending_word = res[res.length - 2]
-  let pending_word_len = res[res.length -1]
-  res.pop() // pop pending_word_len
-  res.pop() // pop pending word
-  res.shift() // shift "data"
   let bytearr = {
     data: res,
     pending_word: pending_word,
@@ -57,9 +46,11 @@ export const callWhitelistMint = async () => {
   calldata.push(account.address) //recipient
 
   let merkle_proof = [
-    0x1bfd917fdf403007307805477ec62a6b8ec2883afa38cdc52a47b1756822248n,
-    0x294c410fc840bc5c257d481337bbcb5901662c1276c29b94f491b04e2b18cban,
-    0xa08249e3f9ee50da4382d47fa01ce5c3a1f7466dcadf0e0c375add37ef48ebn
+    "2461346573285723365912187430944399967588953026779287944953191952128612292614",
+    "1046207144106800084680566165664977077184516474202712165255045607345244738617",
+    "1700665023328058276710386641482722623796946951043856227758729548785023586887",
+    "1776384935207426675478629185070085697852105557904271143125014918582071270454",
+    "2356048579238990704538630181877896738178417927929725321119494838445799290171"
   ]
 
   calldata.push(merkle_proof.length)
@@ -87,5 +78,5 @@ export const callWhitelistMint = async () => {
 }
 
 
-generateSvgImage()
-// callWhitelistMint()
+// generateSvgImage()
+callWhitelistMint()

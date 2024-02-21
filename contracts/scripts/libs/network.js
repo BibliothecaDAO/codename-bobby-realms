@@ -4,6 +4,8 @@ import { Account, RpcProvider, json } from "starknet";
 const NETWORKS = {
   mainnet: {
     name: "mainnet",
+    explorer_url: "https://voyager.online",
+    rpc_url: `${process.env.RPC_API_KEY}`,
     feeder_gateway_url: "https://alpha-mainnet.starknet.io/feeder_gateway",
     gateway_url: "https://alpha-mainnet.starknet.io/gateway",
   },

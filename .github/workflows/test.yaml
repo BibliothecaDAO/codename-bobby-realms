@@ -15,4 +15,4 @@ jobs:
         with:
           starknet-foundry-version: 0.17.1
       - run: cd contracts && scarb fmt --check
-      - run: cd contracts && scarb test -f scarb_descriptor --include-ignored && snforge test 
+      - run: cd contracts && snforge test
