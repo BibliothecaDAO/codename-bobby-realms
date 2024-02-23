@@ -10,7 +10,7 @@ function convertImageToBase64(filePath) {
 
 function appendBase64ToFile(base64String, outputFilePath, functionName) {
   // Format the string as desired
-  const formattedString = `fn ${functionName}() -> ByteArray {\n"${base64String}"\n}\n`;
+  const formattedString = `fn ${functionName}() -> ByteArray {\n    "${base64String}"\n}\n`;
 
   // Append the formatted string to the output file
   fs.appendFileSync(outputFilePath, formattedString);
@@ -39,27 +39,33 @@ function generateBase64(directory, outputFilePath) {
 }
 
 generateBase64(
-  "../art/traits/armour",
-  "../contracts/src/generation/traits/armour.cairo"
+  "art/traits/armour",
+  "contracts/src/generation/traits/data/armour.cairo"
 );
 generateBase64(
-  "../art/traits/backgrounds",
-  "../contracts/src/generation/traits/background.cairo"
-);
-
-generateBase64(
-  "../art/traits/jewellry",
-  "../contracts/src/generation/traits/jewellry.cairo"
+  "art/traits/backgrounds",
+  "contracts/src/generation/traits/data/background.cairo"
 );
 
 generateBase64(
-  "../art/traits/masks",
-  "../contracts/src/generation/traits/masks.cairo"
+  "art/traits/jewelry",
+  "contracts/src/generation/traits/data/jewelry.cairo"
 );
 
 generateBase64(
-  "../art/traits/weapons",
-  "../contracts/src/generation/traits/weapons.cairo"
+  "art/traits/masks",
+  "contracts/src/generation/traits/data/mask.cairo"
+);
+
+generateBase64(
+  "art/traits/weapons",
+  "contracts/src/generation/traits/data/weapon.cairo"
+);
+
+
+generateBase64(
+  "art/custom",
+  "contracts/src/generation/custom/data/images.cairo"
 );
 
 console.log("All conversions complete");

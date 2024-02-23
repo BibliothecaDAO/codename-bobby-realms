@@ -1,0 +1,64 @@
+   Compiling blob v0.1.0 (/Users/credence/Desktop/BobbyRealms/contracts/Scarb.toml)
+    Finished release target(s) in 7 seconds
+[31m   ____          _         [39m
+[31m  |    \ ___ ___| |___ _ _ [39m
+[31m  |  |  | -_| . | | . | | |[39m
+[31m  |____/|___|  _|_|___|_  |[39m
+[31m            |_|       |___|[39m
+[35m
+Declaring Seeder...
+
+[39m
+[35m- Class Hash: [39m 0x2d380808a4096a20d9412d6be237b55be1cda3e962db1a787b74e1eb4c9cd27
+[35m- Tx Hash: [39m https://voyager.online/tx/0x1dde39b5bb28a8f2ee4bfa425c164803d22471afdb6b8966160578ef28365a4)
+[32m
+Deploying Seeder ... 
+
+[39m
+[32mTx hash: [39m https://voyager.online/tx/0x1a00d4d711169240c3df91697a5d83b80eb8b4974f8887836e5da86fdab7f5c)
+[32mContract Address: [39m 0x592403d219ba2077760667c8244850a22a7e04f8f97af89c9d1c8df4678b79c 
+
+
+[35m
+Declaring DescriptorRegular...
+
+[39m
+[35m- Class Hash: [39m 0x57900913798506416e6339b42e1c903d9c4469353a2f39a10510060c79c7482
+[35m- Tx Hash: [39m https://voyager.online/tx/0x7702b1fdb9ad45cb716a081d6c0d369099695f56b15235b3577153405a60c0b)
+[32m
+Deploying DescriptorRegular ... 
+
+[39m
+[32mTx hash: [39m https://voyager.online/tx/0x11011702cfd39a039697db4ed95c9f62d61c833ad7b75ed8a263d60504da724)
+[32mContract Address: [39m 0x7c82f2f8199551b5eb828de9d0a485c1dfbe8f4d05502a7e39d1379da398d7f 
+
+
+[35m
+Declaring DescriptorCustom...
+
+[39m
+[35m- Class Hash: [39m 0x19524960405f69c76cf80f5d9cbfae56fd2c0920b7060f0c59f4d46a7f596fb
+[35m- Tx Hash: [39m https://voyager.online/tx/0x7faf6545c43c2f44f3819df64b26d06119dbbfc1e57ccc2e7c5e2b91aa34c1e)
+[32m
+Deploying DescriptorCustom ... 
+
+[39m
+[32mTx hash: [39m https://voyager.online/tx/0x322d77180a396bb86aeb935b2f6b138bb666970e78fae29a4ff0814a6bdde65)
+[32mContract Address: [39m 0x63ab8702d967c25ad40c0c9bf76df50b9473ca57b282810463fe0ab6166751b 
+
+
+[35m
+Declaring Blobert...
+
+[39m
+[35m- Class Hash: [39m 0x761ab63f932aa13127acaa2fafa9cd837e0658a157152c67894103a9ae2eb5a
+[35m- Tx Hash: [39m https://voyager.online/tx/0x775afbc654e8bf4f4c9df9c248d050c5062655e93402b28b3a6ef100efbeb1e)
+
+
+
+Deploying Blobert ... 
+
+
+Tx hash:  https://voyager.online/tx/0x302e96aad5ae3c3a21942e8a4948847243d191830c560bb8937e4625a73687f)
+Contract Address:  0x539f522b29ae9251dbf7443c7a950cf260372e69efab3710a11bf17a9599f1 
+
